@@ -64,53 +64,8 @@ final class LaravelProjectScaffolder
         // "laravel/laravel" + skeleton blurb which would be wrong for a project.
         $this->rewriteComposerJson($targetDir, $state);
 
-        // Overlay shared/ baseline (CI workflows, pint, editorconfig, .mcp.json,
-        // etc.) but SKIP files that would clobber Laravel-shipped project
-        // defaults. Then overlay laravel-project/ additions on top.
         $substituter = new PlaceholderSubstituter($state);
-        $written = 0;
-
-        $sharedSkip = [
-            '.gitattributes',  // Laravel ships project-tuned version; managed block added later by package-boost sync
-            '.gitignore',      // Laravel's is correct for a project
-            'phpunit.xml',     // Laravel ships its own, project-tuned
-            'README.md',       // Laravel ships its own README; we don't overwrite, just append via README.append.md
-        ];
-        $sharedSkipPrefixes = [
-            'tests/',          // Laravel ships its own TestCase + Unit/Feature dirs; pest opt-in is `pest --init`
-        ];
-
-        foreach (['shared', 'laravel-project'] as $stubDir) {
-            foreach ($this->stubReader->read($stubDir) as $stub) {
-                if ($stubDir === 'shared' && in_array($stub['relative'], $sharedSkip, true)) {
-                    continue;
-                }
-                if ($stubDir === 'shared') {
-                    foreach ($sharedSkipPrefixes as $prefix) {
-                        if (str_starts_with($stub['relative'], $prefix)) {
-                            continue 2;
-                        }
-                    }
-                }
-
-                $relativeSubstituted = $substituter->substitute($stub['relative']);
-                $relativeSubstituted = $this->dotPrefixRename($relativeSubstituted);
-                $destination = $targetDir . '/' . $relativeSubstituted;
-
-                $destinationDir = dirname($destination);
-                if (! is_dir($destinationDir) && ! mkdir($destinationDir, 0755, true) && ! is_dir($destinationDir)) {
-                    throw new RuntimeException("Failed to mkdir {$destinationDir}");
-                }
-
-                $contents = file_get_contents($stub['source']);
-                if ($contents === false) {
-                    throw new RuntimeException("Failed to read {$stub['source']}");
-                }
-
-                file_put_contents($destination, $substituter->substitute($contents));
-                ++$written;
-            }
-        }
+        $written = $this->overlayStubs($targetDir, $substituter);
 
         $optInFlags = [
             'with-hihaho-rules' => $state->withHihahoRules,
@@ -172,6 +127,8 @@ final class LaravelProjectScaffolder
 
     /**
      * Add each plugin name to composer.json `config.allow-plugins`.
+     *
+     * @param  list<string>  $plugins
      */
     private function preAllowPlugins(string $targetDir, array $plugins): void
     {
@@ -210,7 +167,78 @@ final class LaravelProjectScaffolder
             return [];
         }
 
-        return array_values(array_keys($decoded['require']));
+        return array_keys($decoded['require']);
+    }
+
+    /**
+     * Overlay shared/ baseline (CI workflows, pint, editorconfig, .mcp.json,
+     * etc.) but SKIP files that would clobber Laravel-shipped project
+     * defaults. Then overlay laravel-project/ additions on top.
+     */
+    private function overlayStubs(string $targetDir, PlaceholderSubstituter $substituter): int
+    {
+        $sharedSkip = [
+            '.gitattributes',
+            '.gitignore',
+            'phpunit.xml',
+            'README.md',
+            '_gitattributes',  // stub form; would rename to .gitattributes (skip)
+        ];
+        $sharedSkipPrefixes = [
+            'tests/',  // Laravel ships its own TestCase + Unit/Feature dirs
+        ];
+
+        $written = 0;
+        foreach (['shared', 'laravel-project'] as $stubDir) {
+            foreach ($this->stubReader->read($stubDir) as $stub) {
+                if ($stubDir === 'shared' && $this->shouldSkipSharedStub($stub['relative'], $sharedSkip, $sharedSkipPrefixes)) {
+                    continue;
+                }
+                $this->copyStub($stub, $targetDir, $substituter);
+                ++$written;
+            }
+        }
+
+        return $written;
+    }
+
+    /**
+     * @param  list<string>  $skipExact
+     * @param  list<string>  $skipPrefixes
+     */
+    private function shouldSkipSharedStub(string $relative, array $skipExact, array $skipPrefixes): bool
+    {
+        if (in_array($relative, $skipExact, true)) {
+            return true;
+        }
+        foreach ($skipPrefixes as $prefix) {
+            if (str_starts_with($relative, $prefix)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @param  array{source: string, relative: string}  $stub
+     */
+    private function copyStub(array $stub, string $targetDir, PlaceholderSubstituter $substituter): void
+    {
+        $relativeSubstituted = $this->dotPrefixRename($substituter->substitute($stub['relative']));
+        $destination = $targetDir . '/' . $relativeSubstituted;
+
+        $destinationDir = dirname($destination);
+        if (! is_dir($destinationDir) && ! mkdir($destinationDir, 0755, true) && ! is_dir($destinationDir)) {
+            throw new RuntimeException("Failed to mkdir {$destinationDir}");
+        }
+
+        $contents = file_get_contents($stub['source']);
+        if ($contents === false) {
+            throw new RuntimeException("Failed to read {$stub['source']}");
+        }
+
+        file_put_contents($destination, $substituter->substitute($contents));
     }
 
     /**

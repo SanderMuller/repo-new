@@ -13,16 +13,10 @@ parameters:
 			path: src/RepoInit/PerCategoryDeps.php
 
 		-
-			rawMessage: 'Out of 121 possible param types, only 120 - 99.1 %% actually have it. Add more param types to get over 100 %%'
+			rawMessage: 'Out of 155 possible param types, only 154 - 99.3 %% actually have it. Add more param types to get over 100 %%'
 			identifier: typeCoverage.paramTypeCoverage
 			count: 1
 			path: src/RepoInit/PerCategoryDeps.php
-
-		-
-			rawMessage: 'Property SanderMuller\RepoNew\Scaffolder\PackageScaffolder::$io is never read, only written.'
-			identifier: property.onlyWritten
-			count: 1
-			path: src/Scaffolder/PackageScaffolder.php
 
 		-
 			rawMessage: Cannot cast mixed to string.
@@ -123,7 +117,7 @@ parameters:
 		-
 			rawMessage: 'Call to method toBe() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
 			identifier: method.internalClass
-			count: 3
+			count: 4
 			path: tests/Feature/PackageScaffolderSmokeTest.php
 
 		-
@@ -142,12 +136,6 @@ parameters:
 			rawMessage: 'Call to method toContain() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
 			identifier: method.internalClass
 			count: 2
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: 'Call to method toStartWith() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 1
 			path: tests/Feature/PackageScaffolderSmokeTest.php
 
 		-
