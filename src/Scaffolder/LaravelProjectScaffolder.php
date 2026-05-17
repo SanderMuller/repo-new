@@ -85,14 +85,82 @@ final class LaravelProjectScaffolder
             'with-hihaho-rules' => $state->withHihahoRules,
             'with-security-advisories' => $state->withSecurityAdvisories,
         ];
-        $depList = $this->deps->forCategory('laravel-project', null, $state->testFramework ?? 'pest', $optInFlags);
+        $depList = $this->deps->forCategory('laravel-project', null, $state->testFramework ?? 'phpunit', $optInFlags);
         $requireDev = array_map(static fn (string $e): string => $substituter->substitute($e), $depList->requireDev);
 
         if ($requireDev !== []) {
+            // Pre-config allow-plugins for plugins our deps will pull in.
+            // Laravel ships some (pestphp/pest-plugin, php-http/discovery)
+            // but not phpstan/extension-installer which our shared dep list
+            // requires. Without this, composer aborts with "contains a
+            // Composer plugin which is blocked by your allow-plugins config".
+            $this->preAllowPlugins($targetDir, [
+                'phpstan/extension-installer',
+            ]);
+
+            // For packages that Laravel 13+ ships in `require` but we want in
+            // `require-dev` (laravel/tinker is the canonical case), explicitly
+            // remove from require first so `composer require --dev` doesn't
+            // just leave them in require. Composer's auto-move warning isn't
+            // reliable across versions and can leave packages in the wrong
+            // scope when the require-dev call has other resolution conflicts.
+            $alreadyInRequire = $this->listPackagesInRequire($targetDir);
+            $toMove = array_values(array_intersect($requireDev, $alreadyInRequire));
+
+            if ($toMove !== []) {
+                $this->io->writeln('<comment>→ moving to require-dev: ' . implode(', ', $toMove) . '</comment>');
+                $this->composer->remove($targetDir, $toMove, noUpdate: true);
+            }
+
+            // Now install everything as --dev. tinker (or any moved package)
+            // re-enters via require-dev cleanly.
             $this->composer->require($targetDir, $requireDev, dev: true);
         }
 
         return ['stubsWritten' => $written, 'requireDevInstalled' => count($requireDev)];
+    }
+
+    /**
+     * Add each plugin name to composer.json `config.allow-plugins`.
+     */
+    private function preAllowPlugins(string $targetDir, array $plugins): void
+    {
+        foreach ($plugins as $plugin) {
+            $process = new Process(
+                ['composer', 'config', '--no-plugins', "allow-plugins.{$plugin}", 'true'],
+                $targetDir,
+                null,
+                null,
+                60.0,
+            );
+            $process->run();
+            // Non-fatal if it fails — composer require will surface real errors.
+        }
+    }
+
+    /**
+     * Return the names of packages currently in target's composer.json `require` (non-dev).
+     *
+     * @return list<string>
+     */
+    private function listPackagesInRequire(string $targetDir): array
+    {
+        $composerJson = $targetDir . '/composer.json';
+        if (! is_file($composerJson)) {
+            return [];
+        }
+
+        $raw = file_get_contents($composerJson);
+        if ($raw === false) {
+            return [];
+        }
+
+        $decoded = json_decode($raw, true);
+        if (! is_array($decoded) || ! isset($decoded['require']) || ! is_array($decoded['require'])) {
+            return [];
+        }
+
+        return array_values(array_keys($decoded['require']));
     }
 
     private function isEmpty(string $dir): bool

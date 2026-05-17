@@ -103,6 +103,20 @@ final class WizardState
             return 'phpunit';
         }
 
+        // laravel-project ships PHPUnit via `laravel new` by default.
+        // pestphp/pest-plugin-laravel lags Laravel versions (Laravel 13
+        // requires pest-plugin-laravel ^4.1; older Laravel can use earlier).
+        // Default to phpunit; users opt into pest via --test-framework=pest
+        // (then they must run `vendor/bin/pest --init` separately to migrate
+        // tests). Sander-vendor convention also defaults laravel-project to
+        // phpunit since pest-on-Laravel-13 is fragile.
+        if ($this->category === 'laravel-project') {
+            return match ($this->vendor) {
+                'sandermuller' => 'phpunit',  // override the sander → pest default for laravel-project
+                default => 'phpunit',
+            };
+        }
+
         return match ($this->vendor) {
             'hihaho' => 'phpunit',
             default => 'pest',

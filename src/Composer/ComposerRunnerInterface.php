@@ -10,4 +10,9 @@ interface ComposerRunnerInterface
      * @param  list<string>  $packages
      */
     public function require(string $cwd, array $packages, bool $dev = false): void;
+
+    /**
+     * @param  list<string>  $packages
+     */
+    public function remove(string $cwd, array $packages, bool $noUpdate = false): void;
 }

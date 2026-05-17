@@ -48,6 +48,27 @@ final class ComposerRunner implements ComposerRunnerInterface
     }
 
     /**
+     * @param  list<string>  $packages
+     */
+    public function remove(string $cwd, array $packages, bool $noUpdate = false): void
+    {
+        if ($packages === []) {
+            return;
+        }
+
+        $args = ['remove', '--no-interaction'];
+        if ($noUpdate) {
+            $args[] = '--no-update';
+        }
+        foreach ($packages as $pkg) {
+            // For remove, just the name (no version constraint).
+            $args[] = explode(':', $pkg, 2)[0];
+        }
+
+        $this->run($args, $cwd, 'composer remove');
+    }
+
+    /**
      * @param  list<string>  $args
      */
     private function run(array $args, string $cwd, string $label): void

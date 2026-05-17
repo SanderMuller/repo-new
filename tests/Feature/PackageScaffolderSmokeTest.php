@@ -19,6 +19,8 @@ final class NoopComposerRunner implements ComposerRunnerInterface
     public function install(string $cwd): void {}
 
     public function require(string $cwd, array $packages, bool $dev = false): void {}
+
+    public function remove(string $cwd, array $packages, bool $noUpdate = false): void {}
 }
 
 beforeEach(function (): void {
