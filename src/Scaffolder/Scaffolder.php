@@ -8,11 +8,11 @@ use SanderMuller\RepoNew\Wizard\WizardState;
 /**
  * Dispatches per category.
  */
-final class Scaffolder
+final readonly class Scaffolder
 {
     public function __construct(
-        private readonly PackageScaffolder $packageScaffolder,
-        private readonly LaravelProjectScaffolder $projectScaffolder,
+        private PackageScaffolder $packageScaffolder,
+        private LaravelProjectScaffolder $projectScaffolder,
     ) {}
 
     /**

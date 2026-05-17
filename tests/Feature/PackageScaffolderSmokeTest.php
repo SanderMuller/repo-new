@@ -43,6 +43,7 @@ afterEach(function (): void {
     if (! is_dir($this->tmp)) {
         return;
     }
+
     $iter = new RecursiveIteratorIterator(
         new RecursiveDirectoryIterator($this->tmp, FilesystemIterator::SKIP_DOTS),
         RecursiveIteratorIterator::CHILD_FIRST,
@@ -50,6 +51,7 @@ afterEach(function (): void {
     foreach ($iter as $f) {
         $f->isDir() ? @rmdir($f->getPathname()) : @unlink($f->getPathname());
     }
+
     @rmdir($this->tmp);
 });
 
@@ -80,9 +82,9 @@ it('scaffolds a php-package skeleton with all expected files', function (): void
 
     $src = file_get_contents($this->tmp . '/src/QueueInsights.php');
     expect($src)->toContain('namespace Sandermuller\\QueueInsights;')
-        ->and($src)->toContain('final class QueueInsights');
-
-    expect($result['stubsWritten'])->toBeGreaterThan(5);
+        ->and($src)->toContain('final class QueueInsights')
+        ->and($result['stubsWritten'])
+        ->toBeGreaterThan(5);
 });
 
 it('scaffolds a laravel-package sander variant with ServiceProvider file', function (): void {

@@ -12,14 +12,14 @@ namespace SanderMuller\RepoNew\RepoInit;
  * Constraints may contain `__LARAVEL_VERSIONS__` placeholder; substitute
  * before passing to ComposerRunner.
  */
-final class DepList
+final readonly class DepList
 {
     /**
      * @param  list<string>  $require
      * @param  list<string>  $requireDev
      */
     public function __construct(
-        public readonly array $require,
-        public readonly array $requireDev,
+        public array $require,
+        public array $requireDev,
     ) {}
 }

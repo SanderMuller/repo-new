@@ -16,13 +16,13 @@ use Symfony\Component\Process\Process;
  * Scaffolds a laravel-project: shells out to `laravel new` and overlays the
  * stubs/laravel-project/ additions on top.
  */
-final class LaravelProjectScaffolder
+final readonly class LaravelProjectScaffolder
 {
     public function __construct(
-        private readonly SymfonyStyle $io,
-        private readonly StubReader $stubReader,
-        private readonly PerCategoryDeps $deps,
-        private readonly ComposerRunnerInterface $composer,
+        private SymfonyStyle $io,
+        private StubReader $stubReader,
+        private PerCategoryDeps $deps,
+        private ComposerRunnerInterface $composer,
     ) {}
 
     /**
@@ -72,7 +72,7 @@ final class LaravelProjectScaffolder
             'with-security-advisories' => $state->withSecurityAdvisories,
         ];
         $depList = $this->deps->forCategory('laravel-project', null, $state->testFramework ?? 'phpunit', $optInFlags);
-        $requireDev = array_map(static fn (string $e): string => $substituter->substitute($e), $depList->requireDev);
+        $requireDev = array_map($substituter->substitute(...), $depList->requireDev);
 
         if ($requireDev !== []) {
             // Pre-config allow-plugins for plugins our deps will pull in.
@@ -118,6 +118,7 @@ final class LaravelProjectScaffolder
         if (! is_file($testbench)) {
             return;
         }
+
         $process = new Process([$testbench, 'package-boost:sync'], $targetDir, null, null, 120.0);
         $this->io->writeln('<info>→ package-boost:sync</info>');
         $process->run(function (string $type, string $buffer): void {
@@ -194,6 +195,7 @@ final class LaravelProjectScaffolder
                 if ($stubDir === 'shared' && $this->shouldSkipSharedStub($stub['relative'], $sharedSkip, $sharedSkipPrefixes)) {
                     continue;
                 }
+
                 $this->copyStub($stub, $targetDir, $substituter);
                 ++$written;
             }
@@ -211,6 +213,7 @@ final class LaravelProjectScaffolder
         if (in_array($relative, $skipExact, true)) {
             return true;
         }
+
         foreach ($skipPrefixes as $prefix) {
             if (str_starts_with($relative, $prefix)) {
                 return true;
@@ -281,13 +284,16 @@ final class LaravelProjectScaffolder
         if ($composerName !== null) {
             $decoded['name'] = $composerName;
         }
+
         if ($state->description !== null && $state->description !== '') {
             $decoded['description'] = $state->description;
         }
+
         if ($state->vendor !== null && $state->package !== null) {
             $decoded['keywords'] = [$state->vendor, $state->package, 'laravel'];
             $decoded['homepage'] = "https://github.com/{$state->vendor}/{$state->package}";
         }
+
         if ($state->authorName !== null && $state->authorEmail !== null) {
             $decoded['authors'] = [[
                 'name' => $state->authorName,

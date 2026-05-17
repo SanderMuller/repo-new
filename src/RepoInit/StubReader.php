@@ -11,9 +11,9 @@ use SplFileInfo;
 /**
  * Walks a stubs/<category>/ tree and yields (absolute-source, relative-target) tuples.
  */
-final class StubReader
+final readonly class StubReader
 {
-    public function __construct(private readonly string $repoInitDir) {}
+    public function __construct(private string $repoInitDir) {}
 
     /**
      * @return Generator<array{source: string, relative: string}>

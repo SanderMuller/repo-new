@@ -4,9 +4,9 @@ namespace SanderMuller\RepoNew\Composer;
 
 use Symfony\Component\Console\Style\SymfonyStyle;
 
-final class ComposerFailureSurfacer
+final readonly class ComposerFailureSurfacer
 {
-    public function __construct(private readonly SymfonyStyle $io) {}
+    public function __construct(private SymfonyStyle $io) {}
 
     public function surface(string $step, string $stdout, string $stderr, int $exitCode): void
     {
@@ -17,6 +17,7 @@ final class ComposerFailureSurfacer
             $this->io->writeln('<comment>stdout:</comment>');
             $this->io->writeln($stdout);
         }
+
         if ($stderr !== '') {
             $this->io->writeln('<comment>stderr:</comment>');
             $this->io->writeln($stderr);

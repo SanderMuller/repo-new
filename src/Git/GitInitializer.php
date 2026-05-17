@@ -5,9 +5,9 @@ namespace SanderMuller\RepoNew\Git;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
 
-final class GitInitializer
+final readonly class GitInitializer
 {
-    public function __construct(private readonly SymfonyStyle $io) {}
+    public function __construct(private SymfonyStyle $io) {}
 
     public function init(string $targetDir): void
     {

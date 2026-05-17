@@ -2,6 +2,7 @@
 
 namespace SanderMuller\RepoNew\Scaffolder;
 
+use RuntimeException;
 use SanderMuller\RepoNew\Composer\ComposerRunnerInterface;
 use SanderMuller\RepoNew\RepoInit\PerCategoryDeps;
 use SanderMuller\RepoNew\RepoInit\PlaceholderSubstituter;
@@ -23,13 +24,13 @@ use Symfony\Component\Process\Process;
  * Laravel-aware opt-in for extension categories is honored BEFORE composer
  * install via PerCategoryDeps.forCategory().
  */
-final class PackageScaffolder
+final readonly class PackageScaffolder
 {
     public function __construct(
-        private readonly SymfonyStyle $io,
-        private readonly StubReader $stubReader,
-        private readonly PerCategoryDeps $deps,
-        private readonly ComposerRunnerInterface $composer,
+        private SymfonyStyle $io,
+        private StubReader $stubReader,
+        private PerCategoryDeps $deps,
+        private ComposerRunnerInterface $composer,
     ) {}
 
     /**
@@ -53,8 +54,8 @@ final class PackageScaffolder
         $depList = $this->deps->forCategory($state->category ?? '', $state->variant, $state->testFramework ?? 'pest', $optInFlags);
 
         // Substitute placeholders in dep constraints (e.g. illuminate/support: __LARAVEL_VERSIONS__).
-        $require = array_map(static fn (string $e): string => $substituter->substitute($e), $depList->require);
-        $requireDev = array_map(static fn (string $e): string => $substituter->substitute($e), $depList->requireDev);
+        $require = array_map($substituter->substitute(...), $depList->require);
+        $requireDev = array_map($substituter->substitute(...), $depList->requireDev);
 
         // Pre-allow plugins our deps will pull in. Without this, composer
         // aborts with "contains a Composer plugin which is blocked by your
@@ -70,6 +71,7 @@ final class PackageScaffolder
         if ($require !== []) {
             $this->composer->require($targetDir, $require, dev: false);
         }
+
         if ($requireDev !== []) {
             $this->composer->require($targetDir, $requireDev, dev: true);
         }
@@ -95,6 +97,7 @@ final class PackageScaffolder
         if (! is_file($testbench)) {
             return;
         }
+
         $process = new Process([$testbench, 'package-boost:sync'], $targetDir, null, null, 120.0);
         $this->io->writeln('<info>→ package-boost:sync</info>');
         $process->run(function (string $type, string $buffer): void {
@@ -166,18 +169,18 @@ final class PackageScaffolder
 
             $destinationDir = dirname($destination);
             if (! is_dir($destinationDir) && ! mkdir($destinationDir, 0755, true) && ! is_dir($destinationDir)) {
-                throw new \RuntimeException("Failed to mkdir {$destinationDir}");
+                throw new RuntimeException("Failed to mkdir {$destinationDir}");
             }
 
             $contents = file_get_contents($stub['source']);
             if ($contents === false) {
-                throw new \RuntimeException("Failed to read stub {$stub['source']}");
+                throw new RuntimeException("Failed to read stub {$stub['source']}");
             }
 
             $contents = $substituter->substitute($contents);
 
             if (file_put_contents($destination, $contents) === false) {
-                throw new \RuntimeException("Failed to write {$destination}");
+                throw new RuntimeException("Failed to write {$destination}");
             }
 
             ++$count;

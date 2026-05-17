@@ -120,8 +120,8 @@ final class NewCommand extends Command
             $io->writeln('----- 8< -----');
 
             return Command::SUCCESS;
-        } catch (RuntimeException $e) {
-            $io->error($e->getMessage());
+        } catch (RuntimeException $runtimeException) {
+            $io->error($runtimeException->getMessage());
 
             return 65;
         }
@@ -131,13 +131,14 @@ final class NewCommand extends Command
     {
         $state = new WizardState();
 
-        $state->interactive = ! ($input->getOption('no-interaction') === true);
+        $state->interactive = $input->getOption('no-interaction') !== true;
 
         $type = $input->getOption('type');
         if (is_string($type) && $type !== '') {
             if (! in_array($type, self::CATEGORIES, true)) {
                 throw new RuntimeException('Invalid --type. Allowed: ' . implode(', ', self::CATEGORIES));
             }
+
             $state->category = $type;
         }
 
@@ -210,15 +211,19 @@ final class NewCommand extends Command
         if ($state->category === null) {
             $missing[] = 'type';
         }
+
         if ($state->category !== 'laravel-project' && $state->vendor === null) {
             $missing[] = 'vendor';
         }
+
         if ($state->category !== 'laravel-project' && $state->package === null) {
             $missing[] = 'name (package)';
         }
+
         if ($state->description === null || $state->description === '') {
             $missing[] = 'description';
         }
+
         if ($state->phpVersion === null) {
             $missing[] = 'php';
         }

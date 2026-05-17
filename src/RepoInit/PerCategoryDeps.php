@@ -18,10 +18,10 @@ use Symfony\Component\Yaml\Yaml;
  *  - per-category `shared-exclusions` (dropped from shared lists)
  *  - per-opt-in `replaces-in-require-dev` (e.g. larastan replaces phpstan)
  */
-final class PerCategoryDeps
+final readonly class PerCategoryDeps
 {
     /** @var array<string, mixed> */
-    private readonly array $data;
+    private array $data;
 
     public function __construct(string $yamlPath)
     {
@@ -142,6 +142,7 @@ final class PerCategoryDeps
             if (! is_array($cursor) || ! array_key_exists($key, $cursor)) {
                 return [];
             }
+
             $cursor = $cursor[$key];
         }
 
@@ -159,7 +160,7 @@ final class PerCategoryDeps
      */
     private function dropByPackage(array $list, array $packagesToDrop): array
     {
-        $dropSet = array_flip(array_map([$this, 'packageName'], $packagesToDrop));
+        $dropSet = array_flip(array_map($this->packageName(...), $packagesToDrop));
 
         return array_values(array_filter(
             $list,
@@ -180,6 +181,7 @@ final class PerCategoryDeps
             if (isset($seen[$name])) {
                 continue;
             }
+
             $seen[$name] = true;
             $out[] = $entry;
         }

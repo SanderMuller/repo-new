@@ -13,7 +13,7 @@ parameters:
 			path: src/RepoInit/PerCategoryDeps.php
 
 		-
-			rawMessage: 'Out of 155 possible param types, only 154 - 99.3 %% actually have it. Add more param types to get over 100 %%'
+			rawMessage: 'Out of 152 possible param types, only 151 - 99.3 %% actually have it. Add more param types to get over 100 %%'
 			identifier: typeCoverage.paramTypeCoverage
 			count: 1
 			path: src/RepoInit/PerCategoryDeps.php
@@ -361,7 +361,7 @@ parameters:
 			path: tests/Unit/TargetDirResolverTest.php
 
 		-
-			rawMessage: 'Call to method toBeTrue() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
+			rawMessage: 'Call to method toBeDirectory() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
 			identifier: method.internalClass
 			count: 1
 			path: tests/Unit/TargetDirResolverTest.php

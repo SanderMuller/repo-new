@@ -12,12 +12,12 @@ use Symfony\Component\Process\Process;
  * On failure: surfaces stderr via ComposerFailureSurfacer and throws.
  * Caller decides whether to exit (NewCommand maps to exit code 65).
  */
-final class ComposerRunner implements ComposerRunnerInterface
+final readonly class ComposerRunner implements ComposerRunnerInterface
 {
     public function __construct(
-        private readonly SymfonyStyle $io,
-        private readonly ComposerFailureSurfacer $surfacer,
-        private readonly string $composerBinary = 'composer',
+        private SymfonyStyle $io,
+        private ComposerFailureSurfacer $surfacer,
+        private string $composerBinary = 'composer',
     ) {}
 
     public function install(string $cwd): void
@@ -38,6 +38,7 @@ final class ComposerRunner implements ComposerRunnerInterface
         if ($dev) {
             $args[] = '--dev';
         }
+
         foreach ($packages as $pkg) {
             // Entries shaped "name: ^x.y" → pass as "name:^x.y" (composer accepts it).
             $args[] = $this->normalizeConstraint($pkg);
@@ -60,6 +61,7 @@ final class ComposerRunner implements ComposerRunnerInterface
         if ($noUpdate) {
             $args[] = '--no-update';
         }
+
         foreach ($packages as $pkg) {
             // For remove, just the name (no version constraint).
             $args[] = explode(':', $pkg, 2)[0];
@@ -92,7 +94,7 @@ final class ComposerRunner implements ComposerRunnerInterface
     {
         // "foo/bar: ^1.0" → "foo/bar:^1.0"
         if (str_contains($entry, ':')) {
-            [$name, $constraint] = array_map('trim', explode(':', $entry, 2));
+            [$name, $constraint] = array_map(trim(...), explode(':', $entry, 2));
 
             return "{$name}:{$constraint}";
         }

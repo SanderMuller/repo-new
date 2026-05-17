@@ -16,6 +16,7 @@ afterEach(function (): void {
         foreach ($iter as $f) {
             $f->isDir() ? @rmdir($f->getPathname()) : @unlink($f->getPathname());
         }
+
         @rmdir($this->tmp);
     }
 });
@@ -24,8 +25,10 @@ it('creates subdir when name is given relative to cwd', function (): void {
     $resolver = new TargetDirResolver();
     $resolved = $resolver->resolve('foo', $this->tmp);
 
-    expect(is_dir($this->tmp . '/foo'))->toBeTrue();
-    expect($resolved)->toEndWith('/foo');
+    expect($this->tmp . '/foo')
+        ->toBeDirectory()
+        ->and($resolved)
+        ->toEndWith('/foo');
 });
 
 it('returns cwd when no name and cwd is empty', function (): void {

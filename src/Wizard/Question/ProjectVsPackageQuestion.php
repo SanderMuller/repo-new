@@ -22,6 +22,7 @@ final class ProjectVsPackageQuestion
         if ($choice === 'project') {
             $state->category = 'laravel-project';
         }
+
         // If 'package': category is set by PackageTypeQuestion.
     }
 }

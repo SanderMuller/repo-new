@@ -12,9 +12,9 @@ use RuntimeException;
  *  2. Project-local: ./vendor/sandermuller/repo-init/
  *  3. Sibling-of-bin: __DIR__/../../../sandermuller/repo-init/
  */
-final class RepoInitLocator
+final readonly class RepoInitLocator
 {
-    public function __construct(private readonly ?string $cwd = null) {}
+    public function __construct(private ?string $cwd = null) {}
 
     public function locate(): string
     {

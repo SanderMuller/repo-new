@@ -2,6 +2,7 @@
 
 namespace SanderMuller\RepoNew\RepoInit;
 
+use Carbon\Carbon;
 use SanderMuller\RepoNew\Wizard\WizardState;
 
 /**
@@ -10,10 +11,10 @@ use SanderMuller\RepoNew\Wizard\WizardState;
  *
  * Same substitution table for file content AND file paths.
  */
-final class PlaceholderSubstituter
+final readonly class PlaceholderSubstituter
 {
     /** @var array<string, string> */
-    private readonly array $replacements;
+    private array $replacements;
 
     public function __construct(WizardState $state)
     {
@@ -43,7 +44,8 @@ final class PlaceholderSubstituter
             '__PHP_VERSION__' => "^{$phpVersion}",
             '__LARAVEL_VERSIONS__' => $state->laravelVersions ?? '',
             '__PHP_VERSION_NEON__' => str_replace('.', '', $phpVersion),
-            '__YEAR__' => (string) (int) date('Y'),
+            '__YEAR__' => (string) (int) Carbon::now()
+                ->format('Y'),
         ];
     }
 
@@ -69,12 +71,14 @@ final class PlaceholderSubstituter
         if ($parts === false) {
             $parts = [];
         }
+
         $out = '';
         foreach ($parts as $part) {
             $part = strtolower($part);
             if ($part === '') {
                 continue;
             }
+
             $out .= ucfirst($part);
         }
 
