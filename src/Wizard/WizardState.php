@@ -40,9 +40,6 @@ final class WizardState
     /** laravel-project only. */
     public bool $withSecurityAdvisories = false;
 
-    /** laravel-project only. */
-    public bool $withLaravelSets = false;
-
     /** phpstan-extension + rector-extension only. */
     public bool $laravelAware = false;
 

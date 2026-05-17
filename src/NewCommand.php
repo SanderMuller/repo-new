@@ -52,7 +52,6 @@ final class NewCommand extends Command
             ->addOption('test-framework', null, InputOption::VALUE_REQUIRED, 'pest|phpunit')
             ->addOption('with-hihaho-rules', null, InputOption::VALUE_NONE, 'Opt-in for laravel-project.')
             ->addOption('with-security-advisories', null, InputOption::VALUE_NONE, 'Opt-in for laravel-project.')
-            ->addOption('with-laravel-sets', null, InputOption::VALUE_NONE, 'Opt-in for laravel-project.')
             ->addOption('laravel-aware', null, InputOption::VALUE_NONE, 'Opt-in for phpstan/rector-extension.')
             ->addOption('commit', null, InputOption::VALUE_NONE, 'Make an initial commit after scaffolding.');
     }
@@ -133,12 +132,33 @@ final class NewCommand extends Command
 
         $state->interactive = $input->getOption('no-interaction') !== true;
 
+        $this->applyTypeAndVariant($input, $state);
+        $this->applyVendorAndPackage($input, $state);
+
+        foreach (['description' => 'description', 'php' => 'phpVersion', 'laravel' => 'laravelVersions'] as $opt => $field) {
+            $val = $input->getOption($opt);
+            if (is_string($val) && $val !== '') {
+                $state->{$field} = $val;
+            }
+        }
+
+        $this->applyTestFrameworkFlag($input, $state);
+
+        $state->withHihahoRules = $input->getOption('with-hihaho-rules') === true;
+        $state->withSecurityAdvisories = $input->getOption('with-security-advisories') === true;
+        $state->laravelAware = $input->getOption('laravel-aware') === true;
+        $state->commit = $input->getOption('commit') === true;
+
+        return $state;
+    }
+
+    private function applyTypeAndVariant(InputInterface $input, WizardState $state): void
+    {
         $type = $input->getOption('type');
         if (is_string($type) && $type !== '') {
             if (! in_array($type, self::CATEGORIES, true)) {
                 throw new RuntimeException('Invalid --type. Allowed: ' . implode(', ', self::CATEGORIES));
             }
-
             $state->category = $type;
         }
 
@@ -148,14 +168,14 @@ final class NewCommand extends Command
         } elseif ($state->category === 'laravel-package') {
             $state->variant = 'sander';
         }
+    }
 
+    private function applyVendorAndPackage(InputInterface $input, WizardState $state): void
+    {
         $vendor = $input->getOption('vendor');
         $name = $input->getArgument('name');
         $nameStr = is_string($name) ? $name : null;
 
-        // Detect "vendor/package" composer name vs filesystem path. A composer
-        // name is exactly one slash, lowercase, kebab-case; anything with a
-        // dot, leading slash, or multiple slashes is treated as a path.
         $isComposerName = $nameStr !== null
             && preg_match('#^[a-z0-9][a-z0-9._-]*/[a-z0-9][a-z0-9._-]*$#', $nameStr) === 1;
 
@@ -167,38 +187,28 @@ final class NewCommand extends Command
         } elseif ($isComposerName && $nameStr !== null) {
             [$state->vendor, $state->package] = explode('/', $nameStr, 2);
         } elseif ($nameStr !== null) {
-            // No vendor flag, name is a path. Defer vendor to wizard or error
-            // in --no-interaction mode. Package = basename.
             $state->package = basename($nameStr);
         }
+    }
 
-        $desc = $input->getOption('description');
-        if (is_string($desc) && $desc !== '') {
-            $state->description = $desc;
-        }
-
-        $php = $input->getOption('php');
-        if (is_string($php) && $php !== '') {
-            $state->phpVersion = $php;
-        }
-
-        $laravel = $input->getOption('laravel');
-        if (is_string($laravel) && $laravel !== '') {
-            $state->laravelVersions = $laravel;
-        }
-
+    private function applyTestFrameworkFlag(InputInterface $input, WizardState $state): void
+    {
         $tf = $input->getOption('test-framework');
         if (is_string($tf) && $tf !== '') {
+            if (! in_array($tf, ['pest', 'phpunit'], true)) {
+                throw new \InvalidArgumentException("--test-framework must be 'pest' or 'phpunit', got '{$tf}'");
+            }
             $state->testFramework = $tf;
         }
 
-        $state->withHihahoRules = $input->getOption('with-hihaho-rules') === true;
-        $state->withSecurityAdvisories = $input->getOption('with-security-advisories') === true;
-        $state->withLaravelSets = $input->getOption('with-laravel-sets') === true;
-        $state->laravelAware = $input->getOption('laravel-aware') === true;
-        $state->commit = $input->getOption('commit') === true;
-
-        return $state;
+        // Laravel-project + pest needs `pest --init` to migrate from PHPUnit
+        // tests, which the scaffolder doesn't run yet. Reject the combo with a
+        // clear message instead of half-applying it.
+        if ($state->category === 'laravel-project' && $state->testFramework === 'pest') {
+            throw new \InvalidArgumentException(
+                "laravel-project does not yet support --test-framework=pest (would require running `pest --init` to migrate Laravel's PHPUnit tests). Use phpunit or migrate manually after scaffold.",
+            );
+        }
     }
 
     /**

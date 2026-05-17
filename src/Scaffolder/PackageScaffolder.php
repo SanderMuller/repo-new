@@ -103,6 +103,14 @@ final readonly class PackageScaffolder
         $process->run(function (string $type, string $buffer): void {
             $this->io->write($buffer);
         });
+
+        if (! $process->isSuccessful()) {
+            $this->io->warning(
+                'package-boost:sync failed (exit ' . $process->getExitCode() . '). '
+                . 'AI tooling dirs (.ai/, .claude/, .agents/, AGENTS.md, CLAUDE.md, …) may be missing or partial. '
+                . 'Re-run `vendor/bin/testbench package-boost:sync` in the scaffolded dir to retry.',
+            );
+        }
     }
 
     /**
