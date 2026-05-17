@@ -7,7 +7,7 @@ The skeleton is wired (composer install, deps, package-boost). Please:
    confirm everything is already done). Surface anything that needs attention.
 
 2. Walk me through:
-   - Implementing the first piece of functionality in src/{NAMESPACE}ServiceProvider.php
+   - Implementing the first piece of functionality in src/{PACKAGE_STUDLY}ServiceProvider.php
    - Writing the first test in tests/Feature/ or tests/Unit/
    - Setting up the GitHub remote with `gh repo create {COMPOSER_NAME} --public --source=. --remote=origin --push`
 

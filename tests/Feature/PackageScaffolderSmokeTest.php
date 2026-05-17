@@ -76,12 +76,7 @@ it('scaffolds a php-package skeleton with all expected files', function (): void
     $composer = json_decode(file_get_contents($this->tmp . '/composer.json'), true, 512, JSON_THROW_ON_ERROR);
     expect($composer['name'])->toBe('sandermuller/queue-insights')
         ->and($composer['description'])->toBe('Queue insights for Laravel.')
-        // NOTE: stubs in repo-init currently produce a double-trailing
-        // backslash here ("Sandermuller\\QueueInsights\\\\") due to over-
-        // escaping in the JSON stub. This is a known repo-init bug to fix
-        // separately; for now we assert the placeholder substitution at
-        // least put the namespace pieces in the right place.
-        ->and(array_key_first($composer['autoload']['psr-4']))->toStartWith('Sandermuller\\QueueInsights');
+        ->and(array_key_first($composer['autoload']['psr-4']))->toBe('Sandermuller\\QueueInsights\\');
 
     $src = file_get_contents($this->tmp . '/src/QueueInsights.php');
     expect($src)->toContain('namespace Sandermuller\\QueueInsights;')

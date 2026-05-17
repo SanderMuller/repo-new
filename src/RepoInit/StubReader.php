@@ -6,7 +6,6 @@ use FilesystemIterator;
 use Generator;
 use RecursiveDirectoryIterator;
 use RecursiveIteratorIterator;
-use RuntimeException;
 use SplFileInfo;
 
 /**
@@ -23,7 +22,7 @@ final class StubReader
     {
         $base = $this->repoInitDir . '/stubs/' . $stubDir;
         if (! is_dir($base)) {
-            throw new RuntimeException("Stub dir not found: {$base}");
+            return;
         }
 
         $base = rtrim($base, '/');

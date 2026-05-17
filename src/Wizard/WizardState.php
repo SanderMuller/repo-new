@@ -91,6 +91,13 @@ final class WizardState
             $this->laravelVersions = '^11.0||^12.0||^13.0';
         }
 
+        // phpstan/rector extension with --laravel-aware needs a Laravel
+        // constraint for illuminate/* in require (per per-category-deps.yml).
+        if ($this->laravelAware && $this->laravelVersions === null
+            && in_array($this->category, ['phpstan-extension', 'rector-extension'], true)) {
+            $this->laravelVersions = '^11.0||^12.0||^13.0';
+        }
+
         if ($this->phpVersion === null) {
             $this->phpVersion = '8.3';
         }
@@ -98,8 +105,9 @@ final class WizardState
 
     private function defaultTestFramework(): string
     {
-        // phpstan-extension is always phpunit (per spec §3 vendor-driven defaults).
-        if ($this->category === 'phpstan-extension') {
+        // phpstan-extension + rector-extension always phpunit (per spec §3
+        // vendor-driven defaults; extension stubs hardcode phpunit scripts).
+        if ($this->category === 'phpstan-extension' || $this->category === 'rector-extension') {
             return 'phpunit';
         }
 

@@ -42,6 +42,8 @@ final class HandoffPromptBuilder
             '{TARGET_DIR}' => $targetDir,
             '{COMPOSER_NAME}' => $state->composerName() ?? '',
             '{NAMESPACE}' => $namespace,
+            '{VENDOR_STUDLY}' => $vendorStudly,
+            '{PACKAGE_STUDLY}' => $packageStudly,
             '{VARIANT}' => $variantLabel,
             '{CATEGORY}' => $category,
             '{TEST_FRAMEWORK}' => $state->testFramework ?? '',

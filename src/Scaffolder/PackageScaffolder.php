@@ -8,6 +8,7 @@ use SanderMuller\RepoNew\RepoInit\PlaceholderSubstituter;
 use SanderMuller\RepoNew\RepoInit\StubReader;
 use SanderMuller\RepoNew\Wizard\WizardState;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Process\Process;
 
 /**
  * Scaffolds php-package, laravel-package, phpstan-extension, rector-extension.
@@ -44,12 +45,25 @@ final class PackageScaffolder
         $stubVariant = $this->deps->stubVariantFor($state->category ?? '', $state->variant);
         $written += $this->copyStubs($stubVariant, $targetDir, $substituter);
 
+        // Overlay test-framework-specific stubs (e.g. tests/Pest.php for pest).
+        $framework = $state->testFramework ?? 'pest';
+        $written += $this->copyStubs("test-framework-{$framework}", $targetDir, $substituter);
+
         $optInFlags = $this->optInFlagsFromState($state);
         $depList = $this->deps->forCategory($state->category ?? '', $state->variant, $state->testFramework ?? 'pest', $optInFlags);
 
         // Substitute placeholders in dep constraints (e.g. illuminate/support: __LARAVEL_VERSIONS__).
         $require = array_map(static fn (string $e): string => $substituter->substitute($e), $depList->require);
         $requireDev = array_map(static fn (string $e): string => $substituter->substitute($e), $depList->requireDev);
+
+        // Pre-allow plugins our deps will pull in. Without this, composer
+        // aborts with "contains a Composer plugin which is blocked by your
+        // allow-plugins config". Set BEFORE install/require so the first
+        // composer call already sees them allowed.
+        $this->preAllowPlugins($targetDir, [
+            'phpstan/extension-installer',
+            'pestphp/pest-plugin',
+        ]);
 
         $this->composer->install($targetDir);
 
@@ -85,6 +99,23 @@ final class PackageScaffolder
             ],
             default => [],
         };
+    }
+
+    /**
+     * @param  list<string>  $plugins
+     */
+    private function preAllowPlugins(string $targetDir, array $plugins): void
+    {
+        foreach ($plugins as $plugin) {
+            $process = new Process(
+                ['composer', 'config', '--no-plugins', "allow-plugins.{$plugin}", 'true'],
+                $targetDir,
+                null,
+                null,
+                60.0,
+            );
+            $process->run();
+        }
     }
 
     private function copyStubs(string $stubDir, string $targetDir, PlaceholderSubstituter $substituter): int

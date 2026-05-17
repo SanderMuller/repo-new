@@ -59,26 +59,56 @@ final class LaravelProjectScaffolder
             throw new RuntimeException("laravel new {$name} failed (exit {$process->getExitCode()})");
         }
 
-        // Overlay stubs/laravel-project additions.
+        // Rewrite composer.json with user-supplied identity (name, description,
+        // keywords, authors, homepage). Laravel installer ships
+        // "laravel/laravel" + skeleton blurb which would be wrong for a project.
+        $this->rewriteComposerJson($targetDir, $state);
+
+        // Overlay shared/ baseline (CI workflows, pint, editorconfig, .mcp.json,
+        // etc.) but SKIP files that would clobber Laravel-shipped project
+        // defaults. Then overlay laravel-project/ additions on top.
         $substituter = new PlaceholderSubstituter($state);
         $written = 0;
 
-        foreach ($this->stubReader->read('laravel-project') as $stub) {
-            $relativeSubstituted = $substituter->substitute($stub['relative']);
-            $destination = $targetDir . '/' . $relativeSubstituted;
+        $sharedSkip = [
+            '.gitattributes',  // Laravel ships project-tuned version; managed block added later by package-boost sync
+            '.gitignore',      // Laravel's is correct for a project
+            'phpunit.xml',     // Laravel ships its own, project-tuned
+            'README.md',       // Laravel ships its own README; we don't overwrite, just append via README.append.md
+        ];
+        $sharedSkipPrefixes = [
+            'tests/',          // Laravel ships its own TestCase + Unit/Feature dirs; pest opt-in is `pest --init`
+        ];
 
-            $destinationDir = dirname($destination);
-            if (! is_dir($destinationDir) && ! mkdir($destinationDir, 0755, true) && ! is_dir($destinationDir)) {
-                throw new RuntimeException("Failed to mkdir {$destinationDir}");
+        foreach (['shared', 'laravel-project'] as $stubDir) {
+            foreach ($this->stubReader->read($stubDir) as $stub) {
+                if ($stubDir === 'shared' && in_array($stub['relative'], $sharedSkip, true)) {
+                    continue;
+                }
+                if ($stubDir === 'shared') {
+                    foreach ($sharedSkipPrefixes as $prefix) {
+                        if (str_starts_with($stub['relative'], $prefix)) {
+                            continue 2;
+                        }
+                    }
+                }
+
+                $relativeSubstituted = $substituter->substitute($stub['relative']);
+                $destination = $targetDir . '/' . $relativeSubstituted;
+
+                $destinationDir = dirname($destination);
+                if (! is_dir($destinationDir) && ! mkdir($destinationDir, 0755, true) && ! is_dir($destinationDir)) {
+                    throw new RuntimeException("Failed to mkdir {$destinationDir}");
+                }
+
+                $contents = file_get_contents($stub['source']);
+                if ($contents === false) {
+                    throw new RuntimeException("Failed to read {$stub['source']}");
+                }
+
+                file_put_contents($destination, $substituter->substitute($contents));
+                ++$written;
             }
-
-            $contents = file_get_contents($stub['source']);
-            if ($contents === false) {
-                throw new RuntimeException("Failed to read {$stub['source']}");
-            }
-
-            file_put_contents($destination, $substituter->substitute($contents));
-            ++$written;
         }
 
         $optInFlags = [
@@ -161,6 +191,54 @@ final class LaravelProjectScaffolder
         }
 
         return array_values(array_keys($decoded['require']));
+    }
+
+    /**
+     * Rewrite composer.json identity fields from Laravel installer defaults
+     * to user-supplied vendor/package/description/authors.
+     */
+    private function rewriteComposerJson(string $targetDir, WizardState $state): void
+    {
+        $path = $targetDir . '/composer.json';
+        if (! is_file($path)) {
+            return;
+        }
+
+        $raw = file_get_contents($path);
+        if ($raw === false) {
+            return;
+        }
+
+        $decoded = json_decode($raw, true);
+        if (! is_array($decoded)) {
+            return;
+        }
+
+        $composerName = $state->composerName();
+        if ($composerName !== null) {
+            $decoded['name'] = $composerName;
+        }
+        if ($state->description !== null && $state->description !== '') {
+            $decoded['description'] = $state->description;
+        }
+        if ($state->vendor !== null && $state->package !== null) {
+            $decoded['keywords'] = [$state->vendor, $state->package, 'laravel'];
+            $decoded['homepage'] = "https://github.com/{$state->vendor}/{$state->package}";
+        }
+        if ($state->authorName !== null && $state->authorEmail !== null) {
+            $decoded['authors'] = [[
+                'name' => $state->authorName,
+                'email' => $state->authorEmail,
+                'role' => 'Developer',
+            ]];
+        }
+
+        $encoded = json_encode($decoded, JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        if ($encoded === false) {
+            return;
+        }
+
+        file_put_contents($path, $encoded . "\n");
     }
 
     private function isEmpty(string $dir): bool

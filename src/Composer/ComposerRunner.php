@@ -34,7 +34,7 @@ final class ComposerRunner implements ComposerRunnerInterface
             return;
         }
 
-        $args = ['require', '--no-interaction', '--no-scripts'];
+        $args = ['require', '--no-interaction', '--no-scripts', '--with-all-dependencies'];
         if ($dev) {
             $args[] = '--dev';
         }
