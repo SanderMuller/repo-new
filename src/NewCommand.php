@@ -2,6 +2,7 @@
 
 namespace SanderMuller\RepoNew;
 
+use InvalidArgumentException;
 use RuntimeException;
 use SanderMuller\RepoNew\Composer\ComposerFailureSurfacer;
 use SanderMuller\RepoNew\Composer\ComposerRunner;
@@ -159,6 +160,7 @@ final class NewCommand extends Command
             if (! in_array($type, self::CATEGORIES, true)) {
                 throw new RuntimeException('Invalid --type. Allowed: ' . implode(', ', self::CATEGORIES));
             }
+
             $state->category = $type;
         }
 
@@ -196,8 +198,9 @@ final class NewCommand extends Command
         $tf = $input->getOption('test-framework');
         if (is_string($tf) && $tf !== '') {
             if (! in_array($tf, ['pest', 'phpunit'], true)) {
-                throw new \InvalidArgumentException("--test-framework must be 'pest' or 'phpunit', got '{$tf}'");
+                throw new InvalidArgumentException("--test-framework must be 'pest' or 'phpunit', got '{$tf}'");
             }
+
             $state->testFramework = $tf;
         }
 
@@ -205,7 +208,7 @@ final class NewCommand extends Command
         // tests, which the scaffolder doesn't run yet. Reject the combo with a
         // clear message instead of half-applying it.
         if ($state->category === 'laravel-project' && $state->testFramework === 'pest') {
-            throw new \InvalidArgumentException(
+            throw new InvalidArgumentException(
                 "laravel-project does not yet support --test-framework=pest (would require running `pest --init` to migrate Laravel's PHPUnit tests). Use phpunit or migrate manually after scaffold.",
             );
         }

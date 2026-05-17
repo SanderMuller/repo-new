@@ -67,6 +67,7 @@ final readonly class PackageScaffolder
         if (($state->testFramework ?? 'pest') === 'pest') {
             $plugins[] = 'pestphp/pest-plugin';
         }
+
         $this->preAllowPlugins($targetDir, $plugins);
 
         $this->composer->install($targetDir);
