@@ -30,6 +30,8 @@ final readonly class PlaceholderSubstituter
         // = 2 characters), which is exactly the JSON-source form we need.
 
         $phpVersion = $state->phpVersion ?? '8.3';
+        $testRunner = $state->testFramework ?? 'pest';
+        $testCoverageFlag = $testRunner === 'phpunit' ? '--coverage-html=coverage' : '--coverage';
 
         $this->replacements = [
             '__VENDOR__' => $vendor,
@@ -46,6 +48,8 @@ final readonly class PlaceholderSubstituter
             '__PHP_VERSION_NEON__' => str_replace('.', '', $phpVersion),
             '__YEAR__' => (string) (int) Carbon::now()
                 ->format('Y'),
+            '__TEST_RUNNER__' => $testRunner,
+            '__TEST_COVERAGE_FLAG__' => $testCoverageFlag,
         ];
     }
 
