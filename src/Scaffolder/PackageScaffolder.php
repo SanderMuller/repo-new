@@ -60,11 +60,14 @@ final readonly class PackageScaffolder
         // Pre-allow plugins our deps will pull in. Without this, composer
         // aborts with "contains a Composer plugin which is blocked by your
         // allow-plugins config". Set BEFORE install/require so the first
-        // composer call already sees them allowed.
-        $this->preAllowPlugins($targetDir, [
-            'phpstan/extension-installer',
-            'pestphp/pest-plugin',
-        ]);
+        // composer call already sees them allowed. pestphp/pest-plugin only
+        // when actually installing pest (otherwise it lingers in
+        // composer.json as a stale allow-plugin entry for nothing).
+        $plugins = ['phpstan/extension-installer'];
+        if (($state->testFramework ?? 'pest') === 'pest') {
+            $plugins[] = 'pestphp/pest-plugin';
+        }
+        $this->preAllowPlugins($targetDir, $plugins);
 
         $this->composer->install($targetDir);
 
