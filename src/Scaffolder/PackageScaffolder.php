@@ -74,11 +74,32 @@ final class PackageScaffolder
             $this->composer->require($targetDir, $requireDev, dev: true);
         }
 
+        $this->runPackageBoostSync($targetDir);
+
         return [
             'stubsWritten' => $written,
             'requireInstalled' => count($require),
             'requireDevInstalled' => count($requireDev),
         ];
+    }
+
+    /**
+     * Generate .ai/, .claude/, .agents/, .cursor/, AGENTS.md, CLAUDE.md, etc.
+     * Composer install/require ran with --no-scripts to keep the scaffold flow
+     * predictable; we invoke sync explicitly so the scaffold completes with
+     * AI tooling wired up.
+     */
+    private function runPackageBoostSync(string $targetDir): void
+    {
+        $testbench = $targetDir . '/vendor/bin/testbench';
+        if (! is_file($testbench)) {
+            return;
+        }
+        $process = new Process([$testbench, 'package-boost:sync'], $targetDir, null, null, 120.0);
+        $this->io->writeln('<info>→ package-boost:sync</info>');
+        $process->run(function (string $type, string $buffer): void {
+            $this->io->write($buffer);
+        });
     }
 
     /**
@@ -99,6 +120,22 @@ final class PackageScaffolder
             ],
             default => [],
         };
+    }
+
+    /**
+     * Rename leading `_` to `.` in each path segment. Stubs in repo-init
+     * use `_gitattributes` etc. because real `.gitattributes` files in the
+     * source tree get honored by `git archive`/Packagist and strip
+     * legitimate stub content from the published source tarball.
+     */
+    private function dotPrefixRename(string $relative): string
+    {
+        $segments = array_map(
+            static fn (string $s): string => str_starts_with($s, '_') ? '.' . substr($s, 1) : $s,
+            explode('/', $relative),
+        );
+
+        return implode('/', $segments);
     }
 
     /**
@@ -124,6 +161,7 @@ final class PackageScaffolder
 
         foreach ($this->stubReader->read($stubDir) as $stub) {
             $relativeSubstituted = $substituter->substitute($stub['relative']);
+            $relativeSubstituted = $this->dotPrefixRename($relativeSubstituted);
             $destination = $targetDir . '/' . $relativeSubstituted;
 
             $destinationDir = dirname($destination);

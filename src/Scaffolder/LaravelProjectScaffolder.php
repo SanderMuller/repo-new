@@ -94,6 +94,7 @@ final class LaravelProjectScaffolder
                 }
 
                 $relativeSubstituted = $substituter->substitute($stub['relative']);
+                $relativeSubstituted = $this->dotPrefixRename($relativeSubstituted);
                 $destination = $targetDir . '/' . $relativeSubstituted;
 
                 $destinationDir = dirname($destination);
@@ -147,7 +148,26 @@ final class LaravelProjectScaffolder
             $this->composer->require($targetDir, $requireDev, dev: true);
         }
 
+        $this->runPackageBoostSync($targetDir);
+
         return ['stubsWritten' => $written, 'requireDevInstalled' => count($requireDev)];
+    }
+
+    /**
+     * Generate .ai/, .claude/, .agents/, .cursor/, AGENTS.md, CLAUDE.md, etc.
+     * Composer install/require ran with --no-scripts; invoke sync explicitly.
+     */
+    private function runPackageBoostSync(string $targetDir): void
+    {
+        $testbench = $targetDir . '/vendor/bin/testbench';
+        if (! is_file($testbench)) {
+            return;
+        }
+        $process = new Process([$testbench, 'package-boost:sync'], $targetDir, null, null, 120.0);
+        $this->io->writeln('<info>→ package-boost:sync</info>');
+        $process->run(function (string $type, string $buffer): void {
+            $this->io->write($buffer);
+        });
     }
 
     /**
@@ -191,6 +211,21 @@ final class LaravelProjectScaffolder
         }
 
         return array_values(array_keys($decoded['require']));
+    }
+
+    /**
+     * Rename leading `_` to `.` in each path segment. See PackageScaffolder
+     * for the rationale (stub `.gitattributes` would otherwise strip itself
+     * + many sibling files from the published source tarball).
+     */
+    private function dotPrefixRename(string $relative): string
+    {
+        $segments = array_map(
+            static fn (string $s): string => str_starts_with($s, '_') ? '.' . substr($s, 1) : $s,
+            explode('/', $relative),
+        );
+
+        return implode('/', $segments);
     }
 
     /**

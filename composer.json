@@ -18,7 +18,7 @@
     ],
     "require": {
         "php": "^8.3",
-        "sandermuller/repo-init": "@dev",
+        "sandermuller/repo-init": "^0.2.4",
         "symfony/console": "^7.0||^8.0",
         "symfony/process": "^7.0||^8.0",
         "symfony/yaml": "^7.0||^8.0"
@@ -86,10 +86,5 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true,
-    "repositories": [{
-        "name": "repo-init",
-        "type": "path",
-        "url": "/Users/sandermuller/Documents/GitHub/repo-init"
-    }]
+    "prefer-stable": true
 }
