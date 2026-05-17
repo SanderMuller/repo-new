@@ -17,7 +17,11 @@
         }
     ],
     "require": {
-        "php": "^8.3"
+        "php": "^8.3",
+        "sandermuller/repo-init": "@dev",
+        "symfony/console": "^7.0||^8.0",
+        "symfony/process": "^7.0||^8.0",
+        "symfony/yaml": "^7.0||^8.0"
     },
     "require-dev": {
         "laravel/pao": "^1.0",
@@ -43,14 +47,17 @@
     },
     "autoload": {
         "psr-4": {
-            "SanderMuller\\\\RepoNew\\\\": "src/"
+            "SanderMuller\\RepoNew\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "SanderMuller\\\\RepoNew\\\\Tests\\\\": "tests/"
+            "SanderMuller\\RepoNew\\Tests\\": "tests/"
         }
     },
+    "bin": [
+        "bin/repo"
+    ],
     "scripts": {
         "post-install-cmd": [
             "if [ \"$COMPOSER_DEV_MODE\" = \"1\" ]; then vendor/bin/testbench package-boost:sync 2>/dev/null || true; fi"
@@ -79,5 +86,10 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": [{
+        "name": "repo-init",
+        "type": "path",
+        "url": "/Users/sandermuller/Documents/GitHub/repo-init"
+    }]
 }

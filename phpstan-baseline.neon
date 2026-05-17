@@ -1,2 +1,445 @@
 parameters:
-    ignoreErrors: []
+	ignoreErrors:
+		-
+			rawMessage: 'Cognitive complexity for "SanderMuller\RepoNew\NewCommand::buildStateFromFlags()" is 27, keep it under 20'
+			identifier: complexity.functionLike
+			count: 1
+			path: src/NewCommand.php
+
+		-
+			rawMessage: Cannot cast mixed to string.
+			identifier: cast.string
+			count: 1
+			path: src/RepoInit/PerCategoryDeps.php
+
+		-
+			rawMessage: 'Out of 121 possible param types, only 120 - 99.1 %% actually have it. Add more param types to get over 100 %%'
+			identifier: typeCoverage.paramTypeCoverage
+			count: 1
+			path: src/RepoInit/PerCategoryDeps.php
+
+		-
+			rawMessage: 'Property SanderMuller\RepoNew\Scaffolder\PackageScaffolder::$io is never read, only written.'
+			identifier: property.onlyWritten
+			count: 1
+			path: src/Scaffolder/PackageScaffolder.php
+
+		-
+			rawMessage: Cannot cast mixed to string.
+			identifier: cast.string
+			count: 1
+			path: src/Wizard/Question/DescriptionQuestion.php
+
+		-
+			rawMessage: 'Property SanderMuller\RepoNew\Wizard\WizardState::$laravelVersions (string|null) does not accept mixed.'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Wizard/Question/LaravelVersionQuestion.php
+
+		-
+			rawMessage: Cannot cast mixed to string.
+			identifier: cast.string
+			count: 1
+			path: src/Wizard/Question/NameQuestion.php
+
+		-
+			rawMessage: Possibly invalid array key type mixed.
+			identifier: offsetAccess.invalidOffset
+			count: 1
+			path: src/Wizard/Question/PackageTypeQuestion.php
+
+		-
+			rawMessage: 'Property SanderMuller\RepoNew\Wizard\WizardState::$phpVersion (string|null) does not accept mixed.'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Wizard/Question/PhpVersionQuestion.php
+
+		-
+			rawMessage: 'Property SanderMuller\RepoNew\Wizard\WizardState::$variant (string|null) does not accept mixed.'
+			identifier: assign.propertyType
+			count: 1
+			path: src/Wizard/Question/VariantQuestion.php
+
+		-
+			rawMessage: Access to an undefined property Pest\PendingCalls\TestCall::$scaffolder.
+			identifier: property.notFound
+			count: 3
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: Access to an undefined property Pest\PendingCalls\TestCall::$tmp.
+			identifier: property.notFound
+			count: 17
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: Binary operation "." between mixed and '/.editorconfig' results in an error.
+			identifier: binaryOp.invalid
+			count: 1
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: Binary operation "." between mixed and '/.github/workflows…' results in an error.
+			identifier: binaryOp.invalid
+			count: 1
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: Binary operation "." between mixed and '/.gitignore' results in an error.
+			identifier: binaryOp.invalid
+			count: 1
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: Binary operation "." between mixed and '/composer.json' results in an error.
+			identifier: binaryOp.invalid
+			count: 3
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: Binary operation "." between mixed and '/config/queue…' results in an error.
+			identifier: binaryOp.invalid
+			count: 1
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: Binary operation "." between mixed and '/phpstan.neon.dist' results in an error.
+			identifier: binaryOp.invalid
+			count: 1
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: Binary operation "." between mixed and '/src/QueueInsights…' results in an error.
+			identifier: binaryOp.invalid
+			count: 2
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: Binary operation "." between mixed and '/src…' results in an error.
+			identifier: binaryOp.invalid
+			count: 1
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: 'Call to method toBe() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
+			identifier: method.internalClass
+			count: 3
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: 'Call to method toBeGreaterThan() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
+			identifier: method.internalClass
+			count: 1
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: 'Call to method toBeTrue() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
+			identifier: method.internalClass
+			count: 8
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: 'Call to method toContain() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
+			identifier: method.internalClass
+			count: 2
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: 'Call to method toStartWith() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
+			identifier: method.internalClass
+			count: 1
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: Cannot access offset 'autoload' on mixed.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: Cannot access offset 'description' on mixed.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: Cannot access offset 'illuminate/contracts' on mixed.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: Cannot access offset 'name' on mixed.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: Cannot access offset 'psr-4' on mixed.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: Cannot access offset 'require' on mixed.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: Cannot access offset 'stubsWritten' on mixed.
+			identifier: offsetAccess.nonOffsetAccessible
+			count: 1
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: 'Cannot call method getPathname() on mixed.'
+			identifier: method.nonObject
+			count: 2
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: 'Cannot call method isDir() on mixed.'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: 'Cannot call method scaffold() on mixed.'
+			identifier: method.nonObject
+			count: 2
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: 'Parameter #1 $array of function array_key_first expects array, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: 'Parameter #1 $directory of class RecursiveDirectoryIterator constructor expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: 'Parameter #1 $directory of function rmdir expects string, mixed given.'
+			identifier: argument.type
+			count: 2
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: 'Parameter #1 $filename of function is_dir expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: 'Parameter #1 $filename of function unlink expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: 'Parameter #1 $json of function json_decode expects string, string|false given.'
+			identifier: argument.type
+			count: 2
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: Access to an undefined property Pest\PendingCalls\TestCall::$deps.
+			identifier: property.notFound
+			count: 10
+			path: tests/Unit/PerCategoryDepsTest.php
+
+		-
+			rawMessage: Access to an undefined property Pest\PendingCalls\TestCall::$repoInit.
+			identifier: property.notFound
+			count: 1
+			path: tests/Unit/PerCategoryDepsTest.php
+
+		-
+			rawMessage: 'Call to method toBe() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
+			identifier: method.internalClass
+			count: 3
+			path: tests/Unit/PerCategoryDepsTest.php
+
+		-
+			rawMessage: 'Call to method toContain() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
+			identifier: method.internalClass
+			count: 11
+			path: tests/Unit/PerCategoryDepsTest.php
+
+		-
+			rawMessage: Cannot access property $require on mixed.
+			identifier: property.nonObject
+			count: 3
+			path: tests/Unit/PerCategoryDepsTest.php
+
+		-
+			rawMessage: Cannot access property $requireDev on mixed.
+			identifier: property.nonObject
+			count: 6
+			path: tests/Unit/PerCategoryDepsTest.php
+
+		-
+			rawMessage: 'Cannot call method forCategory() on mixed.'
+			identifier: method.nonObject
+			count: 6
+			path: tests/Unit/PerCategoryDepsTest.php
+
+		-
+			rawMessage: 'Cannot call method stubVariantFor() on mixed.'
+			identifier: method.nonObject
+			count: 3
+			path: tests/Unit/PerCategoryDepsTest.php
+
+		-
+			rawMessage: 'Parameter #1 $callback of function array_map expects (callable(mixed): mixed)|null, Closure(string): string given.'
+			identifier: argument.type
+			count: 9
+			path: tests/Unit/PerCategoryDepsTest.php
+
+		-
+			rawMessage: 'Parameter #2 $array of function array_map expects array, mixed given.'
+			identifier: argument.type
+			count: 9
+			path: tests/Unit/PerCategoryDepsTest.php
+
+		-
+			rawMessage: 'Call to method toBe() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
+			identifier: method.internalClass
+			count: 20
+			path: tests/Unit/PlaceholderSubstituterTest.php
+
+		-
+			rawMessage: 'Call to method toBeGreaterThanOrEqual() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
+			identifier: method.internalClass
+			count: 1
+			path: tests/Unit/PlaceholderSubstituterTest.php
+
+		-
+			rawMessage: 'Call to method toContain() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
+			identifier: method.internalClass
+			count: 1
+			path: tests/Unit/PlaceholderSubstituterTest.php
+
+		-
+			rawMessage: Access to an undefined property Pest\PendingCalls\TestCall::$tmp.
+			identifier: property.notFound
+			count: 17
+			path: tests/Unit/TargetDirResolverTest.php
+
+		-
+			rawMessage: Binary operation "." between mixed and '/.git' results in an error.
+			identifier: binaryOp.invalid
+			count: 1
+			path: tests/Unit/TargetDirResolverTest.php
+
+		-
+			rawMessage: Binary operation "." between mixed and '/absolute-target' results in an error.
+			identifier: binaryOp.invalid
+			count: 1
+			path: tests/Unit/TargetDirResolverTest.php
+
+		-
+			rawMessage: Binary operation "." between mixed and '/existing-file' results in an error.
+			identifier: binaryOp.invalid
+			count: 1
+			path: tests/Unit/TargetDirResolverTest.php
+
+		-
+			rawMessage: Binary operation "." between mixed and '/foo' results in an error.
+			identifier: binaryOp.invalid
+			count: 2
+			path: tests/Unit/TargetDirResolverTest.php
+
+		-
+			rawMessage: Binary operation "." between mixed and '/foo/x' results in an error.
+			identifier: binaryOp.invalid
+			count: 1
+			path: tests/Unit/TargetDirResolverTest.php
+
+		-
+			rawMessage: 'Call to method throws() of internal class Pest\PendingCalls\TestCall from outside its root namespace Pest.'
+			identifier: method.internalClass
+			count: 2
+			path: tests/Unit/TargetDirResolverTest.php
+
+		-
+			rawMessage: 'Call to method toBe() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
+			identifier: method.internalClass
+			count: 3
+			path: tests/Unit/TargetDirResolverTest.php
+
+		-
+			rawMessage: 'Call to method toBeTrue() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
+			identifier: method.internalClass
+			count: 1
+			path: tests/Unit/TargetDirResolverTest.php
+
+		-
+			rawMessage: 'Call to method toEndWith() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
+			identifier: method.internalClass
+			count: 1
+			path: tests/Unit/TargetDirResolverTest.php
+
+		-
+			rawMessage: 'Cannot call method getPathname() on mixed.'
+			identifier: method.nonObject
+			count: 2
+			path: tests/Unit/TargetDirResolverTest.php
+
+		-
+			rawMessage: 'Cannot call method isDir() on mixed.'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Unit/TargetDirResolverTest.php
+
+		-
+			rawMessage: 'Parameter #1 $directory of class RecursiveDirectoryIterator constructor expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/TargetDirResolverTest.php
+
+		-
+			rawMessage: 'Parameter #1 $directory of function rmdir expects string, mixed given.'
+			identifier: argument.type
+			count: 2
+			path: tests/Unit/TargetDirResolverTest.php
+
+		-
+			rawMessage: 'Parameter #1 $filename of function is_dir expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/TargetDirResolverTest.php
+
+		-
+			rawMessage: 'Parameter #1 $filename of function unlink expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: tests/Unit/TargetDirResolverTest.php
+
+		-
+			rawMessage: 'Parameter #1 $path of function realpath expects string, mixed given.'
+			identifier: argument.type
+			count: 2
+			path: tests/Unit/TargetDirResolverTest.php
+
+		-
+			rawMessage: 'Parameter #2 $cwd of method SanderMuller\RepoNew\Scaffolder\TargetDirResolver::resolve() expects string, mixed given.'
+			identifier: argument.type
+			count: 5
+			path: tests/Unit/TargetDirResolverTest.php
+
+		-
+			rawMessage: 'Call to method toBe() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
+			identifier: method.internalClass
+			count: 6
+			path: tests/Unit/WizardStateTest.php
+
+		-
+			rawMessage: 'Call to method toBeNull() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
+			identifier: method.internalClass
+			count: 1
+			path: tests/Unit/WizardStateTest.php

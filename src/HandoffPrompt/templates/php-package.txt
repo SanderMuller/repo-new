@@ -1,0 +1,15 @@
+I just scaffolded a new PHP package at {TARGET_DIR}
+(category: php-package, composer name: {COMPOSER_NAME}, namespace: {NAMESPACE}).
+The skeleton is wired (composer install, deps, package-boost). Please:
+
+1. Verify the scaffold is healthy — run the repo-init `bootstrap-php-package.md`
+   phase file from your skill. Every step should be a no-op (idempotency guards
+   confirm everything is already done). Surface anything that needs attention.
+
+2. Walk me through:
+   - Implementing the first piece of functionality in src/
+   - Writing the first test in tests/
+   - Setting up the GitHub remote with `gh repo create {COMPOSER_NAME} --public --source=. --remote=origin --push`
+
+When done with this package later, ask me to run `phases/audit-php-package.md`
+to catch any drift from the canonical baseline.

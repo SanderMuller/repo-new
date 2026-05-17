@@ -1,0 +1,16 @@
+I just scaffolded a new PHPStan extension at {TARGET_DIR}
+(category: phpstan-extension, composer name: {COMPOSER_NAME}, namespace: {NAMESPACE}).
+The skeleton is wired (composer install, deps, package-boost). Please:
+
+1. Verify the scaffold is healthy — run the repo-init `bootstrap-phpstan-extension.md`
+   phase file from your skill. Every step should be a no-op (idempotency guards
+   confirm everything is already done). Surface anything that needs attention.
+
+2. Walk me through:
+   - Writing the first Rule class in src/Rules/
+   - Wiring it into extension.neon
+   - Writing the corresponding RuleTest in tests/Rules/
+   - Setting up the GitHub remote with `gh repo create {COMPOSER_NAME} --public --source=. --remote=origin --push`
+
+When done with this package later, ask me to run `phases/audit-phpstan-extension.md`
+to catch any drift from the canonical baseline.

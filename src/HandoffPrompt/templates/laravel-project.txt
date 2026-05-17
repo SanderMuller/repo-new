@@ -1,0 +1,14 @@
+I just scaffolded a new Laravel project at {TARGET_DIR}
+(category: laravel-project, name: {COMPOSER_NAME}).
+The skeleton is wired (laravel new, deps, package-boost). Please:
+
+1. Verify the scaffold is healthy — run the repo-init `bootstrap-laravel-project.md`
+   phase file from your skill. Every step should be a no-op (idempotency guards
+   confirm everything is already done). Surface anything that needs attention.
+
+2. Walk me through:
+   - First migration / model / controller
+   - Setting up the GitHub remote
+
+When done with this project later, ask me to run `phases/audit-laravel-project.md`
+to catch any drift from the canonical baseline.

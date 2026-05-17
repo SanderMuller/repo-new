@@ -1,0 +1,23 @@
+#!/usr/bin/env php
+<?php declare(strict_types=1);
+
+// Resolve autoloader: project-local first, then composer-global install.
+$candidates = [
+    __DIR__ . '/../vendor/autoload.php',       // local clone / dev
+    __DIR__ . '/../../../autoload.php',         // composer global / project install
+];
+
+foreach ($candidates as $candidate) {
+    if (file_exists($candidate)) {
+        require $candidate;
+        break;
+    }
+}
+
+if (! class_exists(\SanderMuller\RepoNew\Application::class)) {
+    fwrite(STDERR, "Could not locate autoload.php. Did you run composer install?\n");
+    exit(70);
+}
+
+$app = new \SanderMuller\RepoNew\Application();
+exit($app->run());

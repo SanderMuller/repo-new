@@ -1,0 +1,16 @@
+I just scaffolded a new Rector extension at {TARGET_DIR}
+(category: rector-extension, composer name: {COMPOSER_NAME}, namespace: {NAMESPACE}).
+The skeleton is wired (composer install, deps, package-boost). Please:
+
+1. Verify the scaffold is healthy — run the repo-init `bootstrap-rector-extension.md`
+   phase file from your skill. Every step should be a no-op (idempotency guards
+   confirm everything is already done). Surface anything that needs attention.
+
+2. Walk me through:
+   - Writing the first Rector rule in src/Rector/
+   - Wiring it into config/config.php
+   - Writing the corresponding test in tests/Rector/
+   - Setting up the GitHub remote with `gh repo create {COMPOSER_NAME} --public --source=. --remote=origin --push`
+
+When done with this package later, ask me to run `phases/audit-rector-extension.md`
+to catch any drift from the canonical baseline.
