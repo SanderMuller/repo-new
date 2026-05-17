@@ -1,0 +1,83 @@
+{
+    "name": "sandermuller/repo-new",
+    "description": "CLI wizard for scaffolding repos using sandermuller/repo-init's playbook.",
+    "keywords": [
+        "sandermuller",
+        "repo-new",
+        "php"
+    ],
+    "homepage": "https://github.com/sandermuller/repo-new",
+    "license": "MIT",
+    "type": "library",
+    "authors": [
+        {
+            "name": "Sander Muller",
+            "email": "github@scode.nl",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.3"
+    },
+    "require-dev": {
+        "laravel/pao": "^1.0",
+        "laravel/pint": "^1.29",
+        "mrpunyapal/rector-pest": "^0.2",
+        "nunomaduro/collision": "^8.0",
+        "orchestra/testbench": "^9.0||^10.0||^11.0",
+        "pestphp/pest": "^4.0",
+        "pestphp/pest-plugin-arch": "^4.0",
+        "phpstan/extension-installer": "^1.4",
+        "phpstan/phpstan": "^2.0",
+        "phpstan/phpstan-deprecation-rules": "^2.0",
+        "phpstan/phpstan-phpunit": "^2.0",
+        "phpstan/phpstan-strict-rules": "^2.0",
+        "rector/rector": "^2.4",
+        "rector/type-perfect": "^2.1",
+        "sandermuller/package-boost": "^0.15",
+        "spaze/phpstan-disallowed-calls": "^4.10",
+        "stolt/lean-package-validator": "^5.7",
+        "symplify/phpstan-extensions": "^12.0",
+        "tomasvotruba/cognitive-complexity": "^1.1",
+        "tomasvotruba/type-coverage": "^2.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "SanderMuller\\\\RepoNew\\\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "SanderMuller\\\\RepoNew\\\\Tests\\\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "if [ \"$COMPOSER_DEV_MODE\" = \"1\" ]; then vendor/bin/testbench package-boost:sync 2>/dev/null || true; fi"
+        ],
+        "phpstan": "vendor/bin/phpstan analyse --memory-limit=2G",
+        "phpstan-simplified": "vendor/bin/phpstan analyse --memory-limit=2G --error-format symplify",
+        "phpstan-clear-cache": "vendor/bin/phpstan clear-result-cache",
+        "format": "vendor/bin/pint",
+        "rector": "vendor/bin/rector process",
+        "test": "vendor/bin/pest",
+        "test-coverage": "vendor/bin/pest --coverage",
+        "sync-ai": "vendor/bin/testbench package-boost:sync",
+        "validate-gitattributes": "vendor/bin/lean-package-validator validate",
+        "qa": [
+            "@rector",
+            "@format",
+            "@phpstan-simplified",
+            "@validate-gitattributes"
+        ]
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "phpstan/extension-installer": true
+        }
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}
