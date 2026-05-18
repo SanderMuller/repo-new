@@ -49,6 +49,7 @@ final class HandoffPromptBuilder
             '{TEST_FRAMEWORK}' => $state->testFramework ?? '',
             '{PHP_VERSION}' => $state->phpVersion ?? '',
             '{LARAVEL_VERSIONS}' => $state->laravelVersions ?? '',
+            '{PLUGIN_SHAPE}' => $state->pluginShape ?? '',
         ]);
     }
 }

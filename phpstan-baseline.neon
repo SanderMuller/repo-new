@@ -7,7 +7,7 @@ parameters:
 			path: src/RepoInit/PerCategoryDeps.php
 
 		-
-			rawMessage: 'Out of 158 possible param types, only 157 - 99.3 %% actually have it. Add more param types to get over 100 %%'
+			rawMessage: 'Out of 174 possible param types, only 173 - 99.4 %% actually have it. Add more param types to get over 100 %%'
 			identifier: typeCoverage.paramTypeCoverage
 			count: 1
 			path: src/RepoInit/PerCategoryDeps.php
@@ -43,10 +43,136 @@ parameters:
 			path: src/Wizard/Question/PhpVersionQuestion.php
 
 		-
+			rawMessage: Cannot cast mixed to string.
+			identifier: cast.string
+			count: 1
+			path: src/Wizard/Question/PluginShapeQuestion.php
+
+		-
 			rawMessage: 'Property SanderMuller\RepoNew\Wizard\WizardState::$variant (string|null) does not accept mixed.'
 			identifier: assign.propertyType
 			count: 1
 			path: src/Wizard/Question/VariantQuestion.php
+
+		-
+			rawMessage: Access to an undefined property Pest\PendingCalls\TestCall::$repoInit.
+			identifier: property.notFound
+			count: 1
+			path: tests/Feature/ComposerPluginScaffoldTest.php
+
+		-
+			rawMessage: Access to an undefined property Pest\PendingCalls\TestCall::$scaffolder.
+			identifier: property.notFound
+			count: 5
+			path: tests/Feature/ComposerPluginScaffoldTest.php
+
+		-
+			rawMessage: Access to an undefined property Pest\PendingCalls\TestCall::$tmp.
+			identifier: property.notFound
+			count: 17
+			path: tests/Feature/ComposerPluginScaffoldTest.php
+
+		-
+			rawMessage: Binary operation "." between mixed and '/src/Plugin.both.php' results in an error.
+			identifier: binaryOp.invalid
+			count: 1
+			path: tests/Feature/ComposerPluginScaffoldTest.php
+
+		-
+			rawMessage: Binary operation "." between mixed and '/src/Plugin.command…' results in an error.
+			identifier: binaryOp.invalid
+			count: 1
+			path: tests/Feature/ComposerPluginScaffoldTest.php
+
+		-
+			rawMessage: Binary operation "." between mixed and '/src/Plugin.event…' results in an error.
+			identifier: binaryOp.invalid
+			count: 1
+			path: tests/Feature/ComposerPluginScaffoldTest.php
+
+		-
+			rawMessage: Binary operation "." between mixed and '/src/Plugin.none.php' results in an error.
+			identifier: binaryOp.invalid
+			count: 1
+			path: tests/Feature/ComposerPluginScaffoldTest.php
+
+		-
+			rawMessage: Binary operation "." between mixed and '/src/Plugin.php' results in an error.
+			identifier: binaryOp.invalid
+			count: 4
+			path: tests/Feature/ComposerPluginScaffoldTest.php
+
+		-
+			rawMessage: Binary operation "." between mixed and '/src…' results in an error.
+			identifier: binaryOp.invalid
+			count: 4
+			path: tests/Feature/ComposerPluginScaffoldTest.php
+
+		-
+			rawMessage: 'Call to an undefined method Pest\PendingCalls\TestCall::markTestSkipped().'
+			identifier: method.notFound
+			count: 1
+			path: tests/Feature/ComposerPluginScaffoldTest.php
+
+		-
+			rawMessage: 'Call to method toBeFalse() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
+			identifier: method.internalClass
+			count: 6
+			path: tests/Feature/ComposerPluginScaffoldTest.php
+
+		-
+			rawMessage: 'Call to method toBeTrue() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
+			identifier: method.internalClass
+			count: 6
+			path: tests/Feature/ComposerPluginScaffoldTest.php
+
+		-
+			rawMessage: 'Cannot call method getPathname() on mixed.'
+			identifier: method.nonObject
+			count: 2
+			path: tests/Feature/ComposerPluginScaffoldTest.php
+
+		-
+			rawMessage: 'Cannot call method isDir() on mixed.'
+			identifier: method.nonObject
+			count: 1
+			path: tests/Feature/ComposerPluginScaffoldTest.php
+
+		-
+			rawMessage: 'Parameter #1 $directory of class RecursiveDirectoryIterator constructor expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: tests/Feature/ComposerPluginScaffoldTest.php
+
+		-
+			rawMessage: 'Parameter #1 $directory of function rmdir expects string, mixed given.'
+			identifier: argument.type
+			count: 2
+			path: tests/Feature/ComposerPluginScaffoldTest.php
+
+		-
+			rawMessage: 'Parameter #1 $filename of function is_dir expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: tests/Feature/ComposerPluginScaffoldTest.php
+
+		-
+			rawMessage: 'Parameter #1 $filename of function unlink expects string, mixed given.'
+			identifier: argument.type
+			count: 1
+			path: tests/Feature/ComposerPluginScaffoldTest.php
+
+		-
+			rawMessage: 'Parameter #1 $tmp of function scaffoldPlugin expects string, mixed given.'
+			identifier: argument.type
+			count: 4
+			path: tests/Feature/ComposerPluginScaffoldTest.php
+
+		-
+			rawMessage: 'Parameter #3 $scaffolder of function scaffoldPlugin expects SanderMuller\RepoNew\Scaffolder\PackageScaffolder, mixed given.'
+			identifier: argument.type
+			count: 4
+			path: tests/Feature/ComposerPluginScaffoldTest.php
 
 		-
 			rawMessage: Access to an undefined property Pest\PendingCalls\TestCall::$scaffolder.
@@ -307,6 +433,18 @@ parameters:
 			path: tests/Unit/PlaceholderSubstituterTest.php
 
 		-
+			rawMessage: 'Call to method toBe() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
+			identifier: method.internalClass
+			count: 1
+			path: tests/Unit/PluginShapeQuestionTest.php
+
+		-
+			rawMessage: 'Call to method toBeNull() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
+			identifier: method.internalClass
+			count: 1
+			path: tests/Unit/PluginShapeQuestionTest.php
+
+		-
 			rawMessage: Access to an undefined property Pest\PendingCalls\TestCall::$tmp.
 			identifier: property.notFound
 			count: 17
@@ -417,7 +555,7 @@ parameters:
 		-
 			rawMessage: 'Call to method toBe() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
 			identifier: method.internalClass
-			count: 6
+			count: 8
 			path: tests/Unit/WizardStateTest.php
 
 		-

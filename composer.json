@@ -18,7 +18,7 @@
     ],
     "require": {
         "php": "^8.3",
-        "sandermuller/repo-init": "^0.2.4",
+        "sandermuller/repo-init": "^0.3.0",
         "symfony/console": "^7.0||^8.0",
         "symfony/process": "^7.0||^8.0",
         "symfony/yaml": "^7.0||^8.0"
@@ -38,7 +38,6 @@
         "phpstan/phpstan-strict-rules": "^2.0",
         "rector/rector": "^2.4",
         "rector/type-perfect": "^2.1",
-        "sandermuller/package-boost": "^0.15",
         "spaze/phpstan-disallowed-calls": "^4.10",
         "stolt/lean-package-validator": "^5.7",
         "symplify/phpstan-extensions": "^12.0",
@@ -60,7 +59,10 @@
     ],
     "scripts": {
         "post-install-cmd": [
-            "if [ \"$COMPOSER_DEV_MODE\" = \"1\" ]; then vendor/bin/boost sync 2>/dev/null || true; fi"
+            "SanderMuller\\BoostCore\\Scripts\\BoostAutoSync::runWithSummary"
+        ],
+        "post-update-cmd": [
+            "SanderMuller\\BoostCore\\Scripts\\BoostAutoSync::runWithSummary"
         ],
         "phpstan": "vendor/bin/phpstan analyse --memory-limit=2G",
         "phpstan-simplified": "vendor/bin/phpstan analyse --memory-limit=2G --error-format symplify",
@@ -69,7 +71,9 @@
         "rector": "vendor/bin/rector process",
         "test": "vendor/bin/pest",
         "test-coverage": "vendor/bin/pest --coverage",
-        "sync-ai": "vendor/bin/boost sync",
+        "sync-ai": [
+            "SanderMuller\\BoostCore\\Scripts\\BoostAutoSync::runWithSummary"
+        ],
         "validate-gitattributes": "vendor/bin/lean-package-validator validate",
         "qa": [
             "@rector",
@@ -82,7 +86,9 @@
         "sort-packages": true,
         "allow-plugins": {
             "pestphp/pest-plugin": true,
-            "phpstan/extension-installer": true
+            "phpstan/extension-installer": true,
+            "sandermuller/boost-core": true,
+            "sandermuller/package-boost-php": true
         }
     },
     "minimum-stability": "stable",

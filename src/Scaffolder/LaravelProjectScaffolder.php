@@ -114,22 +114,22 @@ final readonly class LaravelProjectScaffolder
      */
     private function runPackageBoostSync(string $targetDir): void
     {
-        $testbench = $targetDir . '/vendor/bin/testbench';
-        if (! is_file($testbench)) {
+        $boost = $targetDir . '/vendor/bin/boost';
+        if (! is_file($boost)) {
             return;
         }
 
-        $process = new Process([$testbench, 'package-boost:sync'], $targetDir, null, null, 120.0);
-        $this->io->writeln('<info>→ package-boost:sync</info>');
+        $process = new Process([$boost, 'sync'], $targetDir, null, null, 120.0);
+        $this->io->writeln('<info>→ boost sync</info>');
         $process->run(function (string $type, string $buffer): void {
             $this->io->write($buffer);
         });
 
         if (! $process->isSuccessful()) {
             $this->io->warning(
-                'package-boost:sync failed (exit ' . $process->getExitCode() . '). '
+                'boost sync failed (exit ' . $process->getExitCode() . '). '
                 . 'AI tooling dirs (.ai/, .claude/, .agents/, AGENTS.md, CLAUDE.md, …) may be missing or partial. '
-                . 'Re-run `vendor/bin/testbench package-boost:sync` in the scaffolded dir to retry.',
+                . 'Re-run `vendor/bin/boost sync` in the scaffolded dir to retry.',
             );
         }
     }

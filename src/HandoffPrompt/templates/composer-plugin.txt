@@ -1,0 +1,17 @@
+I just scaffolded a new Composer plugin at {TARGET_DIR}
+(category: composer-plugin, composer name: {COMPOSER_NAME}, namespace: {NAMESPACE}, plugin shape: {PLUGIN_SHAPE}).
+The skeleton is wired (composer install, deps). Please:
+
+1. Verify the scaffold is healthy — run the repo-init `bootstrap-composer-plugin.md`
+   phase file from your skill. Every step should be a no-op (idempotency guards
+   confirm everything is already done). Surface anything that needs attention.
+
+2. Walk me through:
+   - Fleshing out src/Plugin.php (currently a {PLUGIN_SHAPE} skeleton)
+   - Writing the first test in tests/
+   - Registering the plugin locally via `composer config repositories.local path .` in a consumer
+   - Setting up the GitHub remote with `gh repo create {COMPOSER_NAME} --public --source=. --remote=origin --push`
+
+When done with this package later, ask me to run `phases/audit-composer-plugin.md`
+to catch any drift from the canonical baseline (also auto-detects boost-skill-provider
+and runtime-api sub-flags from your code).

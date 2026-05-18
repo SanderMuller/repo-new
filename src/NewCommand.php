@@ -38,7 +38,10 @@ final class NewCommand extends Command
         'php-package',
         'phpstan-extension',
         'rector-extension',
+        'composer-plugin',
     ];
+
+    private const array PLUGIN_SHAPES = ['command-provider', 'event-subscriber', 'both', 'none'];
 
     protected function configure(): void
     {
@@ -54,6 +57,7 @@ final class NewCommand extends Command
             ->addOption('with-hihaho-rules', null, InputOption::VALUE_NONE, 'Opt-in for laravel-project.')
             ->addOption('with-security-advisories', null, InputOption::VALUE_NONE, 'Opt-in for laravel-project.')
             ->addOption('laravel-aware', null, InputOption::VALUE_NONE, 'Opt-in for phpstan/rector-extension.')
+            ->addOption('plugin-shape', null, InputOption::VALUE_REQUIRED, 'composer-plugin shape: ' . implode('|', self::PLUGIN_SHAPES))
             ->addOption('commit', null, InputOption::VALUE_NONE, 'Make an initial commit after scaffolding.');
     }
 
@@ -150,7 +154,25 @@ final class NewCommand extends Command
         $state->laravelAware = $input->getOption('laravel-aware') === true;
         $state->commit = $input->getOption('commit') === true;
 
+        $this->applyPluginShapeFlag($input, $state);
+
         return $state;
+    }
+
+    private function applyPluginShapeFlag(InputInterface $input, WizardState $state): void
+    {
+        $shape = $input->getOption('plugin-shape');
+        if (! is_string($shape) || $shape === '') {
+            return;
+        }
+
+        if (! in_array($shape, self::PLUGIN_SHAPES, true)) {
+            throw new InvalidArgumentException(
+                '--plugin-shape must be one of: ' . implode(', ', self::PLUGIN_SHAPES) . ", got '{$shape}'",
+            );
+        }
+
+        $state->pluginShape = $shape;
     }
 
     private function applyTypeAndVariant(InputInterface $input, WizardState $state): void
@@ -267,6 +289,7 @@ final class NewCommand extends Command
         $io->definitionList(
             ['Category' => $state->category ?? ''],
             ['Variant' => $state->variant ?? '—'],
+            ['Plugin shape' => $state->pluginShape ?? '—'],
             ['Composer name' => $state->composerName() ?? ''],
             ['Description' => $state->description ?? ''],
             ['PHP' => $state->phpVersion ?? ''],

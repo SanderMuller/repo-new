@@ -29,6 +29,24 @@ it('always defaults to phpunit for phpstan-extension, regardless of vendor', fun
     expect($state->testFramework)->toBe('phpunit');
 });
 
+it('defaults to pest for composer-plugin under sandermuller (vendor-driven, same rule as other packages)', function (): void {
+    $state = new WizardState();
+    $state->category = 'composer-plugin';
+    $state->vendor = 'sandermuller';
+    $state->applyDefaults();
+
+    expect($state->testFramework)->toBe('pest');
+});
+
+it('defaults to phpunit for composer-plugin under hihaho', function (): void {
+    $state = new WizardState();
+    $state->category = 'composer-plugin';
+    $state->vendor = 'hihaho';
+    $state->applyDefaults();
+
+    expect($state->testFramework)->toBe('phpunit');
+});
+
 it('defaults laravelVersions for laravel-package', function (): void {
     $state = new WizardState();
     $state->category = 'laravel-package';

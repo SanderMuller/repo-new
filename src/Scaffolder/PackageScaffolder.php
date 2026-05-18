@@ -46,6 +46,10 @@ final readonly class PackageScaffolder
         $stubVariant = $this->deps->stubVariantFor($state->category ?? '', $state->variant);
         $written += $this->copyStubs($stubVariant, $targetDir, $substituter);
 
+        if ($state->category === 'composer-plugin') {
+            $this->selectPluginShapeFiles($targetDir, $state->pluginShape ?? 'none');
+        }
+
         // Overlay test-framework-specific stubs (e.g. tests/Pest.php for pest).
         $framework = $state->testFramework ?? 'pest';
         $written += $this->copyStubs("test-framework-{$framework}", $targetDir, $substituter);
@@ -90,6 +94,48 @@ final readonly class PackageScaffolder
     }
 
     /**
+     * Post-process composer-plugin stubs: keep only the chosen Plugin variant
+     * (renamed to canonical src/Plugin.php), drop the rest. Drop CommandProvider
+     * sibling unless shape includes command-provider.
+     *
+     * Stubs ship 4 src/Plugin.{none,command-provider,event-subscriber,both}.php
+     * variants + a CommandProvider.php. Generic copyStubs copies them all;
+     * this step culls to the user's selected shape.
+     */
+    private function selectPluginShapeFiles(string $targetDir, string $shape): void
+    {
+        $srcDir = $targetDir . '/src';
+        $variants = ['none', 'command-provider', 'event-subscriber', 'both'];
+
+        foreach ($variants as $variant) {
+            $variantFile = $srcDir . '/Plugin.' . $variant . '.php';
+            if (! is_file($variantFile)) {
+                continue;
+            }
+
+            if ($variant === $shape) {
+                $canonical = $srcDir . '/Plugin.php';
+                if (! rename($variantFile, $canonical)) {
+                    throw new RuntimeException("Failed to rename {$variantFile} → {$canonical}");
+                }
+
+                continue;
+            }
+
+            if (! unlink($variantFile)) {
+                throw new RuntimeException("Failed to delete unused plugin variant {$variantFile}");
+            }
+        }
+
+        if (! in_array($shape, ['command-provider', 'both'], true)) {
+            $commandProvider = $srcDir . '/CommandProvider.php';
+            if (is_file($commandProvider) && ! unlink($commandProvider)) {
+                throw new RuntimeException("Failed to delete unused {$commandProvider}");
+            }
+        }
+    }
+
+    /**
      * Generate .ai/, .claude/, .agents/, .cursor/, AGENTS.md, CLAUDE.md, etc.
      * Composer install/require ran with --no-scripts to keep the scaffold flow
      * predictable; we invoke sync explicitly so the scaffold completes with
@@ -97,22 +143,22 @@ final readonly class PackageScaffolder
      */
     private function runPackageBoostSync(string $targetDir): void
     {
-        $testbench = $targetDir . '/vendor/bin/testbench';
-        if (! is_file($testbench)) {
+        $boost = $targetDir . '/vendor/bin/boost';
+        if (! is_file($boost)) {
             return;
         }
 
-        $process = new Process([$testbench, 'package-boost:sync'], $targetDir, null, null, 120.0);
-        $this->io->writeln('<info>→ package-boost:sync</info>');
+        $process = new Process([$boost, 'sync'], $targetDir, null, null, 120.0);
+        $this->io->writeln('<info>→ boost sync</info>');
         $process->run(function (string $type, string $buffer): void {
             $this->io->write($buffer);
         });
 
         if (! $process->isSuccessful()) {
             $this->io->warning(
-                'package-boost:sync failed (exit ' . $process->getExitCode() . '). '
+                'boost sync failed (exit ' . $process->getExitCode() . '). '
                 . 'AI tooling dirs (.ai/, .claude/, .agents/, AGENTS.md, CLAUDE.md, …) may be missing or partial. '
-                . 'Re-run `vendor/bin/testbench package-boost:sync` in the scaffolded dir to retry.',
+                . 'Re-run `vendor/bin/boost sync` in the scaffolded dir to retry.',
             );
         }
     }

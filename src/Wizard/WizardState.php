@@ -10,7 +10,7 @@ namespace SanderMuller\RepoNew\Wizard;
  */
 final class WizardState
 {
-    /** One of: laravel-project, laravel-package, php-package, phpstan-extension, rector-extension. */
+    /** One of: laravel-project, laravel-package, php-package, phpstan-extension, rector-extension, composer-plugin. */
     public ?string $category = null;
 
     /** One of: sander, spatie. Only meaningful for laravel-package. */
@@ -42,6 +42,9 @@ final class WizardState
 
     /** phpstan-extension + rector-extension only. */
     public bool $laravelAware = false;
+
+    /** composer-plugin only. One of: command-provider, event-subscriber, both, none. */
+    public ?string $pluginShape = null;
 
     /** Resolved absolute path the scaffold writes into. */
     public ?string $targetDir = null;
@@ -103,8 +106,9 @@ final class WizardState
     private function defaultTestFramework(): string
     {
         // phpstan-extension + rector-extension always phpunit (per spec §3
-        // vendor-driven defaults; extension stubs hardcode phpunit scripts).
-        if ($this->category === 'phpstan-extension' || $this->category === 'rector-extension') {
+        // vendor-driven defaults; extension stubs hardcode phpunit scripts;
+        // PHPStan's RuleTestCase is PHPUnit-based).
+        if (in_array($this->category, ['phpstan-extension', 'rector-extension'], true)) {
             return 'phpunit';
         }
 

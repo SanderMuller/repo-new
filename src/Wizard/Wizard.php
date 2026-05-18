@@ -8,6 +8,7 @@ use SanderMuller\RepoNew\Wizard\Question\LaravelVersionQuestion;
 use SanderMuller\RepoNew\Wizard\Question\NameQuestion;
 use SanderMuller\RepoNew\Wizard\Question\PackageTypeQuestion;
 use SanderMuller\RepoNew\Wizard\Question\PhpVersionQuestion;
+use SanderMuller\RepoNew\Wizard\Question\PluginShapeQuestion;
 use SanderMuller\RepoNew\Wizard\Question\ProjectVsPackageQuestion;
 use SanderMuller\RepoNew\Wizard\Question\VariantQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -30,6 +31,7 @@ final class Wizard
         (new PhpVersionQuestion())->ask($io, $state);
         (new LaravelVersionQuestion())->ask($io, $state);
         (new LaravelAwareQuestion())->ask($io, $state);
+        (new PluginShapeQuestion())->ask($io, $state);
 
         $state->applyDefaults();
     }

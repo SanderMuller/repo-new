@@ -12,6 +12,7 @@ final class PackageTypeQuestion
         'php' => 'php-package',
         'phpstan' => 'phpstan-extension',
         'rector' => 'rector-extension',
+        'composer-plugin' => 'composer-plugin',
     ];
 
     public function ask(SymfonyStyle $io, WizardState $state): void

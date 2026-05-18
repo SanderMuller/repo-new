@@ -9,16 +9,16 @@ Interactive CLI wizard that scaffolds a new PHP repo against the canonical Sande
 
 ## What it does
 
-Walks you through 8 questions (category → vendor → package name → description → PHP version → Laravel constraint → test framework → opt-ins), then:
+Walks you through category → vendor → package name → description → PHP version → Laravel constraint (laravel-package) → plugin shape (composer-plugin) → test framework → opt-ins, then:
 
 - Calls `laravel new --boost` for projects, or copies category-specific stubs for packages.
 - Substitutes placeholders (`__VENDOR__`, `__NAMESPACE__`, `__PACKAGE_STUDLY__`, …) across composer.json, source files, CI workflows.
 - Pre-allows composer plugins (`phpstan/extension-installer`, `pestphp/pest-plugin`) before requiring deps, so install never aborts on plugin allowlist errors.
 - Runs `composer install` + per-category `composer require` lists from `repo-init`'s `references/per-category-deps.yml`.
-- Fires `vendor/bin/testbench package-boost:sync` so `.ai/`, `.claude/`, `.agents/`, `.cursor/`, `AGENTS.md`, `CLAUDE.md`, etc. land alongside your code.
+- Fires `vendor/bin/boost sync` so `.ai/`, `.claude/`, `.agents/`, `.cursor/`, `AGENTS.md`, `CLAUDE.md`, etc. land alongside your code.
 - Prints a copy-pasteable handoff prompt for Claude/your agent of choice.
 
-Supports 5 categories: `laravel-project`, `laravel-package` (sander or spatie variant), `php-package`, `phpstan-extension`, `rector-extension`.
+Supports 6 categories: `laravel-project`, `laravel-package` (sander or spatie variant), `php-package`, `phpstan-extension`, `rector-extension`, `composer-plugin` (with `--plugin-shape=command-provider|event-subscriber|both|none`).
 
 ## Install (one-time per machine)
 
