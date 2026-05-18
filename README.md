@@ -1,6 +1,7 @@
 # sandermuller/repo-new
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/sandermuller/repo-new.svg?style=flat-square)](https://packagist.org/packages/sandermuller/repo-new)
+[![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/sandermuller/repo-new/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/sandermuller/repo-new/actions/workflows/run-tests.yml)
 [![Total Downloads](https://img.shields.io/packagist/dt/sandermuller/repo-new.svg?style=flat-square)](https://packagist.org/packages/sandermuller/repo-new)
 [![License](https://img.shields.io/packagist/l/sandermuller/repo-new.svg?style=flat-square)](LICENSE)
 
