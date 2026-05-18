@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Pre-`1.0.0` releases may introduce breaking changes in MINOR bumps; we surface those here clearly.
 
+## 0.3.0 - 2026-05-18
+
+### Added
+
+- **New `composer-plugin` category.** Sixth wizard category for framework-agnostic Composer plugins (event subscribers, command providers, etc.). Selectable via the interactive prompt or `--type=composer-plugin`.
+- **`--plugin-shape` option** with matching interactive prompt. Values: `command-provider | event-subscriber | both | none` (default `none`). Drives the `src/Plugin.php` skeleton selection from `sandermuller/repo-init`'s `stubs/composer-plugin/src/Plugin.{shape}.php` variants and decides whether `src/CommandProvider.php` ships in the scaffold.
+- **Vendor-driven `composer-plugin` test framework default** — Pest for `sandermuller/*`, PHPUnit for `hihaho/*`, matches existing per-vendor convention. `--test-framework` overrides as before.
+- **Handoff template** for `composer-plugin` scaffolds with new `{PLUGIN_SHAPE}` placeholder.
+
+### Changed
+
+- **Bumped `sandermuller/repo-init` floor to `^0.3.0`** so the wizard reads the new `composer-plugin` section from `references/per-category-deps.yml` and resolves the new stub variants.
+- **Scaffold-time AI sync command swapped** from `vendor/bin/testbench package-boost:sync` to `vendor/bin/boost sync` in both `LaravelProjectScaffolder` and `PackageScaffolder`. The standalone `boost` binary is shipped by `sandermuller/boost-core` (pulled transitively via `sandermuller/package-boost-php`) and works in both Laravel apps and package dev installs. The old testbench-routed path was a silent no-op for `laravel-project` scaffolds (testbench is package-dev only).
+
+### Removed
+
+- **Dropped `sandermuller/package-boost`** from `require-dev`. Superseded by `sandermuller/package-boost-php` + `sandermuller/boost-core` (the new framework-agnostic split), pulled transitively via `repo-init`.
+
+### Internal
+
+- `boost.php` shipped at repo root (boost-core convention; agents enabled: claude-code, copilot, codex).
+- `composer.json` `config.allow-plugins` extended for `sandermuller/boost-core` + `sandermuller/package-boost-php`.
+- `AGENTS.md`, `CLAUDE.md`, `.agents/skills/`, `.claude/skills/`, `.github/skills/` untracked — boost-core's managed `.gitignore` block now owns regeneration via `vendor/bin/boost sync`.
+
+### Upgrade notes
+
+Consumers installing via `composer global require sandermuller/repo-new` will pick up the new `repo-init 0.3.0` baseline and `boost-core 0.3.x` automatically. On first install you will be prompted to allow the two new composer plugins; accept both.
+
+**Full Changelog**: https://github.com/SanderMuller/repo-new/compare/0.2.0...0.3.0
+
 ## 0.2.0 - 2026-05-17
 
 **Full Changelog**: https://github.com/SanderMuller/repo-new/compare/0.1.0...0.2.0
