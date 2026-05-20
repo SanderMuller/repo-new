@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Pre-`1.0.0` releases may introduce breaking changes in MINOR bumps; we surface those here clearly.
 
+## 0.5.0 - 2026-05-20
+
+### Added
+
+- **New `skill-bundle` category.** A seventh scaffold category for boost-core skill bundles — packages that ship pure-markdown AI skills under `resources/boost/skills/` with no PHP source and no test runner. Selectable interactively or via `--type=skill-bundle`. It scaffolds a lean repo: `sandermuller/boost-core` as the runtime dependency, Pint + `lean-package-validator` for tooling, and skips the PHP toolchain (PHPStan, Rector, PHPUnit, `.mcp.json`, the `phpstan` / `rector-check` workflows) that the code-bearing categories get.
+- **`consumes-shared-dev-deps` support.** `PerCategoryDeps` now honors the `consumes-shared-dev-deps` key in `repo-init`'s `per-category-deps.yml` — when a category sets it to `false`, its dependency set comes solely from its own `mandatory` block, skipping the shared dependency lists.
+
+### Changed
+
+- **Bumped `sandermuller/repo-init` to `^0.5.0`.** repo-new 0.5.0 requires repo-init 0.5.0+, which ships the `skill-bundle` stubs and `per-category-deps.yml` entry. The existing six categories also pick up repo-init 0.5.0's corrected per-category boost-family packages and `post-install-cmd` / `post-update-cmd` scripts.
+- **`laravel-package` always scaffolds the `spatie/laravel-package-tools` shape.** The generated service provider extends `Spatie\LaravelPackageTools\PackageServiceProvider` with a declarative `configurePackage()`.
+- **`RepoInitLocator` resolves repo-new's own pinned `repo-init` first.** It previously preferred an ambient global install, which could resolve a `repo-init` version different from the one repo-new's `composer.json` pins. The lookup now tries repo-new's own resolved dependency (deterministic, install-relative) before any global or ambient copy.
+
+### Removed
+
+- **BREAKING — the `--variant` flag is removed.** `laravel-package` no longer offers a "Sander-style or Spatie-style?" choice — it is always `spatie/laravel-package-tools`-based. `--variant=sander` and `--variant=spatie` now error.
+
+### Upgrade notes
+
+If you scripted `repo new --type=laravel-package --variant=...`, drop the `--variant` flag — `laravel-package` is always `spatie/laravel-package-tools`-based now. Every other category is unaffected. `composer global update sandermuller/repo-new` pulls repo-init 0.5.0 automatically.
+
+**Full Changelog**: https://github.com/SanderMuller/repo-new/compare/0.4.0...0.5.0
+
 ## 0.4.0 - 2026-05-20
 
 ### Changed
