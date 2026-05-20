@@ -39,7 +39,6 @@ final readonly class PerCategoryDeps
      */
     public function forCategory(
         string $category,
-        ?string $variant,
         string $testFramework,
         array $optInFlags = [],
     ): DepList {
@@ -118,12 +117,13 @@ final readonly class PerCategoryDeps
     }
 
     /**
-     * Stub-variant for laravel-package: returns 'laravel-package-spatie' if
-     * the user opted into the hihaho-package-tools-flavoured opt-in.
+     * Stub directory for a category. `laravel-package` always scaffolds the
+     * spatie/laravel-package-tools-based stub (`laravel-package-spatie`);
+     * every other category maps 1:1 to its own name.
      */
-    public function stubVariantFor(string $category, ?string $variant): string
+    public function stubDirFor(string $category): string
     {
-        if ($category === 'laravel-package' && $variant === 'spatie') {
+        if ($category === 'laravel-package') {
             return 'laravel-package-spatie';
         }
 

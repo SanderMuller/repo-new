@@ -16,7 +16,7 @@ use Symfony\Component\Process\Process;
  *
  * Steps (per spec §5 package categories):
  *  1. Copy stubs/shared/* (substituted).
- *  2. Copy stubs/<category-or-variant>/* (substituted).
+ *  2. Copy stubs/<category>/* (substituted).
  *  3. composer install.
  *  4. composer require --dev <list>.
  *  5. composer require <runtime list>.
@@ -43,8 +43,8 @@ final readonly class PackageScaffolder
         $written = 0;
         $written += $this->copyStubs('shared', $targetDir, $substituter);
 
-        $stubVariant = $this->deps->stubVariantFor($state->category ?? '', $state->variant);
-        $written += $this->copyStubs($stubVariant, $targetDir, $substituter);
+        $stubDir = $this->deps->stubDirFor($state->category ?? '');
+        $written += $this->copyStubs($stubDir, $targetDir, $substituter);
 
         if ($state->category === 'composer-plugin') {
             $this->selectPluginShapeFiles($targetDir, $state->pluginShape ?? 'none');
@@ -55,7 +55,7 @@ final readonly class PackageScaffolder
         $written += $this->copyStubs("test-framework-{$framework}", $targetDir, $substituter);
 
         $optInFlags = $this->optInFlagsFromState($state);
-        $depList = $this->deps->forCategory($state->category ?? '', $state->variant, $state->testFramework ?? 'pest', $optInFlags);
+        $depList = $this->deps->forCategory($state->category ?? '', $state->testFramework ?? 'pest', $optInFlags);
 
         // Substitute placeholders in dep constraints (e.g. illuminate/support: __LARAVEL_VERSIONS__).
         $require = array_map($substituter->substitute(...), $depList->require);
@@ -174,7 +174,9 @@ final readonly class PackageScaffolder
                 'with-security-advisories' => $state->withSecurityAdvisories,
             ],
             'laravel-package' => [
-                'hihaho-package-tools-flavoured' => $state->variant === 'spatie',
+                // laravel-package always scaffolds the spatie/laravel-package-tools
+                // stub; this opt-in pulls spatie/laravel-package-tools into require.
+                'hihaho-package-tools-flavoured' => true,
             ],
             'phpstan-extension', 'rector-extension' => [
                 'laravel-aware' => $state->laravelAware,

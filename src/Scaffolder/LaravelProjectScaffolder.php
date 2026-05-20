@@ -71,7 +71,7 @@ final readonly class LaravelProjectScaffolder
             'with-hihaho-rules' => $state->withHihahoRules,
             'with-security-advisories' => $state->withSecurityAdvisories,
         ];
-        $depList = $this->deps->forCategory('laravel-project', null, $state->testFramework ?? 'phpunit', $optInFlags);
+        $depList = $this->deps->forCategory('laravel-project', $state->testFramework ?? 'phpunit', $optInFlags);
         $requireDev = array_map($substituter->substitute(...), $depList->requireDev);
 
         if ($requireDev !== []) {

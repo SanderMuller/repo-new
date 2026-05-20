@@ -87,10 +87,9 @@ it('scaffolds a php-package skeleton with all expected files', function (): void
         ->toBeGreaterThan(5);
 });
 
-it('scaffolds a laravel-package sander variant with ServiceProvider file', function (): void {
+it('scaffolds a laravel-package with the spatie/laravel-package-tools ServiceProvider', function (): void {
     $state = new WizardState();
     $state->category = 'laravel-package';
-    $state->variant = 'sander';
     $state->vendor = 'sandermuller';
     $state->package = 'queue-insights';
     $state->description = 'Queue insights for Laravel.';
@@ -102,9 +101,12 @@ it('scaffolds a laravel-package sander variant with ServiceProvider file', funct
 
     $this->scaffolder->scaffold($state, $this->tmp);
 
-    expect(file_exists($this->tmp . '/src/QueueInsightsServiceProvider.php'))->toBeTrue()
-        ->and(file_exists($this->tmp . '/config/queue-insights.php'))->toBeTrue();
+    $providerPath = $this->tmp . '/src/QueueInsightsServiceProvider.php';
+    expect(file_exists($providerPath))->toBeTrue()
+        ->and(file_exists($this->tmp . '/config/queue-insights.php'))->toBeTrue()
+        ->and(file_get_contents($providerPath))->toContain('PackageServiceProvider');
 
     $composer = json_decode(file_get_contents($this->tmp . '/composer.json'), true, 512, JSON_THROW_ON_ERROR);
-    expect($composer['require']['illuminate/contracts'])->toBe('^11.0||^12.0||^13.0');
+    expect($composer['require']['illuminate/contracts'])->toBe('^11.0||^12.0||^13.0')
+        ->and($composer['require'])->toHaveKey('spatie/laravel-package-tools');
 });

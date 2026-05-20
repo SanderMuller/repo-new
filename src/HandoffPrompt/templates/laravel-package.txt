@@ -1,5 +1,5 @@
 I just scaffolded a new Laravel package at {TARGET_DIR}
-(category: laravel-package, {VARIANT}, composer name: {COMPOSER_NAME}, namespace: {NAMESPACE}).
+(category: laravel-package, spatie/laravel-package-tools based, composer name: {COMPOSER_NAME}, namespace: {NAMESPACE}).
 The skeleton is wired (composer install, deps, package-boost). Please:
 
 1. Verify the scaffold is healthy — run the repo-init `bootstrap-laravel-package.md`

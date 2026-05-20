@@ -10,7 +10,7 @@ use SanderMuller\RepoNew\Wizard\WizardState;
  * Generates the copy-pasteable Claude handoff per spec §7.
  *
  * One template per category lives in src/HandoffPrompt/templates/<cat>.txt
- * with placeholders {TARGET_DIR}, {COMPOSER_NAME}, {NAMESPACE}, {VARIANT}.
+ * with placeholders {TARGET_DIR}, {COMPOSER_NAME}, {NAMESPACE}, etc.
  */
 final class HandoffPromptBuilder
 {
@@ -34,17 +34,12 @@ final class HandoffPromptBuilder
         $packageStudly = PlaceholderSubstituter::studly($state->package ?? '');
         $namespace = "{$vendorStudly}\\{$packageStudly}";
 
-        $variantLabel = $state->category === 'laravel-package'
-            ? ($state->variant ?? 'sander') . ' variant'
-            : '';
-
         return strtr($body, [
             '{TARGET_DIR}' => $targetDir,
             '{COMPOSER_NAME}' => $state->composerName() ?? '',
             '{NAMESPACE}' => $namespace,
             '{VENDOR_STUDLY}' => $vendorStudly,
             '{PACKAGE_STUDLY}' => $packageStudly,
-            '{VARIANT}' => $variantLabel,
             '{CATEGORY}' => $category,
             '{TEST_FRAMEWORK}' => $state->testFramework ?? '',
             '{PHP_VERSION}' => $state->phpVersion ?? '',

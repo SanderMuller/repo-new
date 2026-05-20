@@ -9,7 +9,7 @@ beforeEach(function (): void {
 });
 
 it('returns expected dev deps for php-package with pest', function (): void {
-    $list = $this->deps->forCategory('php-package', null, 'pest');
+    $list = $this->deps->forCategory('php-package', 'pest');
 
     $names = array_map(fn (string $e): string => trim(explode(':', $e, 2)[0]), $list->requireDev);
 
@@ -19,7 +19,7 @@ it('returns expected dev deps for php-package with pest', function (): void {
 });
 
 it('drops phpstan/phpstan from shared dev deps for phpstan-extension', function (): void {
-    $list = $this->deps->forCategory('phpstan-extension', null, 'phpunit');
+    $list = $this->deps->forCategory('phpstan-extension', 'phpunit');
 
     $devNames = array_map(fn (string $e): string => trim(explode(':', $e, 2)[0]), $list->requireDev);
     $reqNames = array_map(fn (string $e): string => trim(explode(':', $e, 2)[0]), $list->require);
@@ -29,7 +29,7 @@ it('drops phpstan/phpstan from shared dev deps for phpstan-extension', function 
 });
 
 it('drops rector/rector from shared dev deps for rector-extension', function (): void {
-    $list = $this->deps->forCategory('rector-extension', null, 'pest');
+    $list = $this->deps->forCategory('rector-extension', 'pest');
 
     $devNames = array_map(fn (string $e): string => trim(explode(':', $e, 2)[0]), $list->requireDev);
     $reqNames = array_map(fn (string $e): string => trim(explode(':', $e, 2)[0]), $list->require);
@@ -39,7 +39,7 @@ it('drops rector/rector from shared dev deps for rector-extension', function ():
 });
 
 it('replaces phpstan/phpstan with larastan when laravel-aware opt-in fires for phpstan-extension', function (): void {
-    $list = $this->deps->forCategory('phpstan-extension', null, 'phpunit', ['laravel-aware' => true]);
+    $list = $this->deps->forCategory('phpstan-extension', 'phpunit', ['laravel-aware' => true]);
 
     $reqNames = array_map(fn (string $e): string => trim(explode(':', $e, 2)[0]), $list->require);
     $devNames = array_map(fn (string $e): string => trim(explode(':', $e, 2)[0]), $list->requireDev);
@@ -51,7 +51,7 @@ it('replaces phpstan/phpstan with larastan when laravel-aware opt-in fires for p
 });
 
 it('includes pest-plugin-laravel for laravel-package with pest', function (): void {
-    $list = $this->deps->forCategory('laravel-package', 'sander', 'pest');
+    $list = $this->deps->forCategory('laravel-package', 'pest');
 
     $names = array_map(fn (string $e): string => trim(explode(':', $e, 2)[0]), $list->requireDev);
 
@@ -59,7 +59,7 @@ it('includes pest-plugin-laravel for laravel-package with pest', function (): vo
 });
 
 it('uses phpunit (no pest-plugin-laravel) for laravel-package with phpunit', function (): void {
-    $list = $this->deps->forCategory('laravel-package', 'sander', 'phpunit');
+    $list = $this->deps->forCategory('laravel-package', 'phpunit');
 
     $names = array_map(fn (string $e): string => trim(explode(':', $e, 2)[0]), $list->requireDev);
 
@@ -67,8 +67,8 @@ it('uses phpunit (no pest-plugin-laravel) for laravel-package with phpunit', fun
         ->and($names)->not->toContain('pestphp/pest-plugin-laravel');
 });
 
-it('returns laravel-package-spatie stub variant for spatie', function (): void {
-    expect($this->deps->stubVariantFor('laravel-package', 'spatie'))->toBe('laravel-package-spatie')
-        ->and($this->deps->stubVariantFor('laravel-package', 'sander'))->toBe('laravel-package')
-        ->and($this->deps->stubVariantFor('php-package', null))->toBe('php-package');
+it('maps laravel-package to the spatie stub directory', function (): void {
+    expect($this->deps->stubDirFor('laravel-package'))->toBe('laravel-package-spatie')
+        ->and($this->deps->stubDirFor('php-package'))->toBe('php-package')
+        ->and($this->deps->stubDirFor('composer-plugin'))->toBe('composer-plugin');
 });

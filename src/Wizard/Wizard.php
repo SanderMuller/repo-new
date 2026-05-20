@@ -10,7 +10,6 @@ use SanderMuller\RepoNew\Wizard\Question\PackageTypeQuestion;
 use SanderMuller\RepoNew\Wizard\Question\PhpVersionQuestion;
 use SanderMuller\RepoNew\Wizard\Question\PluginShapeQuestion;
 use SanderMuller\RepoNew\Wizard\Question\ProjectVsPackageQuestion;
-use SanderMuller\RepoNew\Wizard\Question\VariantQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
@@ -25,7 +24,6 @@ final class Wizard
     {
         (new ProjectVsPackageQuestion())->ask($io, $state);
         (new PackageTypeQuestion())->ask($io, $state);
-        (new VariantQuestion())->ask($io, $state);
         (new NameQuestion())->ask($io, $state);
         (new DescriptionQuestion())->ask($io, $state);
         (new PhpVersionQuestion())->ask($io, $state);

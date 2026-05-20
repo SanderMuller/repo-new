@@ -48,7 +48,6 @@ final class NewCommand extends Command
         $this
             ->addArgument('name', InputArgument::OPTIONAL, 'Target dir / package name (kebab-case).')
             ->addOption('type', null, InputOption::VALUE_REQUIRED, 'Category: ' . implode(', ', self::CATEGORIES))
-            ->addOption('variant', null, InputOption::VALUE_REQUIRED, 'Variant for laravel-package: sander|spatie')
             ->addOption('vendor', null, InputOption::VALUE_REQUIRED, 'Composer vendor.')
             ->addOption('description', null, InputOption::VALUE_REQUIRED, 'One-line description.')
             ->addOption('php', null, InputOption::VALUE_REQUIRED, 'PHP version: 8.3|8.4|8.5')
@@ -137,7 +136,7 @@ final class NewCommand extends Command
 
         $state->interactive = $input->getOption('no-interaction') !== true;
 
-        $this->applyTypeAndVariant($input, $state);
+        $this->applyType($input, $state);
         $this->applyVendorAndPackage($input, $state);
 
         foreach (['description' => 'description', 'php' => 'phpVersion', 'laravel' => 'laravelVersions'] as $opt => $field) {
@@ -175,7 +174,7 @@ final class NewCommand extends Command
         $state->pluginShape = $shape;
     }
 
-    private function applyTypeAndVariant(InputInterface $input, WizardState $state): void
+    private function applyType(InputInterface $input, WizardState $state): void
     {
         $type = $input->getOption('type');
         if (is_string($type) && $type !== '') {
@@ -184,13 +183,6 @@ final class NewCommand extends Command
             }
 
             $state->category = $type;
-        }
-
-        $variant = $input->getOption('variant');
-        if (is_string($variant) && $variant !== '') {
-            $state->variant = $variant;
-        } elseif ($state->category === 'laravel-package') {
-            $state->variant = 'sander';
         }
     }
 
@@ -288,7 +280,6 @@ final class NewCommand extends Command
         $io->section('Plan');
         $io->definitionList(
             ['Category' => $state->category ?? ''],
-            ['Variant' => $state->variant ?? '—'],
             ['Plugin shape' => $state->pluginShape ?? '—'],
             ['Composer name' => $state->composerName() ?? ''],
             ['Description' => $state->description ?? ''],

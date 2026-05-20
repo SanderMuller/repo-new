@@ -13,9 +13,6 @@ final class WizardState
     /** One of: laravel-project, laravel-package, php-package, phpstan-extension, rector-extension, composer-plugin. */
     public ?string $category = null;
 
-    /** One of: sander, spatie. Only meaningful for laravel-package. */
-    public ?string $variant = null;
-
     /** Composer vendor, lowercase. Part before `/`. */
     public ?string $vendor = null;
 

@@ -7,7 +7,7 @@ parameters:
 			path: src/RepoInit/PerCategoryDeps.php
 
 		-
-			rawMessage: 'Out of 174 possible param types, only 173 - 99.4 %% actually have it. Add more param types to get over 100 %%'
+			rawMessage: 'Out of 170 possible param types, only 169 - 99.4 %% actually have it. Add more param types to get over 100 %%'
 			identifier: typeCoverage.paramTypeCoverage
 			count: 1
 			path: src/RepoInit/PerCategoryDeps.php
@@ -47,12 +47,6 @@ parameters:
 			identifier: cast.string
 			count: 1
 			path: src/Wizard/Question/PluginShapeQuestion.php
-
-		-
-			rawMessage: 'Property SanderMuller\RepoNew\Wizard\WizardState::$variant (string|null) does not accept mixed.'
-			identifier: assign.propertyType
-			count: 1
-			path: src/Wizard/Question/VariantQuestion.php
 
 		-
 			rawMessage: Access to an undefined property Pest\PendingCalls\TestCall::$repoInit.
@@ -255,7 +249,13 @@ parameters:
 		-
 			rawMessage: 'Call to method toContain() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
 			identifier: method.internalClass
-			count: 2
+			count: 3
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: 'Call to method toHaveKey() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
+			identifier: method.internalClass
+			count: 1
 			path: tests/Feature/PackageScaffolderSmokeTest.php
 
 		-
@@ -291,7 +291,7 @@ parameters:
 		-
 			rawMessage: Cannot access offset 'require' on mixed.
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
+			count: 2
 			path: tests/Feature/PackageScaffolderSmokeTest.php
 
 		-
@@ -397,7 +397,7 @@ parameters:
 			path: tests/Unit/PerCategoryDepsTest.php
 
 		-
-			rawMessage: 'Cannot call method stubVariantFor() on mixed.'
+			rawMessage: 'Cannot call method stubDirFor() on mixed.'
 			identifier: method.nonObject
 			count: 3
 			path: tests/Unit/PerCategoryDepsTest.php
