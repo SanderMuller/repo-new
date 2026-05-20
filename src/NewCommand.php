@@ -39,6 +39,7 @@ final class NewCommand extends Command
         'phpstan-extension',
         'rector-extension',
         'composer-plugin',
+        'skill-bundle',
     ];
 
     private const array PLUGIN_SHAPES = ['command-provider', 'event-subscriber', 'both', 'none'];
@@ -285,7 +286,7 @@ final class NewCommand extends Command
             ['Description' => $state->description ?? ''],
             ['PHP' => $state->phpVersion ?? ''],
             ['Laravel' => $state->laravelVersions ?? '—'],
-            ['Test framework' => $state->testFramework ?? ''],
+            ['Test framework' => $state->category === 'skill-bundle' ? '—' : ($state->testFramework ?? '')],
             ['Author' => ($state->authorName ?? '') . ' <' . ($state->authorEmail ?? '') . '>'],
             ['Target dir' => $targetDir],
         );

@@ -7,10 +7,18 @@ use RuntimeException;
 /**
  * Locates the installed sandermuller/repo-init directory at runtime.
  *
- * Lookup order (per spec §4):
- *  1. Composer-global vendor: $COMPOSER_HOME/vendor/sandermuller/repo-init/
- *  2. Project-local: ./vendor/sandermuller/repo-init/
- *  3. Sibling-of-bin: __DIR__/../../../sandermuller/repo-init/
+ * repo-new is tightly coupled to repo-init's stub + per-category-deps.yml
+ * format, so it must use the repo-init version its own composer.json pinned —
+ * never an unrelated ambient global that may be a different version. Lookup
+ * order therefore puts repo-new's own resolved dependency (deterministic,
+ * __DIR__-relative) first; ambient/global paths are fallbacks only:
+ *  1. Vendor sibling: __DIR__/../../../../sandermuller/repo-init/
+ *     (repo-new installed in a vendor/ dir — repo-init is a sibling).
+ *  2. Project vendor: __DIR__/../../vendor/sandermuller/repo-init/
+ *     (repo-new checked out as its own project — repo-init under vendor/).
+ *  3. Composer-global vendor: $COMPOSER_HOME/vendor/sandermuller/repo-init/.
+ *  4. Project-local: <cwd>/vendor/sandermuller/repo-init/.
+ *  5. Side-by-side dev clone: __DIR__/../../../repo-init/.
  */
 final readonly class RepoInitLocator
 {
@@ -36,6 +44,17 @@ final readonly class RepoInitLocator
     {
         $candidates = [];
 
+        // repo-new's own repo-init dependency — deterministic, __DIR__-relative,
+        // so it wins over any ambient/global copy. repo-new must use the
+        // repo-init version its composer.json pinned. __DIR__ = .../src/RepoInit.
+        // (1) repo-new installed in a vendor dir: repo-init is a vendor sibling
+        //     (up four to the vendor root, then into sandermuller/repo-init).
+        $candidates[] = __DIR__ . '/../../../../sandermuller/repo-init';
+        // (2) repo-new checked out as its own project: repo-init under vendor/.
+        $candidates[] = __DIR__ . '/../../vendor/sandermuller/repo-init';
+
+        // Ambient fallbacks — only reached when repo-new's own dependency is
+        // not where expected (unusual installs).
         $composerHome = $this->composerHome();
         if ($composerHome !== null) {
             $candidates[] = $composerHome . '/vendor/sandermuller/repo-init';
@@ -46,14 +65,9 @@ final readonly class RepoInitLocator
             $candidates[] = $cwd . '/vendor/sandermuller/repo-init';
         }
 
-        // Sibling-of-bin: when this package is installed in a vendor dir,
-        // repo-init is a sibling. __DIR__ here = .../src/RepoInit, so we go
-        // up four to reach the vendor root, then into sandermuller/repo-init.
-        $candidates[] = __DIR__ . '/../../../../sandermuller/repo-init';
-
-        // Dev path: when cloned side-by-side (the dev composer.json uses a
-        // `path` repository), the package may be symlinked from a sibling
-        // directory. Try the parent of this package's root.
+        // Side-by-side dev clone: when cloned next to repo-new (the dev
+        // composer.json uses a `path` repository), repo-init may be a sibling
+        // directory of the package root.
         $candidates[] = __DIR__ . '/../../../repo-init';
 
         return $candidates;

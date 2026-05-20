@@ -37,4 +37,13 @@
 |
 */
 
-// function something(): void { /* ... */ }
+/**
+ * Absolute path to the repo-init installed as this project's Composer
+ * dependency. Tests pin to this project-local copy (the version `composer.json`
+ * resolved) rather than `RepoInitLocator`, whose production global-first lookup
+ * would make tests depend on the dev machine's global Composer state.
+ */
+function repoInitPath(): string
+{
+    return dirname(__DIR__) . '/vendor/sandermuller/repo-init';
+}

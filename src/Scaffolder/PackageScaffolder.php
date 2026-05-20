@@ -12,7 +12,8 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
 
 /**
- * Scaffolds php-package, laravel-package, phpstan-extension, rector-extension.
+ * Scaffolds php-package, laravel-package, phpstan-extension, rector-extension,
+ * composer-plugin, skill-bundle.
  *
  * Steps (per spec §5 package categories):
  *  1. Copy stubs/shared/* (substituted).
@@ -26,6 +27,22 @@ use Symfony\Component\Process\Process;
  */
 final readonly class PackageScaffolder
 {
+    /**
+     * skill-bundle ships pure-markdown skills with no PHP source, so the
+     * PHP-toolchain stubs in stubs/shared/ are skipped for it. Source of
+     * truth: repo-init's phases/bootstrap-skill-bundle.md step 5.
+     *
+     * @var list<string>
+     */
+    private const array SKILL_BUNDLE_SHARED_SKIP = [
+        '.github/workflows/phpstan.yml',
+        '.github/workflows/rector-check.yml',
+        '.mcp.json',
+        'phpstan-baseline.neon',
+        'phpunit.xml',
+        'tests/',
+    ];
+
     public function __construct(
         private SymfonyStyle $io,
         private StubReader $stubReader,
@@ -41,7 +58,8 @@ final readonly class PackageScaffolder
         $substituter = new PlaceholderSubstituter($state);
 
         $written = 0;
-        $written += $this->copyStubs('shared', $targetDir, $substituter);
+        $sharedSkip = $state->category === 'skill-bundle' ? self::SKILL_BUNDLE_SHARED_SKIP : [];
+        $written += $this->copyStubs('shared', $targetDir, $substituter, $sharedSkip);
 
         $stubDir = $this->deps->stubDirFor($state->category ?? '');
         $written += $this->copyStubs($stubDir, $targetDir, $substituter);
@@ -51,8 +69,12 @@ final readonly class PackageScaffolder
         }
 
         // Overlay test-framework-specific stubs (e.g. tests/Pest.php for pest).
-        $framework = $state->testFramework ?? 'pest';
-        $written += $this->copyStubs("test-framework-{$framework}", $targetDir, $substituter);
+        // skill-bundle ships pure-markdown skills, no PHP and no test runner,
+        // so it gets no test-framework overlay.
+        if ($state->category !== 'skill-bundle') {
+            $framework = $state->testFramework ?? 'pest';
+            $written += $this->copyStubs("test-framework-{$framework}", $targetDir, $substituter);
+        }
 
         $optInFlags = $this->optInFlagsFromState($state);
         $depList = $this->deps->forCategory($state->category ?? '', $state->testFramework ?? 'pest', $optInFlags);
@@ -67,12 +89,17 @@ final readonly class PackageScaffolder
         // composer call already sees them allowed. pestphp/pest-plugin only
         // when actually installing pest (otherwise it lingers in
         // composer.json as a stale allow-plugin entry for nothing).
-        $plugins = ['phpstan/extension-installer'];
-        if (($state->testFramework ?? 'pest') === 'pest') {
-            $plugins[] = 'pestphp/pest-plugin';
-        }
+        // skill-bundle pulls no plugin-bearing dev deps and ships no test
+        // runner, so it needs no pre-allow — its only plugin, boost-core, is
+        // already allowed in the skill-bundle stub's composer.json.
+        if ($state->category !== 'skill-bundle') {
+            $plugins = ['phpstan/extension-installer'];
+            if (($state->testFramework ?? 'pest') === 'pest') {
+                $plugins[] = 'pestphp/pest-plugin';
+            }
 
-        $this->preAllowPlugins($targetDir, $plugins);
+            $this->preAllowPlugins($targetDir, $plugins);
+        }
 
         $this->composer->install($targetDir);
 
@@ -218,11 +245,18 @@ final readonly class PackageScaffolder
         }
     }
 
-    private function copyStubs(string $stubDir, string $targetDir, PlaceholderSubstituter $substituter): int
+    /**
+     * @param  list<string>  $skipRelative  Stub-relative paths to skip — exact match, or a `dir/` prefix.
+     */
+    private function copyStubs(string $stubDir, string $targetDir, PlaceholderSubstituter $substituter, array $skipRelative = []): int
     {
         $count = 0;
 
         foreach ($this->stubReader->read($stubDir) as $stub) {
+            if ($this->shouldSkipStub($stub['relative'], $skipRelative)) {
+                continue;
+            }
+
             $relativeSubstituted = $substituter->substitute($stub['relative']);
             $relativeSubstituted = $this->dotPrefixRename($relativeSubstituted);
             $destination = $targetDir . '/' . $relativeSubstituted;
@@ -247,5 +281,23 @@ final readonly class PackageScaffolder
         }
 
         return $count;
+    }
+
+    /**
+     * @param  list<string>  $skip  Exact stub-relative paths, or `dir/` prefixes.
+     */
+    private function shouldSkipStub(string $relative, array $skip): bool
+    {
+        foreach ($skip as $entry) {
+            if (str_ends_with($entry, '/')) {
+                if (str_starts_with($relative, $entry)) {
+                    return true;
+                }
+            } elseif ($relative === $entry) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -2,7 +2,6 @@
 
 use SanderMuller\RepoNew\Composer\ComposerRunnerInterface;
 use SanderMuller\RepoNew\RepoInit\PerCategoryDeps;
-use SanderMuller\RepoNew\RepoInit\RepoInitLocator;
 use SanderMuller\RepoNew\RepoInit\StubReader;
 use SanderMuller\RepoNew\Scaffolder\PackageScaffolder;
 use SanderMuller\RepoNew\Wizard\WizardState;
@@ -27,7 +26,7 @@ beforeEach(function (): void {
     $this->tmp = sys_get_temp_dir() . '/repo-new-smoke-' . bin2hex(random_bytes(4));
     mkdir($this->tmp);
 
-    $repoInit = (new RepoInitLocator())->locate();
+    $repoInit = repoInitPath();
     $output = new BufferedOutput();
     $io = new SymfonyStyle(new ArrayInput([]), $output);
 
@@ -109,4 +108,41 @@ it('scaffolds a laravel-package with the spatie/laravel-package-tools ServicePro
     $composer = json_decode(file_get_contents($this->tmp . '/composer.json'), true, 512, JSON_THROW_ON_ERROR);
     expect($composer['require']['illuminate/contracts'])->toBe('^11.0||^12.0||^13.0')
         ->and($composer['require'])->toHaveKey('spatie/laravel-package-tools');
+});
+
+it('scaffolds a skill-bundle with the lean shared set and no PHP toolchain', function (): void {
+    $state = new WizardState();
+    $state->category = 'skill-bundle';
+    $state->vendor = 'sandermuller';
+    $state->package = 'my-skills';
+    $state->description = 'A bundle of AI skills.';
+    $state->phpVersion = '8.3';
+    $state->testFramework = 'pest'; // even with pest set, skill-bundle gets no test-framework overlay
+    $state->authorName = 'Sander Muller';
+    $state->authorEmail = 'github@scode.nl';
+
+    $this->scaffolder->scaffold($state, $this->tmp);
+
+    expect(file_exists($this->tmp . '/composer.json'))->toBeTrue()
+        ->and(file_exists($this->tmp . '/resources/boost/skills/.gitkeep'))->toBeTrue()
+        // lean shared meta files are kept
+        ->and(file_exists($this->tmp . '/pint.json'))->toBeTrue()
+        ->and(file_exists($this->tmp . '/.editorconfig'))->toBeTrue()
+        ->and(file_exists($this->tmp . '/.github/workflows/pint-check.yml'))->toBeTrue()
+        ->and(file_exists($this->tmp . '/.github/workflows/update-changelog.yml'))->toBeTrue()
+        // PHP-toolchain shared stubs are skipped
+        ->and(file_exists($this->tmp . '/phpstan-baseline.neon'))->toBeFalse()
+        ->and(file_exists($this->tmp . '/phpunit.xml'))->toBeFalse()
+        ->and(file_exists($this->tmp . '/.mcp.json'))->toBeFalse()
+        ->and(file_exists($this->tmp . '/.github/workflows/phpstan.yml'))->toBeFalse()
+        ->and(file_exists($this->tmp . '/.github/workflows/rector-check.yml'))->toBeFalse()
+        // no test-framework overlay, no shared tests/ dir
+        ->and(file_exists($this->tmp . '/tests/Pest.php'))->toBeFalse()
+        ->and(is_dir($this->tmp . '/tests'))->toBeFalse();
+
+    $composer = json_decode(file_get_contents($this->tmp . '/composer.json'), true, 512, JSON_THROW_ON_ERROR);
+    expect($composer['name'])->toBe('sandermuller/my-skills')
+        ->and($composer['require'])->toHaveKey('sandermuller/boost-core')
+        // no spurious plugin pre-allow — skill-bundle uses no phpstan/pest plugins
+        ->and($composer['config']['allow-plugins'])->toBe(['sandermuller/boost-core' => true]);
 });

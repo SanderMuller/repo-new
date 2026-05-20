@@ -55,30 +55,37 @@ final readonly class PerCategoryDeps
         /** @var list<string> $requireDev */
         $requireDev = $this->listFrom($cat, ['mandatory', 'require-dev']);
 
-        // Shared always.
-        /** @var list<string> $sharedAlwaysDev */
-        $sharedAlwaysDev = $this->listFrom($this->data, ['shared', 'always', 'require-dev']);
+        // `consumes-shared-dev-deps: false` (skill-bundle) means the category's
+        // dev deps come solely from its own `mandatory` block — skip BOTH the
+        // shared.always list AND the shared.test-framework block. Absent ⇒ true.
+        $consumesSharedDevDeps = $cat['consumes-shared-dev-deps'] ?? true;
 
-        // Test-framework deps.
-        /** @var list<string> $testDev */
-        $testDev = $this->listFrom($this->data, ['shared', 'test-framework', $testFramework, 'require-dev']);
+        if ($consumesSharedDevDeps !== false) {
+            // Shared always.
+            /** @var list<string> $sharedAlwaysDev */
+            $sharedAlwaysDev = $this->listFrom($this->data, ['shared', 'always', 'require-dev']);
 
-        // Pest laravel-only addition.
-        if ($testFramework === 'pest' && in_array($category, ['laravel-project', 'laravel-package'], true)) {
-            /** @var list<string> $pestLaravelOnly */
-            $pestLaravelOnly = $this->listFrom($this->data, ['shared', 'test-framework', 'pest-laravel-only', 'require-dev']);
-            $testDev = array_values(array_merge($testDev, $pestLaravelOnly));
+            // Test-framework deps.
+            /** @var list<string> $testDev */
+            $testDev = $this->listFrom($this->data, ['shared', 'test-framework', $testFramework, 'require-dev']);
+
+            // Pest laravel-only addition.
+            if ($testFramework === 'pest' && in_array($category, ['laravel-project', 'laravel-package'], true)) {
+                /** @var list<string> $pestLaravelOnly */
+                $pestLaravelOnly = $this->listFrom($this->data, ['shared', 'test-framework', 'pest-laravel-only', 'require-dev']);
+                $testDev = array_values(array_merge($testDev, $pestLaravelOnly));
+            }
+
+            // Compose shared dev list.
+            $sharedDev = array_values(array_merge($sharedAlwaysDev, $testDev));
+
+            // Apply per-category shared-exclusions to the shared list.
+            /** @var list<string> $exclusions */
+            $exclusions = $cat['shared-exclusions'] ?? [];
+            $sharedDev = $this->dropByPackage($sharedDev, $exclusions);
+
+            $requireDev = array_values(array_merge($requireDev, $sharedDev));
         }
-
-        // Compose shared dev list.
-        $sharedDev = array_values(array_merge($sharedAlwaysDev, $testDev));
-
-        // Apply per-category shared-exclusions to the shared list.
-        /** @var list<string> $exclusions */
-        $exclusions = $cat['shared-exclusions'] ?? [];
-        $sharedDev = $this->dropByPackage($sharedDev, $exclusions);
-
-        $requireDev = array_values(array_merge($requireDev, $sharedDev));
 
         // Apply opt-ins.
         /** @var array<string, array<string, mixed>> $optional */

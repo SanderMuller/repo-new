@@ -1,0 +1,17 @@
+I just scaffolded a new boost-core skill bundle at {TARGET_DIR}
+(category: skill-bundle, composer name: {COMPOSER_NAME}).
+The skeleton is wired (composer install, deps, boost-core). It ships
+pure-markdown skills under resources/boost/skills/ — no PHP source, no
+test runner. Please:
+
+1. Verify the scaffold is healthy — run the repo-init `bootstrap-skill-bundle.md`
+   phase file from your skill. Every step should be a no-op (idempotency guards
+   confirm everything is already done). Surface anything that needs attention.
+
+2. Walk me through:
+   - Authoring the first skill at resources/boost/skills/<skill-name>/SKILL.md
+     (a directory with a SKILL.md carrying `name:` + `description:` frontmatter)
+   - Setting up the GitHub remote with `gh repo create {COMPOSER_NAME} --public --source=. --remote=origin --push`
+
+When done with this bundle later, ask me to run `phases/audit-skill-bundle.md`
+to catch any drift from the canonical baseline.

@@ -10,7 +10,7 @@ namespace SanderMuller\RepoNew\Wizard;
  */
 final class WizardState
 {
-    /** One of: laravel-project, laravel-package, php-package, phpstan-extension, rector-extension, composer-plugin. */
+    /** One of: laravel-project, laravel-package, php-package, phpstan-extension, rector-extension, composer-plugin, skill-bundle. */
     public ?string $category = null;
 
     /** Composer vendor, lowercase. Part before `/`. */

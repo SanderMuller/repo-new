@@ -38,7 +38,7 @@ See `repo new --help` for the full flag list.
 
 ## Categories
 
-repo-new scaffolds six repo categories. Choose one interactively, or pass `--type`:
+repo-new scaffolds seven repo categories. Choose one interactively, or pass `--type`:
 
 | Category (`--type`) | What it scaffolds | Runtime dependencies wired in | Category options |
 |---|---|---|---|
@@ -48,6 +48,7 @@ repo-new scaffolds six repo categories. Choose one interactively, or pass `--typ
 | `phpstan-extension` | A PHPStan rule / extension package | `phpstan/phpstan: ^2` | `--laravel-aware` (swaps in `larastan/larastan`) |
 | `rector-extension` | A Rector rule / ruleset package | `rector/rector: ^2`, `symplify/rule-doc-generator-contracts` | `--laravel-aware` (adds `driftingly/rector-laravel`) |
 | `composer-plugin` | A Composer plugin — command provider and/or event subscriber skeleton | `composer-plugin-api: ^2.6` | `--plugin-shape=command-provider\|event-subscriber\|both\|none` |
+| `skill-bundle` | A boost-core skill bundle — pure-markdown AI skills under `resources/boost/skills/`, no PHP source or test runner | `sandermuller/boost-core` | — |
 
 ## What it sets up
 
@@ -60,6 +61,8 @@ Beyond the category-specific source skeleton above, every scaffolded repo gets t
 - **AI tooling** — `sandermuller/package-boost-php` + `boost-core` installed, then `vendor/bin/boost sync` run to generate `.ai/`, `.claude/`, `.agents/`, `.cursor/`, `AGENTS.md`, `CLAUDE.md`, and the per-agent skill directories.
 
 Per-category runtime and dev dependencies come from `repo-init`'s `references/per-category-deps.yml`, so the dependency set always matches the current canonical baseline.
+
+`skill-bundle` is the lean exception: it ships pure-markdown skills with no PHP, so it skips the PHP toolchain (PHPStan, Rector, PHPUnit, `.mcp.json`, the `phpstan` / `rector-check` workflows) and the test runner — keeping Pint, `lean-package-validator`, the meta files, and the `pint-check` + `update-changelog` workflows.
 
 ## How it works
 

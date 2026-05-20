@@ -2,7 +2,6 @@
 
 use SanderMuller\RepoNew\Composer\ComposerRunnerInterface;
 use SanderMuller\RepoNew\RepoInit\PerCategoryDeps;
-use SanderMuller\RepoNew\RepoInit\RepoInitLocator;
 use SanderMuller\RepoNew\RepoInit\StubReader;
 use SanderMuller\RepoNew\Scaffolder\PackageScaffolder;
 use SanderMuller\RepoNew\Wizard\WizardState;
@@ -20,19 +19,7 @@ final class NoopComposerRunnerForPlugin implements ComposerRunnerInterface
 }
 
 beforeEach(function (): void {
-    $repoInit = (new RepoInitLocator())->locate();
-
-    // composer-plugin stubs may not exist on globally-installed repo-init
-    // (pre-release feature). Fall back to dev path if peer's repo-init is
-    // checked out side-by-side.
-    if (! is_dir($repoInit . '/stubs/composer-plugin')) {
-        $devPath = dirname(__DIR__, 3) . '/repo-init';
-        if (is_dir($devPath . '/stubs/composer-plugin')) {
-            $repoInit = $devPath;
-        } else {
-            $this->markTestSkipped('composer-plugin stubs not present in installed repo-init');
-        }
-    }
+    $repoInit = repoInitPath();
 
     $this->repoInit = $repoInit;
 

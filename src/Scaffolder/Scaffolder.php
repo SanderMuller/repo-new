@@ -22,7 +22,7 @@ final readonly class Scaffolder
     {
         return match ($state->category) {
             'laravel-project' => $this->projectScaffolder->scaffold($state, $targetDir),
-            'laravel-package', 'php-package', 'phpstan-extension', 'rector-extension', 'composer-plugin' => $this->packageScaffolder->scaffold($state, $targetDir),
+            'laravel-package', 'php-package', 'phpstan-extension', 'rector-extension', 'composer-plugin', 'skill-bundle' => $this->packageScaffolder->scaffold($state, $targetDir),
             default => throw new RuntimeException("Unknown category: {$state->category}"),
         };
     }

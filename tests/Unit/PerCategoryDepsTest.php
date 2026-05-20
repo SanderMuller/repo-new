@@ -1,10 +1,9 @@
 <?php declare(strict_types=1);
 
 use SanderMuller\RepoNew\RepoInit\PerCategoryDeps;
-use SanderMuller\RepoNew\RepoInit\RepoInitLocator;
 
 beforeEach(function (): void {
-    $this->repoInit = (new RepoInitLocator())->locate();
+    $this->repoInit = repoInitPath();
     $this->deps = new PerCategoryDeps($this->repoInit . '/references/per-category-deps.yml');
 });
 
@@ -70,5 +69,19 @@ it('uses phpunit (no pest-plugin-laravel) for laravel-package with phpunit', fun
 it('maps laravel-package to the spatie stub directory', function (): void {
     expect($this->deps->stubDirFor('laravel-package'))->toBe('laravel-package-spatie')
         ->and($this->deps->stubDirFor('php-package'))->toBe('php-package')
-        ->and($this->deps->stubDirFor('composer-plugin'))->toBe('composer-plugin');
+        ->and($this->deps->stubDirFor('composer-plugin'))->toBe('composer-plugin')
+        ->and($this->deps->stubDirFor('skill-bundle'))->toBe('skill-bundle');
+});
+
+it('takes skill-bundle deps solely from its mandatory block (consumes-shared-dev-deps false)', function (): void {
+    $list = $this->deps->forCategory('skill-bundle', 'pest');
+
+    $reqNames = array_map(fn (string $e): string => trim(explode(':', $e, 2)[0]), $list->require);
+    $devNames = array_map(fn (string $e): string => trim(explode(':', $e, 2)[0]), $list->requireDev);
+
+    // require + require-dev are EXACTLY the mandatory block — no shared.always,
+    // no shared.test-framework merged in.
+    expect($reqNames)->toBe(['sandermuller/boost-core'])
+        ->and($devNames)->toBe(['laravel/pint', 'stolt/lean-package-validator'])
+        ->and($devNames)->not->toContain('rector/rector', 'pestphp/pest', 'orchestra/testbench', 'mrpunyapal/rector-pest');
 });
