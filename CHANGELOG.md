@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Pre-`1.0.0` releases may introduce breaking changes in MINOR bumps; we surface those here clearly.
 
+## 0.4.0 - 2026-05-20
+
+### Changed
+
+- **Bumped `sandermuller/repo-init` floor from `^0.3.0` to `^0.4.0`.** Aligns repo-new with the boost-core 0.4.0 family release — `repo-init 0.4.0`, plus `package-boost-php 0.4.0` and `boost-core 0.4.0` pulled transitively. The wizard's behaviour is unchanged: the `references/per-category-deps.yml` schema and the `stubs/` layout repo-new consumes are identical in repo-init 0.4.0.
+
+### Upgrade notes
+
+`composer global update sandermuller/repo-new` picks up `repo-init 0.4.0` and `boost-core 0.4.0` automatically.
+
+repo-init 0.4.0 changes where globally-installed packages place their AI skill files under your home directory: `~/.{agent}/skills/repo-init/` becomes `~/.{agent}/skills/sandermuller__repo-init/`, namespaced by the full `vendor__package` slug. boost-core's migrator performs a one-time, ownership-checked rename of the legacy directory on the first global update — no manual action needed. Project-scope `.claude/skills/` directories are unaffected.
+
+repo-new itself is unaffected by this path change: it locates the installed `repo-init` through Composer's vendor directories, never the agent skill directory.
+
+**Full Changelog**: https://github.com/SanderMuller/repo-new/compare/0.3.0...0.4.0
+
 ## 0.3.0 - 2026-05-18
 
 ### Added
