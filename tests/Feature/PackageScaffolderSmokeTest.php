@@ -128,6 +128,8 @@ it('scaffolds a skill-bundle with the lean shared set and no PHP toolchain', fun
         // lean shared meta files are kept
         ->and(file_exists($this->tmp . '/pint.json'))->toBeTrue()
         ->and(file_exists($this->tmp . '/.editorconfig'))->toBeTrue()
+        // skill-bundle carries boost-core, so it gets the shared boost.php
+        ->and(file_exists($this->tmp . '/boost.php'))->toBeTrue()
         ->and(file_exists($this->tmp . '/.github/workflows/pint-check.yml'))->toBeTrue()
         ->and(file_exists($this->tmp . '/.github/workflows/update-changelog.yml'))->toBeTrue()
         // PHP-toolchain shared stubs are skipped

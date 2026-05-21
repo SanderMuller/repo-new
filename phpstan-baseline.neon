@@ -171,7 +171,7 @@ parameters:
 		-
 			rawMessage: Access to an undefined property Pest\PendingCalls\TestCall::$tmp.
 			identifier: property.notFound
-			count: 32
+			count: 33
 			path: tests/Feature/PackageScaffolderSmokeTest.php
 
 		-
@@ -194,6 +194,12 @@ parameters:
 
 		-
 			rawMessage: Binary operation "." between mixed and '/.mcp.json' results in an error.
+			identifier: binaryOp.invalid
+			count: 1
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: Binary operation "." between mixed and '/boost.php' results in an error.
 			identifier: binaryOp.invalid
 			count: 1
 			path: tests/Feature/PackageScaffolderSmokeTest.php
@@ -285,7 +291,7 @@ parameters:
 		-
 			rawMessage: 'Call to method toBeTrue() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
 			identifier: method.internalClass
-			count: 14
+			count: 15
 			path: tests/Feature/PackageScaffolderSmokeTest.php
 
 		-

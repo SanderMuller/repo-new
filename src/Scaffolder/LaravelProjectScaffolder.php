@@ -192,6 +192,7 @@ final readonly class LaravelProjectScaffolder
             'phpunit.xml',
             'README.md',
             '_gitattributes',  // stub form; would rename to .gitattributes (skip)
+            'boost.php',  // laravel-project uses laravel/boost, not boost-core
         ];
         $sharedSkipPrefixes = [
             'tests/',  // Laravel ships its own TestCase + Unit/Feature dirs
