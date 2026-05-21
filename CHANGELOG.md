@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Pre-`1.0.0` releases may introduce breaking changes in MINOR bumps; we surface those here clearly.
 
+## 0.7.0 - 2026-05-21
+
+### Added
+
+- **`boost-skills` skill-tag picker.** Scaffolded package repos get a `->withTags(...)` call in their `boost.php` selecting which `sandermuller/boost-skills` capability sets to sync. The wizard presents `php` / `frontend` / `github` / `jira` as a checklist (package categories pre-select `php`, since a PHP package wants boost-skills' backend-quality / pre-release set); `--skill-tags=php,jira` sets them non-interactively. `laravel-project` uses `laravel/boost` — it has no `boost.php` and skips the question.
+
+### Changed
+
+- **Bumped `sandermuller/repo-init` to `^0.7.0`** — which ships the `withTags`-templated `boost.php` stub and the `shared-stub-skip` key in `per-category-deps.yml`.
+- **Per-category shared-stub skipping is now data-driven.** Which `stubs/shared/` files a category omits (`laravel-project` skips `boost.php`; `skill-bundle` skips the PHP toolchain) is read from repo-init's `shared-stub-skip` key instead of hardcoded — the skip lists always track the canonical baseline.
+
+### Fixed
+
+- **Invalid `--skill-tags` / `--plugin-shape` / `--test-framework` values now produce a clean error message** and exit code, instead of an uncaught exception.
+
+### Upgrade notes
+
+`composer global update sandermuller/repo-new` pulls repo-init 0.7.0 automatically. No breaking changes — newly scaffolded package repos gain a `boost.php` `->withTags(...)` line, and the wizard has one extra step (skill tags, defaulting to `php`).
+
+**Full Changelog**: https://github.com/SanderMuller/repo-new/compare/0.6.0...0.7.0
+
 ## 0.6.0 - 2026-05-21
 
 ### Changed
