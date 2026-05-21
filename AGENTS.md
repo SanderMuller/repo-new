@@ -1,130 +1,99 @@
-<package-boost-guidelines>
-# Package Boost Guidelines
+## Database Safety
 
-These guidelines replace Laravel Boost's default foundation for
-repositories that ship as Composer packages — Laravel-targeted or
-framework-agnostic. The framing, tooling, and trade-offs differ from
-application development; follow this version when working inside a
-package codebase.
+### Never Run Destructive Database Commands
 
-## Foundational Context
+**Do not run commands that drop, wipe, reset, or recreate a database or its tables** — regardless of flags or environment arguments. Destructive operations include, whatever the stack:
 
-This codebase is a **Composer package**, not an application. The rules
-below hold regardless of which framework (if any) the package targets.
+- Framework commands that drop and rebuild the schema (a "fresh", "reset", "refresh", or "wipe" migration command).
+- Raw SQL `DROP` or `TRUNCATE` against any database.
+- Restoring or re-importing a database over an existing one.
 
-- There is no `app/`, `bootstrap/`, `routes/`, `.env`, or database by
-  default. Tooling that assumes an application context (e.g. running
-  `php artisan` against the package itself) does not apply.
-- The primary artefact is the package's public API — entry-point
-  classes, service providers, exposed contracts. Everything else is
-  scaffolding.
-- Downstream consumers depend on this package via Composer. Every
-  public change is a user-facing API change governed by semver.
-- `composer.json` is the source of truth for supported PHP versions
-  and any framework constraints. Check `require.php` (and any
-  `require.<framework>/*` entries) before using version-specific
-  features.
+These destroy data. An environment flag (`--env=...`, an alternate connection name) is **not** a safety net — it only helps if a separate, correctly configured environment actually exists. If you are unsure which database a destructive command targets, do not run it.
 
-## Source Layout
+### Test Database
 
-- `src/` — package source, PSR-4 autoloaded per `composer.json`
-- `tests/` — Pest or PHPUnit suite
-- `config/` — publishable defaults shipped with the package, when
-  applicable
-- `resources/` — views, translations, Boost skills / guidelines, when
-  applicable
-- `database/migrations`, `database/factories` — only if the package
-  ships them
-- `workbench/` — developer-only Testbench scaffolding when Testbench
-  is in use; never shipped
+- The test database is owned by the project's test runner. Let the test suite create, migrate, and tear it down — never migrate or refresh it by hand.
+- If the test database gets into a broken state, ask the user to fix it rather than running destructive commands.
 
-Check sibling files before inventing structure. Do not introduce new
-top-level directories without a clear reason.
+### Safe Operations
 
-## Tests Are the Specification
+Safe — these advance or add to the schema without destroying data:
 
-The package has no running application to click through. Tests are how
-behaviour is pinned down.
+- Running pending migrations **forward** on a non-test database — *after* checking that the pending files only add or alter columns. A forward migration is not automatically safe: it can still drop a column or table, or delete data in a backfill. Read it first.
+- Running the test suite (it manages its own database lifecycle).
+- Seeding additional data without truncating existing tables.
 
-- Write tests alongside any behavioural change.
-- Do not create "verification scripts" when a test can prove the same
-  thing.
-- Run the project's configured test runner (`vendor/bin/pest` or
-  `vendor/bin/phpunit`) before claiming a change is done.
+### When a Destructive Operation Is Genuinely Needed
 
-## Public API Discipline
+Stop and ask the user to run it themselves, or to confirm it explicitly. Never decide on your own that data loss is acceptable.
 
-- Every `public`, `protected`, or exported symbol is part of the
-  package's surface. Breaking changes require a major version bump.
-- Prefer `final` classes and `private`/`@internal` markers for
-  anything not intended for extension.
-- Keep config keys, published asset paths, and service container
-  bindings stable across patch and minor versions.
+---
 
-## Conventions
+## Migrations
 
-- Match existing code style, naming, and structural patterns — check
-  sibling files before writing new ones.
-- Use descriptive names (`resolvePublishDestination`, not `resolve()`).
-- Reuse existing helpers before adding new ones.
-- Do not add dependencies without approval; every new `require` is a
-  constraint downstream consumers inherit.
+Conventions for schema migration files, whatever the migration tool. Examples use a schema-builder DSL for illustration; the principles apply to raw-SQL migrations too.
 
-## Documentation Files
+### Self-Contained Migrations
 
-Only create or edit documentation (README, CHANGELOG, docs/) when
-explicitly requested or when a behaviour change requires it.
+- Migrations must be fully self-contained. Never reference application code — model constants, enums, config values, or helper functions.
+- Use plain string and scalar literals for column names, table names, and other identifiers directly in the migration file.
+- This keeps migrations stable and runnable regardless of future application code changes — a migration written today must still run years later, even if the code it once referenced has been renamed or deleted.
+- Legacy migrations may still reference application code; only update them to follow this guideline when you are otherwise modifying those migrations.
 
-## Replies
+```php
+// ❌ WRONG — references an application constant
+$table->boolean(Feature::FLAG_ENABLED)->nullable();
 
-Be concise. Focus on what changed and why. Skip restating what the
-diff already shows.
+// ✅ CORRECT — plain string literal
+$table->boolean('flag_enabled')->nullable();
+```
 
-## If your package targets Laravel
+### Column Ordering
 
-The rest of this document is Laravel-specific. Skip it if the package
-is framework-agnostic — `composer.json` should make that obvious (no
-`require.illuminate/*`, no `require.laravel/framework`).
+- Add new columns at the **end** of the table — do not insert one into the middle of an existing table.
+- On MySQL/MariaDB, positioning a column mid-table (an `AFTER` clause) can disable instant/online DDL and force a full table copy — a significant hit on large tables. Other engines such as PostgreSQL have no column-position concept at all, so a position clause is meaningless there. Appending is safe and portable everywhere.
 
-### Laravel context
+```php
+// ❌ WRONG — mid-table positioning can force a full table rebuild on MySQL/MariaDB
+$table->string('description')->after('name');
 
-A Testbench-provided Laravel application is spun up only at test
-time. Base test case is `Orchestra\Testbench\TestCase`.
-`composer.json`'s `require.illuminate/*` (or
-`require.laravel/framework`) defines the supported Laravel range —
-check it before using version-specific framework APIs.
+// ✅ CORRECT — just append the column
+$table->string('description');
+```
 
-### Use `vendor/bin/testbench`, not `php artisan`
+---
 
-Running artisan commands directly against the package fails — there is
-no host application. Use Testbench's binary:
+## Verification Before Completion
 
-| Instead of | Use |
-|---|---|
-| `php artisan test` | `vendor/bin/pest` or `vendor/bin/phpunit` |
-| `php artisan tinker` | `vendor/bin/testbench tinker` |
-| `php artisan make:*` | Create files manually under `src/` |
-| `php artisan vendor:publish` | `vendor/bin/testbench vendor:publish` |
+Before claiming any work is complete or successful, run the verification command fresh and confirm the output. Evidence before claims, always.
 
-#### Commands that require `laravel/boost`
+### Required Before Any Completion Claim
 
-These only apply when the package has `laravel/boost` as a dev
-dependency. Skip if Boost isn't installed — `boost sync`
-prints a warning and moves on.
+1. **Run** the relevant command (in the current message, not from memory)
+2. **Read** the full output
+3. **Confirm** it supports the claim
+4. **Then** state the result with evidence
 
-| Instead of | Use |
-|---|---|
-| `php artisan boost:install` | `vendor/bin/testbench boost:install` |
-| `php artisan boost:mcp` | `vendor/bin/testbench boost:mcp` |
+| Claim            | Required verification                                            |
+|------------------|------------------------------------------------------------------|
+| Tests pass       | The project's test command, output showing 0 failures            |
+| Code style clean | The project's formatter/style checker, output showing no changes |
+| Linting clean    | The project's linter, output showing 0 errors                    |
+| Types check      | The project's type checker, output showing 0 errors              |
+| Bug fixed        | The previously failing test now passes                           |
+| Feature complete | All related tests pass                                           |
 
-Register the package's service provider in `testbench.yaml` under
-`providers:` so Testbench boots it. Published files land in
-`workbench/` by default, not `config/` or `resources/` of a host app.
+Use the project's own commands — check its `composer.json` / `package.json` scripts, CI config, or sibling docs to find them. Do not assume a specific tool.
 
-### Cross-Version Compatibility
+### Delegating the checks
 
-Supporting multiple Laravel / PHP majors is routine for Laravel
-packages. Activate `cross-version-laravel-support` **before** writing
-the code; activate `ci-matrix-troubleshooting` **after** a matrix cell
-has failed.
-</package-boost-guidelines>
+Where the project has dedicated quality-check skills synced, delegate to them — `backend-quality` for backend files, `frontend-quality` for frontend files, both when a change spans both. Otherwise, run the project's own equivalent commands directly.
+
+### Never Use Without Evidence
+
+- "should work now"
+- "that should fix it"
+- "looks correct"
+- "I'm confident this works"
+
+These phrases indicate missing verification. Run the command first, then report what actually happened.
