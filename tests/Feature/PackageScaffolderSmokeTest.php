@@ -147,4 +147,7 @@ it('scaffolds a skill-bundle with the lean shared set and no PHP toolchain', fun
         ->and($composer['require'])->toHaveKey('sandermuller/boost-core')
         // no spurious plugin pre-allow — skill-bundle uses no phpstan/pest plugins
         ->and($composer['config']['allow-plugins'])->toBe(['sandermuller/boost-core' => true]);
+
+    // __SKILL_TAGS__ substituted — no skillTags set on the state → empty withTags().
+    expect(file_get_contents($this->tmp . '/boost.php'))->toContain('->withTags()');
 });

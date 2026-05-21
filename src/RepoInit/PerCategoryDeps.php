@@ -138,6 +138,18 @@ final readonly class PerCategoryDeps
     }
 
     /**
+     * Stub-relative paths under stubs/shared/ that the category does NOT
+     * plain-copy — the `shared-stub-skip` denylist in per-category-deps.yml.
+     * Absent ⇒ empty list (the category copies all of stubs/shared/).
+     *
+     * @return list<string>
+     */
+    public function sharedStubSkipFor(string $category): array
+    {
+        return $this->listFrom($this->data, ['categories', $category, 'shared-stub-skip']);
+    }
+
+    /**
      * @param  array<int|string, mixed>  $haystack
      * @param  list<int|string>  $path
      * @return list<string>

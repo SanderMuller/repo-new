@@ -27,22 +27,6 @@ use Symfony\Component\Process\Process;
  */
 final readonly class PackageScaffolder
 {
-    /**
-     * skill-bundle ships pure-markdown skills with no PHP source, so the
-     * PHP-toolchain stubs in stubs/shared/ are skipped for it. Source of
-     * truth: repo-init's phases/bootstrap-skill-bundle.md step 5.
-     *
-     * @var list<string>
-     */
-    private const array SKILL_BUNDLE_SHARED_SKIP = [
-        '.github/workflows/phpstan.yml',
-        '.github/workflows/rector-check.yml',
-        '.mcp.json',
-        'phpstan-baseline.neon',
-        'phpunit.xml',
-        'tests/',
-    ];
-
     public function __construct(
         private SymfonyStyle $io,
         private StubReader $stubReader,
@@ -58,8 +42,10 @@ final readonly class PackageScaffolder
         $substituter = new PlaceholderSubstituter($state);
 
         $written = 0;
-        $sharedSkip = $state->category === 'skill-bundle' ? self::SKILL_BUNDLE_SHARED_SKIP : [];
-        $written += $this->copyStubs('shared', $targetDir, $substituter, $sharedSkip);
+        // Which stubs/shared/ files this category skips is repo-init's
+        // `shared-stub-skip` denylist (per-category-deps.yml).
+        $sharedSkipper = new SharedStubSkipper($this->deps->sharedStubSkipFor($state->category ?? ''));
+        $written += $this->copyStubs('shared', $targetDir, $substituter, $sharedSkipper);
 
         $stubDir = $this->deps->stubDirFor($state->category ?? '');
         $written += $this->copyStubs($stubDir, $targetDir, $substituter);
@@ -245,15 +231,12 @@ final readonly class PackageScaffolder
         }
     }
 
-    /**
-     * @param  list<string>  $skipRelative  Stub-relative paths to skip — exact match, or a `dir/` prefix.
-     */
-    private function copyStubs(string $stubDir, string $targetDir, PlaceholderSubstituter $substituter, array $skipRelative = []): int
+    private function copyStubs(string $stubDir, string $targetDir, PlaceholderSubstituter $substituter, ?SharedStubSkipper $skipper = null): int
     {
         $count = 0;
 
         foreach ($this->stubReader->read($stubDir) as $stub) {
-            if ($this->shouldSkipStub($stub['relative'], $skipRelative)) {
+            if ($skipper?->shouldSkip($stub['relative']) === true) {
                 continue;
             }
 
@@ -281,23 +264,5 @@ final readonly class PackageScaffolder
         }
 
         return $count;
-    }
-
-    /**
-     * @param  list<string>  $skip  Exact stub-relative paths, or `dir/` prefixes.
-     */
-    private function shouldSkipStub(string $relative, array $skip): bool
-    {
-        foreach ($skip as $entry) {
-            if (str_ends_with($entry, '/')) {
-                if (str_starts_with($relative, $entry)) {
-                    return true;
-                }
-            } elseif ($relative === $entry) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }

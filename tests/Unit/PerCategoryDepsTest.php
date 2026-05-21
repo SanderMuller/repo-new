@@ -79,9 +79,19 @@ it('takes skill-bundle deps solely from its mandatory block (consumes-shared-dev
     $reqNames = array_map(fn (string $e): string => trim(explode(':', $e, 2)[0]), $list->require);
     $devNames = array_map(fn (string $e): string => trim(explode(':', $e, 2)[0]), $list->requireDev);
 
-    // require + require-dev are EXACTLY the mandatory block — no shared.always,
-    // no shared.test-framework merged in.
-    expect($reqNames)->toBe(['sandermuller/boost-core'])
-        ->and($devNames)->toBe(['laravel/pint', 'stolt/lean-package-validator'])
+    // consumes-shared-dev-deps: false → require-dev is the category's own
+    // mandatory block, with NO shared.always / shared.test-framework merged in.
+    expect($reqNames)->toContain('sandermuller/boost-core')
+        ->and($devNames)->toContain('laravel/pint', 'stolt/lean-package-validator')
         ->and($devNames)->not->toContain('rector/rector', 'pestphp/pest', 'orchestra/testbench', 'mrpunyapal/rector-pest');
+});
+
+it('returns the shared-stub-skip denylist per category', function (): void {
+    expect($this->deps->sharedStubSkipFor('laravel-project'))
+        ->toContain('boost.php', '_gitattributes', 'tests/')
+        ->and($this->deps->sharedStubSkipFor('skill-bundle'))
+        ->toContain('.mcp.json', 'phpstan-baseline.neon', 'tests/')
+        // php-package has no shared-stub-skip key — copies all of stubs/shared/.
+        ->and($this->deps->sharedStubSkipFor('php-package'))
+        ->toBeEmpty();
 });

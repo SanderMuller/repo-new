@@ -43,6 +43,14 @@ final class WizardState
     /** composer-plugin only. One of: command-provider, event-subscriber, both, none. */
     public ?string $pluginShape = null;
 
+    /**
+     * boost-skills capability tags written into boost.php's withTags().
+     * Package categories only; null until the wizard or --skill-tags answers it.
+     *
+     * @var list<string>|null
+     */
+    public ?array $skillTags = null;
+
     /** Resolved absolute path the scaffold writes into. */
     public ?string $targetDir = null;
 

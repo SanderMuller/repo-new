@@ -15,6 +15,7 @@ use SanderMuller\RepoNew\Scaffolder\LaravelProjectScaffolder;
 use SanderMuller\RepoNew\Scaffolder\PackageScaffolder;
 use SanderMuller\RepoNew\Scaffolder\Scaffolder;
 use SanderMuller\RepoNew\Scaffolder\TargetDirResolver;
+use SanderMuller\RepoNew\Wizard\Question\SkillTagsQuestion;
 use SanderMuller\RepoNew\Wizard\Wizard;
 use SanderMuller\RepoNew\Wizard\WizardState;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -58,6 +59,7 @@ final class NewCommand extends Command
             ->addOption('with-security-advisories', null, InputOption::VALUE_NONE, 'Opt-in for laravel-project.')
             ->addOption('laravel-aware', null, InputOption::VALUE_NONE, 'Opt-in for phpstan/rector-extension.')
             ->addOption('plugin-shape', null, InputOption::VALUE_REQUIRED, 'composer-plugin shape: ' . implode('|', self::PLUGIN_SHAPES))
+            ->addOption('skill-tags', null, InputOption::VALUE_REQUIRED, 'Comma-separated boost-skills tags for boost.php: ' . implode(',', SkillTagsQuestion::TAGS))
             ->addOption('commit', null, InputOption::VALUE_NONE, 'Make an initial commit after scaffolding.');
     }
 
@@ -124,8 +126,10 @@ final class NewCommand extends Command
             $io->writeln('----- 8< -----');
 
             return Command::SUCCESS;
-        } catch (RuntimeException $runtimeException) {
-            $io->error($runtimeException->getMessage());
+        } catch (RuntimeException|InvalidArgumentException $exception) {
+            // RuntimeException — scaffolding/locate failures. InvalidArgumentException
+            // — flag validation (--skill-tags / --plugin-shape / --test-framework).
+            $io->error($exception->getMessage());
 
             return 65;
         }
@@ -155,6 +159,7 @@ final class NewCommand extends Command
         $state->commit = $input->getOption('commit') === true;
 
         $this->applyPluginShapeFlag($input, $state);
+        $this->applySkillTagsFlag($input, $state);
 
         return $state;
     }
@@ -173,6 +178,29 @@ final class NewCommand extends Command
         }
 
         $state->pluginShape = $shape;
+    }
+
+    private function applySkillTagsFlag(InputInterface $input, WizardState $state): void
+    {
+        $raw = $input->getOption('skill-tags');
+        if (! is_string($raw)) {
+            return;
+        }
+
+        $tags = array_values(array_filter(
+            array_map(trim(...), explode(',', $raw)),
+            static fn (string $tag): bool => $tag !== '',
+        ));
+
+        foreach ($tags as $tag) {
+            if (! in_array($tag, SkillTagsQuestion::TAGS, true)) {
+                throw new InvalidArgumentException(
+                    '--skill-tags values must be from: ' . implode(', ', SkillTagsQuestion::TAGS) . ", got '{$tag}'",
+                );
+            }
+        }
+
+        $state->skillTags = $tags;
     }
 
     private function applyType(InputInterface $input, WizardState $state): void
@@ -287,6 +315,7 @@ final class NewCommand extends Command
             ['PHP' => $state->phpVersion ?? ''],
             ['Laravel' => $state->laravelVersions ?? '—'],
             ['Test framework' => $state->category === 'skill-bundle' ? '—' : ($state->testFramework ?? '')],
+            ['Skill tags' => $state->skillTags === null || $state->skillTags === [] ? '—' : implode(', ', $state->skillTags)],
             ['Author' => ($state->authorName ?? '') . ' <' . ($state->authorEmail ?? '') . '>'],
             ['Target dir' => $targetDir],
         );

@@ -7,7 +7,7 @@ parameters:
 			path: src/RepoInit/PerCategoryDeps.php
 
 		-
-			rawMessage: 'Out of 176 possible param types, only 175 - 99.4 %% actually have it. Add more param types to get over 100 %%'
+			rawMessage: 'Out of 180 possible param types, only 179 - 99.4 %% actually have it. Add more param types to get over 100 %%'
 			identifier: typeCoverage.paramTypeCoverage
 			count: 1
 			path: src/RepoInit/PerCategoryDeps.php
@@ -171,7 +171,7 @@ parameters:
 		-
 			rawMessage: Access to an undefined property Pest\PendingCalls\TestCall::$tmp.
 			identifier: property.notFound
-			count: 33
+			count: 34
 			path: tests/Feature/PackageScaffolderSmokeTest.php
 
 		-
@@ -201,7 +201,7 @@ parameters:
 		-
 			rawMessage: Binary operation "." between mixed and '/boost.php' results in an error.
 			identifier: binaryOp.invalid
-			count: 1
+			count: 2
 			path: tests/Feature/PackageScaffolderSmokeTest.php
 
 		-
@@ -297,7 +297,7 @@ parameters:
 		-
 			rawMessage: 'Call to method toContain() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
 			identifier: method.internalClass
-			count: 3
+			count: 4
 			path: tests/Feature/PackageScaffolderSmokeTest.php
 
 		-
@@ -441,7 +441,7 @@ parameters:
 		-
 			rawMessage: Access to an undefined property Pest\PendingCalls\TestCall::$deps.
 			identifier: property.notFound
-			count: 12
+			count: 15
 			path: tests/Unit/PerCategoryDepsTest.php
 
 		-
@@ -453,13 +453,19 @@ parameters:
 		-
 			rawMessage: 'Call to method toBe() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
 			identifier: method.internalClass
-			count: 6
+			count: 4
+			path: tests/Unit/PerCategoryDepsTest.php
+
+		-
+			rawMessage: 'Call to method toBeEmpty() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
+			identifier: method.internalClass
+			count: 1
 			path: tests/Unit/PerCategoryDepsTest.php
 
 		-
 			rawMessage: 'Call to method toContain() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
 			identifier: method.internalClass
-			count: 12
+			count: 16
 			path: tests/Unit/PerCategoryDepsTest.php
 
 		-
@@ -478,6 +484,12 @@ parameters:
 			rawMessage: 'Cannot call method forCategory() on mixed.'
 			identifier: method.nonObject
 			count: 7
+			path: tests/Unit/PerCategoryDepsTest.php
+
+		-
+			rawMessage: 'Cannot call method sharedStubSkipFor() on mixed.'
+			identifier: method.nonObject
+			count: 3
 			path: tests/Unit/PerCategoryDepsTest.php
 
 		-
@@ -501,7 +513,7 @@ parameters:
 		-
 			rawMessage: 'Call to method toBe() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
 			identifier: method.internalClass
-			count: 20
+			count: 22
 			path: tests/Unit/PlaceholderSubstituterTest.php
 
 		-
@@ -539,6 +551,30 @@ parameters:
 			identifier: method.internalClass
 			count: 1
 			path: tests/Unit/RepoInitLocatorTest.php
+
+		-
+			rawMessage: 'Call to method toBeFalse() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
+			identifier: method.internalClass
+			count: 4
+			path: tests/Unit/SharedStubSkipperTest.php
+
+		-
+			rawMessage: 'Call to method toBeTrue() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
+			identifier: method.internalClass
+			count: 3
+			path: tests/Unit/SharedStubSkipperTest.php
+
+		-
+			rawMessage: 'Call to method toBe() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
+			identifier: method.internalClass
+			count: 2
+			path: tests/Unit/SkillTagsQuestionTest.php
+
+		-
+			rawMessage: 'Call to method toBeNull() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
+			identifier: method.internalClass
+			count: 1
+			path: tests/Unit/SkillTagsQuestionTest.php
 
 		-
 			rawMessage: Access to an undefined property Pest\PendingCalls\TestCall::$tmp.

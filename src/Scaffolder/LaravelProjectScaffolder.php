@@ -186,22 +186,15 @@ final readonly class LaravelProjectScaffolder
      */
     private function overlayStubs(string $targetDir, PlaceholderSubstituter $substituter): int
     {
-        $sharedSkip = [
-            '.gitattributes',
-            '.gitignore',
-            'phpunit.xml',
-            'README.md',
-            '_gitattributes',  // stub form; would rename to .gitattributes (skip)
-            'boost.php',  // laravel-project uses laravel/boost, not boost-core
-        ];
-        $sharedSkipPrefixes = [
-            'tests/',  // Laravel ships its own TestCase + Unit/Feature dirs
-        ];
+        // Which stubs/shared/ files laravel-project skips is repo-init's
+        // `shared-stub-skip` denylist (per-category-deps.yml) — files that
+        // would clobber Laravel-shipped project defaults.
+        $skipper = new SharedStubSkipper($this->deps->sharedStubSkipFor('laravel-project'));
 
         $written = 0;
         foreach (['shared', 'laravel-project'] as $stubDir) {
             foreach ($this->stubReader->read($stubDir) as $stub) {
-                if ($stubDir === 'shared' && $this->shouldSkipSharedStub($stub['relative'], $sharedSkip, $sharedSkipPrefixes)) {
+                if ($stubDir === 'shared' && $skipper->shouldSkip($stub['relative'])) {
                     continue;
                 }
 
@@ -211,25 +204,6 @@ final readonly class LaravelProjectScaffolder
         }
 
         return $written;
-    }
-
-    /**
-     * @param  list<string>  $skipExact
-     * @param  list<string>  $skipPrefixes
-     */
-    private function shouldSkipSharedStub(string $relative, array $skipExact, array $skipPrefixes): bool
-    {
-        if (in_array($relative, $skipExact, true)) {
-            return true;
-        }
-
-        foreach ($skipPrefixes as $prefix) {
-            if (str_starts_with($relative, $prefix)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 
     /**

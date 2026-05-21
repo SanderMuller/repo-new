@@ -58,7 +58,7 @@ Beyond the category-specific source skeleton above, every scaffolded repo gets t
 - **CI workflows** — GitHub Actions for the test suite, PHPStan, Pint, Rector, and changelog automation, plus a Dependabot config.
 - **Quality tooling, configured and installed** — Pint (`pint.json`), PHPStan (`phpstan-baseline.neon`) with the strict / deprecation / PHPUnit / disallowed-calls / Symplify extension set, Rector with `type-perfect`, and `type-coverage` + `cognitive-complexity` analysis. All wired into `composer` scripts.
 - **Test suite** — Pest or PHPUnit. PHPStan / Rector extensions and Laravel projects default to PHPUnit; other categories default to Pest (PHPUnit for the `hihaho` vendor). Override with `--test-framework`.
-- **AI tooling** — `sandermuller/package-boost-php` + `boost-core` installed and a `boost.php` config scaffolded (the agents + dependency vendors to sync; package categories only — `laravel-project` uses `laravel/boost` instead), then `vendor/bin/boost sync` run to generate `.ai/`, `.claude/`, `.agents/`, `.cursor/`, `AGENTS.md`, `CLAUDE.md`, and the per-agent skill directories.
+- **AI tooling** — `sandermuller/package-boost-php` + `boost-core` installed and a `boost.php` config scaffolded — the agents, dependency vendors, and `sandermuller/boost-skills` capability tags to sync (tags chosen interactively or via `--skill-tags`; package categories only — `laravel-project` uses `laravel/boost` instead). Then `vendor/bin/boost sync` generates `.ai/`, `.claude/`, `.agents/`, `.cursor/`, `AGENTS.md`, `CLAUDE.md`, and the per-agent skill directories.
 
 Per-category runtime and dev dependencies come from `repo-init`'s `references/per-category-deps.yml`, so the dependency set always matches the current canonical baseline.
 
@@ -66,7 +66,7 @@ Per-category runtime and dev dependencies come from `repo-init`'s `references/pe
 
 ## How it works
 
-1. The wizard collects: category → vendor → package name → description → PHP version → (Laravel constraint for `laravel-package`, plugin shape for `composer-plugin`) → test framework → opt-ins.
+1. The wizard collects: category → vendor → package name → description → PHP version → (Laravel constraint for `laravel-package`, plugin shape for `composer-plugin`) → test framework → `boost-skills` tags → opt-ins.
 2. Runs `laravel new --boost` (for `laravel-project`) or copies the category stubs (for package categories) from the installed `repo-init`.
 3. Substitutes placeholders (`__VENDOR__`, `__NAMESPACE__`, `__PACKAGE_STUDLY__`, …) across `composer.json`, source files, and CI workflows.
 4. Pre-allows Composer plugins (`phpstan/extension-installer`, `pestphp/pest-plugin`) before requiring dependencies, so install never aborts on the plugin allowlist.
