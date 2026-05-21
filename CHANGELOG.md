@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Pre-`1.0.0` releases may introduce breaking changes in MINOR bumps; we surface those here clearly.
 
+## 0.6.0 - 2026-05-21
+
+### Changed
+
+- **Bumped `sandermuller/repo-init` to `^0.6.0`.** repo-init 0.6.0 adds `stubs/shared/boost.php` — a boost-core config declaring which AI agents and dependency vendors `boost sync` writes to. repo-new now scaffolds it into every package category, so a freshly generated package has its boost-core config committed and ready (and `composer install` / `update` auto-syncs the AI tooling).
+- **`laravel-project` omits `boost.php`.** Laravel applications use `laravel/boost`, not `sandermuller/boost-core`, for AI-asset sync — so `laravel-project` scaffolds correctly skip the boost-core `boost.php`. Every other category gets it.
+
+### Upgrade notes
+
+`composer global update sandermuller/repo-new` pulls repo-init 0.6.0 automatically. No CLI or flag changes — `repo new` behaves exactly as in 0.5.0; newly scaffolded package repos simply gain a `boost.php`.
+
+**Full Changelog**: https://github.com/SanderMuller/repo-new/compare/0.5.0...0.6.0
+
 ## 0.5.0 - 2026-05-20
 
 ### Added
