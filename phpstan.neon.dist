@@ -40,3 +40,10 @@ parameters:
         -
             identifier: trait.unused
             reportUnmatched: false
+        # Pest's expectation API is marked @internal but is the intended public
+        # surface for tests. Allow calling it from our tests/.
+        -
+            identifier: method.internalClass
+            paths:
+                - tests/*
+            reportUnmatched: false

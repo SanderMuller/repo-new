@@ -40,10 +40,10 @@ return RectorConfig::configure()
     ->withParallel(300, 15, 15)
     ->withMemoryLimit('3G')
     ->withPhpSets(php83: true)
-    ->withSets([
+    ->withSets(class_exists(PestSetList::class) ? [
         PestSetList::PEST_CODE_QUALITY,
         PestSetList::PEST_CHAIN,
-    ])
+    ] : [])
     ->withSkip([
         NullToStrictStringFuncCallArgRector::class,
         AddArrowFunctionReturnTypeRector::class,
