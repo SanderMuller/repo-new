@@ -145,8 +145,8 @@ it('scaffolds a skill-bundle with the lean shared set and no PHP toolchain', fun
     $composer = json_decode(file_get_contents($this->tmp . '/composer.json'), true, 512, JSON_THROW_ON_ERROR);
     expect($composer['name'])->toBe('sandermuller/my-skills')
         ->and($composer['require'])->toHaveKey('sandermuller/boost-core')
-        // no spurious plugin pre-allow — skill-bundle uses no phpstan/pest plugins
-        ->and($composer['config']['allow-plugins'])->toBe(['sandermuller/boost-core' => true]);
+        // no plugin pre-allow needed — boost-core 0.6+ is type:library, skill-bundle uses no phpstan/pest plugins
+        ->and($composer['config'])->not->toHaveKey('allow-plugins');
 
     // __SKILL_TAGS__ substituted — no skillTags set on the state → empty withTags().
     expect(file_get_contents($this->tmp . '/boost.php'))->toContain('->withTags()');

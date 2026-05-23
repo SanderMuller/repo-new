@@ -103,18 +103,6 @@ parameters:
 			path: tests/Feature/ComposerPluginScaffoldTest.php
 
 		-
-			rawMessage: 'Call to method toBeFalse() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 6
-			path: tests/Feature/ComposerPluginScaffoldTest.php
-
-		-
-			rawMessage: 'Call to method toBeTrue() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 6
-			path: tests/Feature/ComposerPluginScaffoldTest.php
-
-		-
 			rawMessage: 'Cannot call method getPathname() on mixed.'
 			identifier: method.nonObject
 			count: 2
@@ -271,48 +259,6 @@ parameters:
 			path: tests/Feature/PackageScaffolderSmokeTest.php
 
 		-
-			rawMessage: 'Call to method toBe() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 6
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: 'Call to method toBeFalse() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 7
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: 'Call to method toBeGreaterThan() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 1
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: 'Call to method toBeTrue() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 15
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: 'Call to method toContain() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 4
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: 'Call to method toHaveKey() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 2
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: Cannot access offset 'allow-plugins' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
 			rawMessage: Cannot access offset 'autoload' on mixed.
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -415,30 +361,6 @@ parameters:
 			path: tests/Feature/PackageScaffolderSmokeTest.php
 
 		-
-			rawMessage: 'Call to method toBeEmpty() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 1
-			path: tests/Unit/HandoffPromptBuilderTest.php
-
-		-
-			rawMessage: 'Call to method toBeString() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 1
-			path: tests/Unit/HandoffPromptBuilderTest.php
-
-		-
-			rawMessage: 'Call to method toContain() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 1
-			path: tests/Unit/HandoffPromptBuilderTest.php
-
-		-
-			rawMessage: 'Call to method with() of internal class Pest\PendingCalls\TestCall from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 1
-			path: tests/Unit/HandoffPromptBuilderTest.php
-
-		-
 			rawMessage: Access to an undefined property Pest\PendingCalls\TestCall::$deps.
 			identifier: property.notFound
 			count: 15
@@ -448,24 +370,6 @@ parameters:
 			rawMessage: Access to an undefined property Pest\PendingCalls\TestCall::$repoInit.
 			identifier: property.notFound
 			count: 1
-			path: tests/Unit/PerCategoryDepsTest.php
-
-		-
-			rawMessage: 'Call to method toBe() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 4
-			path: tests/Unit/PerCategoryDepsTest.php
-
-		-
-			rawMessage: 'Call to method toBeEmpty() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 1
-			path: tests/Unit/PerCategoryDepsTest.php
-
-		-
-			rawMessage: 'Call to method toContain() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 16
 			path: tests/Unit/PerCategoryDepsTest.php
 
 		-
@@ -511,72 +415,6 @@ parameters:
 			path: tests/Unit/PerCategoryDepsTest.php
 
 		-
-			rawMessage: 'Call to method toBe() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 22
-			path: tests/Unit/PlaceholderSubstituterTest.php
-
-		-
-			rawMessage: 'Call to method toBeGreaterThanOrEqual() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 1
-			path: tests/Unit/PlaceholderSubstituterTest.php
-
-		-
-			rawMessage: 'Call to method toContain() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 1
-			path: tests/Unit/PlaceholderSubstituterTest.php
-
-		-
-			rawMessage: 'Call to method toBe() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 1
-			path: tests/Unit/PluginShapeQuestionTest.php
-
-		-
-			rawMessage: 'Call to method toBeNull() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 1
-			path: tests/Unit/PluginShapeQuestionTest.php
-
-		-
-			rawMessage: 'Call to method toBe() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 1
-			path: tests/Unit/RepoInitLocatorTest.php
-
-		-
-			rawMessage: 'Call to method toBeDirectory() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 1
-			path: tests/Unit/RepoInitLocatorTest.php
-
-		-
-			rawMessage: 'Call to method toBeFalse() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 4
-			path: tests/Unit/SharedStubSkipperTest.php
-
-		-
-			rawMessage: 'Call to method toBeTrue() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 3
-			path: tests/Unit/SharedStubSkipperTest.php
-
-		-
-			rawMessage: 'Call to method toBe() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 2
-			path: tests/Unit/SkillTagsQuestionTest.php
-
-		-
-			rawMessage: 'Call to method toBeNull() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 1
-			path: tests/Unit/SkillTagsQuestionTest.php
-
-		-
 			rawMessage: Access to an undefined property Pest\PendingCalls\TestCall::$tmp.
 			identifier: property.notFound
 			count: 17
@@ -609,30 +447,6 @@ parameters:
 		-
 			rawMessage: Binary operation "." between mixed and '/foo/x' results in an error.
 			identifier: binaryOp.invalid
-			count: 1
-			path: tests/Unit/TargetDirResolverTest.php
-
-		-
-			rawMessage: 'Call to method throws() of internal class Pest\PendingCalls\TestCall from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 2
-			path: tests/Unit/TargetDirResolverTest.php
-
-		-
-			rawMessage: 'Call to method toBe() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 3
-			path: tests/Unit/TargetDirResolverTest.php
-
-		-
-			rawMessage: 'Call to method toBeDirectory() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 1
-			path: tests/Unit/TargetDirResolverTest.php
-
-		-
-			rawMessage: 'Call to method toEndWith() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
 			count: 1
 			path: tests/Unit/TargetDirResolverTest.php
 
@@ -683,15 +497,3 @@ parameters:
 			identifier: argument.type
 			count: 5
 			path: tests/Unit/TargetDirResolverTest.php
-
-		-
-			rawMessage: 'Call to method toBe() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 8
-			path: tests/Unit/WizardStateTest.php
-
-		-
-			rawMessage: 'Call to method toBeNull() of internal class Pest\Mixins\Expectation<TValue> from outside its root namespace Pest.'
-			identifier: method.internalClass
-			count: 1
-			path: tests/Unit/WizardStateTest.php
