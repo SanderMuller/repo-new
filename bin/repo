@@ -19,5 +19,14 @@ if (! class_exists(\SanderMuller\RepoNew\Application::class)) {
     exit(70);
 }
 
+// Self-sync bundled AI skills to user scope on first run after install
+// (sentinel-gated per-version, honors BOOST_SKIP_AUTOSYNC). Idempotent and
+// silent on a no-op; failures emit a one-line stderr warning and never
+// block the CLI.
+\SanderMuller\BoostCore\Scripts\BoostAutoSync::syncUserScopeOnce(
+    dirname(__DIR__),
+    'sandermuller/repo-new',
+);
+
 $app = new \SanderMuller\RepoNew\Application();
 exit($app->run());

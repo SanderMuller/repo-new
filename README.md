@@ -15,6 +15,8 @@ composer global require sandermuller/repo-new
 
 Make sure your global Composer `bin` directory (`~/.composer/vendor/bin` or `~/.config/composer/vendor/bin`) is on your `PATH`. `sandermuller/repo-init` — the source of the stubs and dependency lists — is pulled in automatically as a dependency; no separate install needed.
 
+On first run, `repo` syncs its bundled AI skills to your user scope (`~/.claude/skills/`, `~/.codex/skills/`, etc.) so they're available to every agent on the machine — no manual `boost sync --scope=user` step needed. Subsequent runs no-op via a per-version sentinel. Set `BOOST_SKIP_AUTOSYNC=1` to disable.
+
 ## Use
 
 Interactive (recommended) — the wizard walks you through every choice:
