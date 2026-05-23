@@ -7,6 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Pre-`1.0.0` releases may introduce breaking changes in MINOR bumps; we surface those here clearly.
 
+## 0.8.0 - 2026-05-23
+
+### What changed
+
+- **`sandermuller/repo-init` constraint bumped to `^0.8.1`.** Scaffolded repos now ship the 0.8.x stubs — most visibly, the boost-core 0.6 migration:
+  - `sandermuller/boost-core` is `type: library` rather than a Composer plugin, so scaffolded `composer.json` no longer pre-allows it via `config.allow-plugins`.
+  - Scaffolded `post-install-cmd` / `post-update-cmd` callbacks invoke `BoostAutoSync::run` (silent on no-op installs) instead of `::runWithSummary`. The user-invoked `composer sync-ai` script remains on `::runWithSummary` so an explicit sync still echoes its result.
+  
+- **`sandermuller/boost-skills` adopted as the dev-time AI-skills source-of-truth.** Twelve previously-local skills under `.ai/skills/` are now shipped by the vendor package, deduplicated against `package-boost-php` and `repo-init`. `boost.php` declares `withTags(Tag::Php, Tag::Github)` so the full PHP-on-GitHub skill set syncs into the local agent surface.
+- **`config.allow-plugins` cleaned up.** `sandermuller/boost-core` is no longer a plugin; `sandermuller/package-boost-php` was transitively removed by the `repo-init` cascade. Both entries dropped from repo-new's own `composer.json`.
+
+### Upgrading
+
+```bash
+composer global update sandermuller/repo-new
+
+```
+No CLI flag or interactive-prompt changes — the wizard behaves identically. The differences land in the scaffolded output: new `repo new ...` invocations produce repos aligned with the boost-core 0.6 family.
+
+If you maintain consumer repos created by earlier `repo-new` versions, the boost-core 0.6 migration also applies to them — see `sandermuller/boost-core`'s `UPGRADING.md` for the consumer-side steps.
+
+**Full Changelog**: https://github.com/SanderMuller/repo-new/compare/0.7.0...0.8.0
+
 ## 0.7.0 - 2026-05-21
 
 ### Added
