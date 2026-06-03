@@ -7,10 +7,10 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
  * Asks which `sandermuller/boost-skills` capability tags to write into the
- * scaffolded `boost.php` `->withTags(...)`.
+ * scaffolded `.config/boost.php` `->withTags(...)`.
  *
  * Package categories only — `laravel-project` uses `laravel/boost` and
- * scaffolds no `boost.php`, so it has no `withTags()` to fill.
+ * scaffolds no `.config/boost.php`, so it has no `withTags()` to fill.
  */
 final class SkillTagsQuestion
 {
@@ -48,7 +48,7 @@ final class SkillTagsQuestion
         // adjusts. choice() returns selected TAGS values (all strings) —
         // is_string keeps the list typed without an unsafe mixed→string cast.
         $chosen = $io->choice(
-            'boost-skills tags for boost.php — adjust the checklist as needed',
+            'boost-skills tags for .config/boost.php — adjust the checklist as needed',
             self::TAGS,
             implode(',', self::DEFAULT_TAGS),
             multiSelect: true,

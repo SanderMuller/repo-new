@@ -128,8 +128,10 @@ it('scaffolds a skill-bundle with the lean shared set and no PHP toolchain', fun
         // lean shared meta files are kept
         ->and(file_exists($this->tmp . '/pint.json'))->toBeTrue()
         ->and(file_exists($this->tmp . '/.editorconfig'))->toBeTrue()
-        // skill-bundle carries boost-core, so it gets the shared boost.php
-        ->and(file_exists($this->tmp . '/boost.php'))->toBeTrue()
+        // skill-bundle carries boost-core, so it gets the shared .config/boost.php
+        ->and(file_exists($this->tmp . '/.config/boost.php'))->toBeTrue()
+        // …and NOT at the legacy root path — both present trips boost-core's AmbiguousBoostConfigException
+        ->and(file_exists($this->tmp . '/boost.php'))->toBeFalse()
         ->and(file_exists($this->tmp . '/.github/workflows/pint-check.yml'))->toBeTrue()
         ->and(file_exists($this->tmp . '/.github/workflows/update-changelog.yml'))->toBeTrue()
         // PHP-toolchain shared stubs are skipped
@@ -149,5 +151,5 @@ it('scaffolds a skill-bundle with the lean shared set and no PHP toolchain', fun
         ->and($composer['config'])->not->toHaveKey('allow-plugins');
 
     // __SKILL_TAGS__ substituted — no skillTags set on the state → empty withTags().
-    expect(file_get_contents($this->tmp . '/boost.php'))->toContain('->withTags()');
+    expect(file_get_contents($this->tmp . '/.config/boost.php'))->toContain('->withTags()');
 });

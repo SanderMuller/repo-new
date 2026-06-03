@@ -1,65 +1,32 @@
-## Database Safety
+## Fixing PHPStan Errors
 
-### Never Run Destructive Database Commands
+When fixing a PHPStan error, first decide whether it represents a runtime bug a test could catch — and if so, write that test before the fix.
 
-**Do not run commands that drop, wipe, reset, or recreate a database or its tables** — regardless of flags or environment arguments. Destructive operations include, whatever the stack:
+### Process
 
-- Framework commands that drop and rebuild the schema (a "fresh", "reset", "refresh", or "wipe" migration command).
-- Raw SQL `DROP` or `TRUNCATE` against any database.
-- Restoring or re-importing a database over an existing one.
+1. **Assess testability** — does the error represent a runtime bug a test could reproduce (a wrong argument type, a missing method, an incorrect return type used downstream)?
+2. **Write the test first** — if a test can catch it, write a failing test that reproduces the error before applying the fix.
+3. **Fix the code** — apply the fix so both the PHPStan error and the new test pass.
+4. **Verify both** — confirm PHPStan reports no error and the test passes.
 
-These destroy data. An environment flag (`--env=...`, an alternate connection name) is **not** a safety net — it only helps if a separate, correctly configured environment actually exists. If you are unsure which database a destructive command targets, do not run it.
+### When to Write a Test
 
-### Test Database
+Write a test when the PHPStan error indicates a fault that would surface at runtime:
 
-- The test database is owned by the project's test runner. Let the test suite create, migrate, and tear it down — never migrate or refresh it by hand.
-- If the test database gets into a broken state, ask the user to fix it rather than running destructive commands.
+- A method call on a value of the wrong type
+- Missing or incorrect arguments to a function or method
+- A return-type mismatch that would break callers
+- Accessing a property or method that does not exist
+- Any type error that would manifest as a runtime exception
 
-### Safe Operations
+### When to Skip the Test
 
-Safe — these advance or add to the schema without destroying data:
+Skip the test when the error is purely static and cannot cause a runtime failure:
 
-- Running pending migrations **forward** on a non-test database — *after* checking that the pending files only add or alter columns. A forward migration is not automatically safe: it can still drop a column or table, or delete data in a backfill. Read it first.
-- Running the test suite (it manages its own database lifecycle).
-- Seeding additional data without truncating existing tables.
-
-### When a Destructive Operation Is Genuinely Needed
-
-Stop and ask the user to run it themselves, or to confirm it explicitly. Never decide on your own that data loss is acceptable.
-
----
-
-## Migrations
-
-Conventions for schema migration files, whatever the migration tool. Examples use a schema-builder DSL for illustration; the principles apply to raw-SQL migrations too.
-
-### Self-Contained Migrations
-
-- Migrations must be fully self-contained. Never reference application code — model constants, enums, config values, or helper functions.
-- Use plain string and scalar literals for column names, table names, and other identifiers directly in the migration file.
-- This keeps migrations stable and runnable regardless of future application code changes — a migration written today must still run years later, even if the code it once referenced has been renamed or deleted.
-- Legacy migrations may still reference application code; only update them to follow this guideline when you are otherwise modifying those migrations.
-
-```php
-// ❌ WRONG — references an application constant
-$table->boolean(Feature::FLAG_ENABLED)->nullable();
-
-// ✅ CORRECT — plain string literal
-$table->boolean('flag_enabled')->nullable();
-```
-
-### Column Ordering
-
-- Add new columns at the **end** of the table — do not insert one into the middle of an existing table.
-- On MySQL/MariaDB, positioning a column mid-table (an `AFTER` clause) can disable instant/online DDL and force a full table copy — a significant hit on large tables. Other engines such as PostgreSQL have no column-position concept at all, so a position clause is meaningless there. Appending is safe and portable everywhere.
-
-```php
-// ❌ WRONG — mid-table positioning can force a full table rebuild on MySQL/MariaDB
-$table->string('description')->after('name');
-
-// ✅ CORRECT — just append the column
-$table->string('description');
-```
+- Missing return-type declarations
+- PHPDoc mismatches with no runtime impact
+- Unused variables or imports
+- Generic-type parameter issues
 
 ---
 

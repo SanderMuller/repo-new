@@ -88,7 +88,7 @@ it('takes skill-bundle deps solely from its mandatory block (consumes-shared-dev
 
 it('returns the shared-stub-skip denylist per category', function (): void {
     expect($this->deps->sharedStubSkipFor('laravel-project'))
-        ->toContain('boost.php', '_gitattributes', 'tests/')
+        ->toContain('.config/boost.php', '_gitattributes', 'tests/')
         ->and($this->deps->sharedStubSkipFor('skill-bundle'))
         ->toContain('.mcp.json', 'phpstan-baseline.neon', 'tests/')
         // php-package has no shared-stub-skip key — copies all of stubs/shared/.

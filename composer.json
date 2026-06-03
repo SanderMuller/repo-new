@@ -18,7 +18,7 @@
     ],
     "require": {
         "php": "^8.3",
-        "sandermuller/repo-init": "^1.0",
+        "sandermuller/repo-init": "^1.5",
         "symfony/console": "^7.0||^8.0",
         "symfony/process": "^7.0||^8.0",
         "symfony/yaml": "^7.0||^8.0"
@@ -38,7 +38,7 @@
         "phpstan/phpstan-strict-rules": "^2.0",
         "rector/rector": "^2.4",
         "rector/type-perfect": "^2.1",
-        "sandermuller/boost-skills": "^1.0",
+        "sandermuller/boost-skills": "^2.0",
         "spaze/phpstan-disallowed-calls": "^4.10",
         "stolt/lean-package-validator": "^5.7",
         "symplify/phpstan-extensions": "^12.0",

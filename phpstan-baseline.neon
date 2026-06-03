@@ -7,12 +7,6 @@ parameters:
 			path: src/RepoInit/PerCategoryDeps.php
 
 		-
-			rawMessage: 'Out of 180 possible param types, only 179 - 99.4 %% actually have it. Add more param types to get over 100 %%'
-			identifier: typeCoverage.paramTypeCoverage
-			count: 1
-			path: src/RepoInit/PerCategoryDeps.php
-
-		-
 			rawMessage: Cannot cast mixed to string.
 			identifier: cast.string
 			count: 1
@@ -159,7 +153,7 @@ parameters:
 		-
 			rawMessage: Access to an undefined property Pest\PendingCalls\TestCall::$tmp.
 			identifier: property.notFound
-			count: 34
+			count: 35
 			path: tests/Feature/PackageScaffolderSmokeTest.php
 
 		-
@@ -187,9 +181,15 @@ parameters:
 			path: tests/Feature/PackageScaffolderSmokeTest.php
 
 		-
-			rawMessage: Binary operation "." between mixed and '/boost.php' results in an error.
+			rawMessage: Binary operation "." between mixed and '/.config/boost.php' results in an error.
 			identifier: binaryOp.invalid
 			count: 2
+			path: tests/Feature/PackageScaffolderSmokeTest.php
+
+		-
+			rawMessage: Binary operation "." between mixed and '/boost.php' results in an error.
+			identifier: binaryOp.invalid
+			count: 1
 			path: tests/Feature/PackageScaffolderSmokeTest.php
 
 		-

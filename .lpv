@@ -7,7 +7,7 @@
 .cache/ export-ignore
 CHANGELOG.md export-ignore
 composer.lock export-ignore
-boost.php export-ignore
+.config/ export-ignore
 phpstan-baseline.neon export-ignore
 phpstan.neon.dist export-ignore
 phpunit.xml export-ignore

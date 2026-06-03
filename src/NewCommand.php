@@ -59,7 +59,7 @@ final class NewCommand extends Command
             ->addOption('with-security-advisories', null, InputOption::VALUE_NONE, 'Opt-in for laravel-project.')
             ->addOption('laravel-aware', null, InputOption::VALUE_NONE, 'Opt-in for phpstan/rector-extension.')
             ->addOption('plugin-shape', null, InputOption::VALUE_REQUIRED, 'composer-plugin shape: ' . implode('|', self::PLUGIN_SHAPES))
-            ->addOption('skill-tags', null, InputOption::VALUE_REQUIRED, 'Comma-separated boost-skills tags for boost.php: ' . implode(',', SkillTagsQuestion::TAGS))
+            ->addOption('skill-tags', null, InputOption::VALUE_REQUIRED, 'Comma-separated boost-skills tags for .config/boost.php: ' . implode(',', SkillTagsQuestion::TAGS))
             ->addOption('commit', null, InputOption::VALUE_NONE, 'Make an initial commit after scaffolding.');
     }
 

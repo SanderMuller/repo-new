@@ -44,7 +44,7 @@ final class WizardState
     public ?string $pluginShape = null;
 
     /**
-     * boost-skills capability tags written into boost.php's withTags().
+     * boost-skills capability tags written into .config/boost.php's withTags().
      * Package categories only; null until the wizard or --skill-tags answers it.
      *
      * @var list<string>|null

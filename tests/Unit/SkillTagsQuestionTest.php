@@ -11,7 +11,7 @@ function skillTagsIo(): SymfonyStyle
     return new SymfonyStyle(new ArrayInput([]), new BufferedOutput());
 }
 
-it('skips laravel-project — it has no boost.php to fill', function (): void {
+it('skips laravel-project — it has no .config/boost.php to fill', function (): void {
     $state = new WizardState();
     $state->category = 'laravel-project';
 

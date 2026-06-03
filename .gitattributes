@@ -9,6 +9,7 @@
 .agents/ export-ignore
 .cache/ export-ignore
 .claude/ export-ignore
+.config/ export-ignore
 .cursor/ export-ignore
 .editorconfig export-ignore
 .gitattributes export-ignore

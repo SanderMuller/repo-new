@@ -169,7 +169,7 @@ final readonly class PerCategoryDeps
             return [];
         }
 
-        return array_values(array_map(static fn ($v): string => (string) $v, $cursor));
+        return array_values(array_map(static fn (mixed $v): string => (string) $v, $cursor));
     }
 
     /**
