@@ -33,8 +33,8 @@ final readonly class PlaceholderSubstituter
         $testRunner = $state->testFramework ?? 'pest';
         $testCoverageFlag = $testRunner === 'phpunit' ? '--coverage-html=coverage' : '--coverage';
 
-        // .config/boost.php `->withTags(__SKILL_TAGS__)`: a comma-separated list of
-        // single-quoted tag strings, or empty (→ `->withTags()`, a valid no-op).
+        // .config/boost.php `->withTags([__SKILL_TAGS__])`: a comma-separated list of
+        // single-quoted tag strings, or empty (→ `->withTags([])`, a valid no-op).
         $skillTags = implode(', ', array_map(
             static fn (string $tag): string => "'{$tag}'",
             $state->skillTags ?? [],

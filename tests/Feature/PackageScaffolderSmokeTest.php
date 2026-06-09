@@ -150,6 +150,6 @@ it('scaffolds a skill-bundle with the lean shared set and no PHP toolchain', fun
         // no plugin pre-allow needed — boost-core 0.6+ is type:library, skill-bundle uses no phpstan/pest plugins
         ->and($composer['config'])->not->toHaveKey('allow-plugins');
 
-    // __SKILL_TAGS__ substituted — no skillTags set on the state → empty withTags().
-    expect(file_get_contents($this->tmp . '/.config/boost.php'))->toContain('->withTags()');
+    // __SKILL_TAGS__ substituted — no skillTags set on the state → empty withTags([]).
+    expect(file_get_contents($this->tmp . '/.config/boost.php'))->toContain('->withTags([])');
 });

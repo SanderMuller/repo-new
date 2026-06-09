@@ -19,6 +19,7 @@
 .kiro/ export-ignore
 .mcp.json export-ignore
 AGENTS.md export-ignore
+CHANGELOG.md export-ignore
 CLAUDE.md export-ignore
 composer.lock export-ignore
 GEMINI.md export-ignore
@@ -28,4 +29,10 @@ phpunit.xml export-ignore
 pint.json export-ignore
 rector.php export-ignore
 tests/ export-ignore
+.config/boost.php export-ignore
+.github/dependabot.yml export-ignore
+.github/workflows/ export-ignore
+tests/Feature/ export-ignore
+tests/Pest.php export-ignore
+tests/Unit/ export-ignore
 # <<< package-boost (managed) <<<

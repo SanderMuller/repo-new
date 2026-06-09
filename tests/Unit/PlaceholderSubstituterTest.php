@@ -70,11 +70,11 @@ it('substitutes __SKILL_TAGS__ as comma-separated single-quoted strings', functi
 
     $sub = new PlaceholderSubstituter($state);
 
-    expect($sub->substitute('->withTags(__SKILL_TAGS__)'))->toBe("->withTags('php', 'jira')");
+    expect($sub->substitute('->withTags([__SKILL_TAGS__])'))->toBe("->withTags(['php', 'jira'])");
 });
 
 it('substitutes __SKILL_TAGS__ to empty when no skill tags are set', function (): void {
     $sub = new PlaceholderSubstituter(new WizardState());
 
-    expect($sub->substitute('->withTags(__SKILL_TAGS__)'))->toBe('->withTags()');
+    expect($sub->substitute('->withTags([__SKILL_TAGS__])'))->toBe('->withTags([])');
 });
