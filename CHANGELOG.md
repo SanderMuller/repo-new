@@ -7,6 +7,38 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 From `1.0.0` onwards `sandermuller/repo-new` follows standard SemVer — breaking changes ship as MAJOR (2.0.0+), additive as MINOR, fixes as PATCH. The pre-1.0 cadence (breaking-MINOR allowed) is closed; prior 0.x entries remain below as history.
 
+## 1.1.0 - 2026-06-09
+
+<!-- verified-sha: 63c4e720a52467b42a75a94370889b40d73ba0ec -->
+First MINOR since the 1.0.0 stability declaration. Adds first-run self-sync of the wizard's own AI skills, tracks the `sandermuller/repo-init` 1.6 scaffolding baseline (boost config under `.config/`, `package-boost-php` 1.0 wiring), and fixes a silently-vacuous `.lpv` in repo-new's own repo. No CLI flags or wizard prompts changed.
+
+### Added
+
+- **Self-sync boost skills to user scope on first run.** `bin/repo` now calls `BoostAutoSync::syncUserScopeOnce()` after autoloader resolution, before dispatch — the first `repo` invocation after `composer global require sandermuller/repo-new` syncs the package's allowed-vendor skills (`sandermuller/boost-skills`) into the user scope (`~/.claude/skills/`, `~/.codex/skills/`, …). Sentinel-gated per `package@version`, honors `BOOST_SKIP_AUTOSYNC=1`, runs in-process (no subprocess), and never blocks the CLI on failure (a sync error emits a one-line stderr warning and the wizard proceeds).
+
+### Changed
+
+- **Scaffolding baseline tracks `sandermuller/repo-init` 1.6** (`^1.0` → `^1.6`). `repo new …` now copies the current repo-init stubs: boost config lives at `.config/boost.php`, generated packages wire `sandermuller/package-boost-php` and the `PackageBoostPhp\Scripts\AutoSync` autosync callback, and the `.config/boost.php` `withTags([...])` form is array-wrapped.
+- **Boost toolchain bumped** — `sandermuller/boost-skills` `^2.0` → `^2.4`, `sandermuller/package-boost-php` `^1.0` added, `sandermuller/boost-core` floats to 1.x transitively. repo-new's own autosync hooks moved to the `PackageBoostPhp\Scripts\AutoSync` façade and `sync-ai` to `vendor/bin/boost sync`.
+
+### Fixed
+
+- **`.lpv` validated nothing.** repo-new's own `.lpv` was written in `.gitattributes` syntax (each line carried an `export-ignore` suffix), so `lean-package-validator` built a glob that matched zero files and `validate` passed vacuously. Rewrote `.lpv` to bare glob patterns (the canonical form) and completed the managed `.gitattributes` block (`CHANGELOG.md` plus committed nested children), so `composer validate-gitattributes` now exercises the export-ignore set for real on a clean checkout.
+
+### Internal
+
+- Scaffolder smoke test, `PlaceholderSubstituter` substitution test, and the substituter's doc comment updated for repo-init 1.6's array-wrapped `withTags([...])` stub.
+
+### Upgrading
+
+```bash
+composer global update sandermuller/repo-new
+
+```
+The first `repo` run afterwards performs the one-time user-scope skill sync described above. Set `BOOST_SKIP_AUTOSYNC=1` to opt out. Same wizard, same flags as 1.0.0.
+
+**Full Changelog**: https://github.com/SanderMuller/repo-new/compare/1.0.0...1.1.0
+
 ## 1.0.0 - 2026-05-23
 
 **1.0.0 is a stability declaration**, not a feature release. Functionally identical to 0.8.0 — no CLI, wizard, flag, or scaffolded-output changes. From this version on `sandermuller/repo-new` follows standard SemVer: breaking changes ship as MAJOR (2.0.0+), additive as MINOR, fixes as PATCH. The pre-1.0 cadence (breaking-MINOR allowed) is closed; the prior 0.x entries remain in `CHANGELOG.md` as history.
@@ -27,6 +59,7 @@ From `1.0.0` onwards `sandermuller/repo-new` follows standard SemVer — breakin
 
 ```bash
 composer global update sandermuller/repo-new
+
 
 ```
 No further steps. Same wizard, same flags, same scaffolded output as 0.8.0.
@@ -51,6 +84,7 @@ No further steps. Same wizard, same flags, same scaffolded output as 0.8.0.
 
 ```bash
 composer global update sandermuller/repo-new
+
 
 
 ```
