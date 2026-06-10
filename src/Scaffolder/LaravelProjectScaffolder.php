@@ -30,7 +30,7 @@ final readonly class LaravelProjectScaffolder
      */
     public function scaffold(WizardState $state, string $targetDir): array
     {
-        $laravelBin = (new ExecutableFinder())->find('laravel');
+        $laravelBin = new ExecutableFinder()->find('laravel');
         if ($laravelBin === null) {
             throw new RuntimeException(
                 'laravel binary not found on PATH. Install via `composer global require laravel/installer` first.',

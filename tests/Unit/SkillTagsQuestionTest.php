@@ -15,7 +15,7 @@ it('skips laravel-project — it has no .config/boost.php to fill', function ():
     $state = new WizardState();
     $state->category = 'laravel-project';
 
-    (new SkillTagsQuestion())->ask(skillTagsIo(), $state);
+    new SkillTagsQuestion()->ask(skillTagsIo(), $state);
 
     expect($state->skillTags)->toBeNull();
 });
@@ -25,7 +25,7 @@ it('skips when skillTags already set (e.g. via --skill-tags flag)', function ():
     $state->category = 'php-package';
     $state->skillTags = ['php'];
 
-    (new SkillTagsQuestion())->ask(skillTagsIo(), $state);
+    new SkillTagsQuestion()->ask(skillTagsIo(), $state);
 
     expect($state->skillTags)->toBe(['php']);
 });
@@ -35,7 +35,7 @@ it('defaults to the php tag in non-interactive mode for package categories', fun
     $state->category = 'php-package';
     $state->interactive = false;
 
-    (new SkillTagsQuestion())->ask(skillTagsIo(), $state);
+    new SkillTagsQuestion()->ask(skillTagsIo(), $state);
 
     expect($state->skillTags)->toBe(['php']);
 });

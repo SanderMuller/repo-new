@@ -23,15 +23,15 @@ final class Wizard
 {
     public function run(SymfonyStyle $io, WizardState $state): void
     {
-        (new ProjectVsPackageQuestion())->ask($io, $state);
-        (new PackageTypeQuestion())->ask($io, $state);
-        (new NameQuestion())->ask($io, $state);
-        (new DescriptionQuestion())->ask($io, $state);
-        (new PhpVersionQuestion())->ask($io, $state);
-        (new LaravelVersionQuestion())->ask($io, $state);
-        (new LaravelAwareQuestion())->ask($io, $state);
-        (new PluginShapeQuestion())->ask($io, $state);
-        (new SkillTagsQuestion())->ask($io, $state);
+        new ProjectVsPackageQuestion()->ask($io, $state);
+        new PackageTypeQuestion()->ask($io, $state);
+        new NameQuestion()->ask($io, $state);
+        new DescriptionQuestion()->ask($io, $state);
+        new PhpVersionQuestion()->ask($io, $state);
+        new LaravelVersionQuestion()->ask($io, $state);
+        new LaravelAwareQuestion()->ask($io, $state);
+        new PluginShapeQuestion()->ask($io, $state);
+        new SkillTagsQuestion()->ask($io, $state);
 
         $state->applyDefaults();
     }

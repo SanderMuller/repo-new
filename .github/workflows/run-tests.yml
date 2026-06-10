@@ -31,9 +31,9 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - { php: '8.3', stability: prefer-lowest }
-          - { php: '8.3', stability: prefer-stable }
+          - { php: '8.4', stability: prefer-lowest }
           - { php: '8.4', stability: prefer-stable }
+          - { php: '8.5', stability: prefer-stable }
 
     name: P${{ matrix.php }} - ${{ matrix.stability }}
 

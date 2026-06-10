@@ -15,7 +15,7 @@ it('skips when category is not composer-plugin', function (): void {
     $state = new WizardState();
     $state->category = 'php-package';
 
-    (new PluginShapeQuestion())->ask(makeIo(), $state);
+    new PluginShapeQuestion()->ask(makeIo(), $state);
 
     expect($state->pluginShape)->toBeNull();
 });
@@ -25,7 +25,7 @@ it('skips when pluginShape already set (e.g. via --plugin-shape flag)', function
     $state->category = 'composer-plugin';
     $state->pluginShape = 'both';
 
-    (new PluginShapeQuestion())->ask(makeIo(), $state);
+    new PluginShapeQuestion()->ask(makeIo(), $state);
 
     expect($state->pluginShape)->toBe('both');
 });

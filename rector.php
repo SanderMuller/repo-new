@@ -39,7 +39,7 @@ return RectorConfig::configure()
     ->withFluentCallNewLine()
     ->withParallel(300, 15, 15)
     ->withMemoryLimit('3G')
-    ->withPhpSets(php83: true)
+    ->withPhpSets(php84: true)
     ->withSets(class_exists(PestSetList::class) ? [
         PestSetList::PEST_CODE_QUALITY,
         PestSetList::PEST_CHAIN,

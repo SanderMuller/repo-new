@@ -25,14 +25,18 @@ final class TargetDirResolver
                     throw new RuntimeException("Target dir already exists and is not empty: {$target}");
                 }
 
-                return rtrim((realpath($target) !== false ? realpath($target) : $target), '/');
+                $real = realpath($target);
+
+                return rtrim($real !== false ? $real : $target, '/');
             }
 
             if (! mkdir($target, 0755, true) && ! is_dir($target)) {
                 throw new RuntimeException("Failed to mkdir target dir: {$target}");
             }
 
-            return rtrim((realpath($target) !== false ? realpath($target) : $target), '/');
+            $real = realpath($target);
+
+            return rtrim($real !== false ? $real : $target, '/');
         }
 
         // No name → cwd, must be empty modulo .git/.
@@ -42,7 +46,9 @@ final class TargetDirResolver
             );
         }
 
-        return rtrim((realpath($cwd) !== false ? realpath($cwd) : $cwd), '/');
+        $real = realpath($cwd);
+
+        return rtrim($real !== false ? $real : $cwd, '/');
     }
 
     private function isAbsolute(string $path): bool

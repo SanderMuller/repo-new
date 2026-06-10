@@ -117,7 +117,7 @@ final class NewCommand extends Command
             $io->success("Scaffold complete at {$targetDir}");
             $io->writeln('Summary: ' . json_encode($result, JSON_THROW_ON_ERROR));
 
-            $handoff = (new HandoffPromptBuilder())->build($state, $targetDir);
+            $handoff = new HandoffPromptBuilder()->build($state, $targetDir);
             $io->newLine();
             $io->writeln('Next: copy-paste this to Claude:');
             $io->writeln('');

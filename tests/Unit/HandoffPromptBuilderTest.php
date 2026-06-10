@@ -11,7 +11,7 @@ it('builds a non-empty handoff prompt for every wizard category', function (stri
 
     // build() throws "No handoff template" if the category has no template —
     // this guards every category in NewCommand::CATEGORIES against that gap.
-    $prompt = (new HandoffPromptBuilder())->build($state, '/tmp/demo');
+    $prompt = new HandoffPromptBuilder()->build($state, '/tmp/demo');
 
     expect($prompt)->toBeString()
         ->and($prompt)->not->toBeEmpty()
