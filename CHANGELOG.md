@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 From `1.0.0` onwards `sandermuller/repo-new` follows standard SemVer — breaking changes ship as MAJOR (2.0.0+), additive as MINOR, fixes as PATCH. The pre-1.0 cadence (breaking-MINOR allowed) is closed; prior 0.x entries remain below as history.
 
+## 1.1.1 - 2026-06-13
+
+<!-- verified-sha: 82b4def5c3275d8e4727514cad83dee32a08f17e -->
+### Fixed
+
+- **`nesbot/carbon` is now declared in `require`.** `PlaceholderSubstituter` uses `Carbon\Carbon` for
+  the `__YEAR__` placeholder (enforced by `DateFuncCallToCarbonRector` in `rector.php`), but the
+  package was only present transitively. A clean `composer global require sandermuller/repo-new`
+  did not pull it, so `repo new` aborted with `Class "Carbon\Carbon" not found` before scaffolding.
+  Declaring it as a runtime dependency fixes scaffolding on a fresh global install.
+
+**Full Changelog**: https://github.com/SanderMuller/repo-new/compare/1.1.0...1.1.1
+
 ## 1.1.0 - 2026-06-09
 
 <!-- verified-sha: 63c4e720a52467b42a75a94370889b40d73ba0ec -->
@@ -33,6 +46,7 @@ First MINOR since the 1.0.0 stability declaration. Adds first-run self-sync of t
 
 ```bash
 composer global update sandermuller/repo-new
+
 
 ```
 The first `repo` run afterwards performs the one-time user-scope skill sync described above. Set `BOOST_SKIP_AUTOSYNC=1` to opt out. Same wizard, same flags as 1.0.0.
@@ -61,6 +75,7 @@ The first `repo` run afterwards performs the one-time user-scope skill sync desc
 composer global update sandermuller/repo-new
 
 
+
 ```
 No further steps. Same wizard, same flags, same scaffolded output as 0.8.0.
 
@@ -84,6 +99,7 @@ No further steps. Same wizard, same flags, same scaffolded output as 0.8.0.
 
 ```bash
 composer global update sandermuller/repo-new
+
 
 
 
