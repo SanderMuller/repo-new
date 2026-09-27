@@ -57,11 +57,11 @@ repo-new scaffolds seven repo categories. Choose one interactively, or pass `--t
 Beyond the category-specific source skeleton above, every scaffolded repo gets the same baseline:
 
 - **Project files** — `composer.json` with PSR-4 autoloading, `src/` + `tests/`, plus `README.md`, `CHANGELOG.md`, `LICENSE`, `SECURITY.md`, `.editorconfig`, `.gitignore`, `.gitattributes` (lean published archive), and `.mcp.json`.
-- **CI workflows** — GitHub Actions for the test suite, PHPStan, Pint, Rector, and changelog automation, plus a Dependabot config.
+- **CI workflows** — GitHub Actions for the test suite, PHPStan, Pint, Rector, zizmor (workflow security audit), and changelog automation, plus a Dependabot config.
 - **Quality tooling, configured and installed** — Pint (`pint.json`), PHPStan (`phpstan-baseline.neon`) with the strict / deprecation / PHPUnit / disallowed-calls / Symplify extension set, Rector, and `type-coverage` + `cognitive-complexity` analysis. All wired into `composer` scripts.
 - **Test suite** — Pest 5 or PHPUnit. PHPStan extensions and Laravel projects default to PHPUnit; other categories default to Pest (PHPUnit for the `hihaho` vendor). Override with `--test-framework`; the test deps, scripts, CI command and Rector config follow the choice.
 - **PHP version** — `--php=8.4` (default) or `8.5` for packages; `laravel-project` takes `8.5` only. Older versions are rejected.
-- **AI tooling** — `sandermuller/package-boost-php` + `boost-core` installed and a `.config/boost.php` config scaffolded — the agents, dependency vendors, and `sandermuller/boost-skills` capability tags to sync (tags chosen interactively or via `--skill-tags`; package categories only — `laravel-project` uses `laravel/boost` instead). Then `vendor/bin/boost sync` generates `.ai/`, `.claude/`, `.agents/`, `.cursor/`, `AGENTS.md`, `CLAUDE.md`, and the per-agent skill directories.
+- **AI tooling** — the category's boost umbrella (`sandermuller/package-boost-laravel` for `laravel-package`, `sandermuller/package-boost-php` otherwise) + `boost-core` installed and a `.config/boost.php` config scaffolded — the agents, dependency vendors, and `sandermuller/boost-skills` capability tags to sync (tags chosen interactively or via `--skill-tags`; package categories only — `laravel-project` uses `laravel/boost` instead). Then `vendor/bin/boost sync` generates `.ai/`, `.claude/`, `.agents/`, `.cursor/`, `AGENTS.md`, `CLAUDE.md`, and the per-agent skill directories.
 
 Per-category runtime and dev dependencies come from `repo-init`'s `references/per-category-deps.yml`, so the dependency set always matches the current canonical baseline.
 
