@@ -54,6 +54,7 @@ final readonly class PackageScaffolder
         if ($category !== 'skill-bundle') {
             $written += $this->copyStubs("test-framework-{$framework}", $targetDir, $substituter);
             $this->overlayFrameworkNativeCiMatrix($category, $stubDir, $framework, $targetDir, $substituter);
+            $this->dropLaravel12CellsOutsideRange($category, $state->laravelVersions, $targetDir);
             new TestFrameworkSwapper($this->deps)->apply($targetDir, $category, $framework);
         }
 
@@ -191,6 +192,29 @@ final readonly class PackageScaffolder
         }
 
         $this->copyStubs($nativeStubDir, $targetDir, $substituter, only: ['.github/workflows/run-tests.yml']);
+    }
+
+    /**
+     * A Laravel 12 CI cell cannot install when the package's range excludes
+     * Laravel 12 (repo-init version-defaults.md "Laravel majors in the CI matrix").
+     */
+    private function dropLaravel12CellsOutsideRange(string $category, ?string $laravelVersions, string $targetDir): void
+    {
+        if ($category !== 'laravel-package' || preg_match('/(?:^|\|)\s*[\^~]?12(?:\.|\s*(?:\||$))/', $laravelVersions ?? '') === 1) {
+            return;
+        }
+
+        $path = $targetDir . '/.github/workflows/run-tests.yml';
+        $yaml = is_file($path) ? file_get_contents($path) : false;
+        if ($yaml === false) {
+            return;
+        }
+
+        // Each cell goes together with the comment line that labels it.
+        $updated = (string) preg_replace("#^(?:[ \t]*\#[^\n]*\n)?[ \t]*- \{[^}\n]*laravel: '12\.\*'[^}\n]*\}\n#m", '', $yaml);
+        if ($updated !== $yaml && file_put_contents($path, $updated) === false) {
+            throw new RuntimeException("Failed to write {$path}");
+        }
     }
 
     /**

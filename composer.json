@@ -19,7 +19,7 @@
     "require": {
         "php": "^8.4",
         "nesbot/carbon": "^3.0",
-        "sandermuller/repo-init": "^1.17",
+        "sandermuller/repo-init": "^1.18",
         "symfony/console": "^7.0||^8.0",
         "symfony/process": "^7.0||^8.0",
         "symfony/yaml": "^7.0||^8.0"

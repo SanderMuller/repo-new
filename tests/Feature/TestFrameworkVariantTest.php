@@ -22,7 +22,7 @@ function variantScaffolder(ComposerRunnerInterface $composer): PackageScaffolder
 }
 
 /**
- * @param  array{phpVersion?: string, variant?: string, laravelAware?: bool}  $overrides
+ * @param  array{phpVersion?: string, variant?: string, laravelAware?: bool, laravelVersions?: string}  $overrides
  */
 function variantState(string $category, string $framework, array $overrides = []): WizardState
 {
@@ -37,6 +37,7 @@ function variantState(string $category, string $framework, array $overrides = []
     $state->authorEmail = 'github@scode.nl';
     $state->variant = $overrides['variant'] ?? null;
     $state->laravelAware = $overrides['laravelAware'] ?? false;
+    $state->laravelVersions = $overrides['laravelVersions'] ?? null;
 
     $state->applyDefaults();
 
@@ -185,4 +186,22 @@ it('pins the swapped-in laravel-package CI matrix to 8.5 for --php=8.5', functio
 
     expect(workflowsOf($this->tmp))->not->toContain("'8.4'")
         ->toContain("php: '8.5'");
+});
+
+it('drops the Laravel 12 CI cells for a ^13.0 range, keeping the 13 cells', function (string $framework, string $variant): void {
+    variantScaffolder(new RecordingComposerRunner())
+        ->scaffold(variantState('laravel-package', $framework, ['variant' => $variant, 'laravelVersions' => '^13.0']), $this->tmp);
+
+    $ci = readFileContents($this->tmp . '/.github/workflows/run-tests.yml');
+
+    expect($ci)->not->toContain("laravel: '12.*'")
+        ->toContain("laravel: '13.*'")
+        ->and(substr_count($ci, 'Mid Laravel'))->toBe(0);
+})->with([['phpunit', 'spatie'], ['phpunit', 'sander']]);
+
+it('keeps the Laravel 12 CI cells for a PHPUnit ^12.0||^13.0 package', function (): void {
+    variantScaffolder(new RecordingComposerRunner())
+        ->scaffold(variantState('laravel-package', 'phpunit', ['variant' => 'spatie']), $this->tmp);
+
+    expect(readFileContents($this->tmp . '/.github/workflows/run-tests.yml'))->toContain("laravel: '12.*'");
 });
