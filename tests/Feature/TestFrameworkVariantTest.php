@@ -153,8 +153,9 @@ it('does not re-require unconstrained deps the stub already pins', function (): 
     $requested = array_merge(...array_column($composer->requires, 'packages'));
 
     // orchestra/testbench is bare in per-category-deps.yml and pinned ^11.0 by the stub.
+    // symplify/phpstan-rules is constrained in per-category-deps.yml, so it is still requested.
     expect($requested)->not->toContain('orchestra/testbench')
-        ->and($requested)->toContain('symplify/phpstan-rules: ^14.12');
+        ->and(array_filter($requested, static fn (string $entry): bool => str_starts_with($entry, 'symplify/phpstan-rules: ^')))->not->toBeEmpty();
 });
 
 it('fails the scaffold when boost sync fails', function (): void {

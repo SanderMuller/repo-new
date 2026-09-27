@@ -25,12 +25,6 @@ final readonly class LaravelProjectScaffolder
     /** Stub-relative paths `laravel new --boost` already writes. */
     private const array SKIP_IF_EXISTS = ['boost.json'];
 
-    /**
-     * The shared .mcp.json runs `vendor/bin/testbench boost:mcp`, which a
-     * project doesn't have; laravel/boost writes the project's own.
-     */
-    private const array NEVER_COPY = ['.mcp.json'];
-
     public function __construct(
         private SymfonyStyle $io,
         private StubReader $stubReader,
@@ -269,7 +263,7 @@ final readonly class LaravelProjectScaffolder
         // Which stubs/shared/ files laravel-project skips is repo-init's
         // `shared-stub-skip` denylist (per-category-deps.yml) — files that
         // would clobber Laravel-shipped project defaults.
-        $skipper = new SharedStubSkipper([...$this->deps->sharedStubSkipFor('laravel-project'), ...self::NEVER_COPY]);
+        $skipper = new SharedStubSkipper($this->deps->sharedStubSkipFor('laravel-project'));
 
         $written = 0;
         foreach (['shared', 'laravel-project'] as $stubDir) {

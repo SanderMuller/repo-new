@@ -93,7 +93,9 @@ it('returns the shared-stub-skip denylist per category', function (): void {
         ->toContain('.config/boost.php', '_gitattributes', 'tests/')
         ->and($this->deps->sharedStubSkipFor('skill-bundle'))
         ->toContain('.mcp.json', 'phpstan-baseline.neon', 'tests/')
-        // php-package has no shared-stub-skip key — copies all of stubs/shared/.
         ->and($this->deps->sharedStubSkipFor('php-package'))
+        ->toBe(['.mcp.json'])
+        // a category without the key copies all of stubs/shared/.
+        ->and($this->deps->sharedStubSkipFor('laravel-package'))
         ->toBeEmpty();
 });
