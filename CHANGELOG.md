@@ -7,6 +7,40 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 From `1.0.0` onwards `sandermuller/repo-new` follows standard SemVer — breaking changes ship as MAJOR (2.0.0+), additive as MINOR, fixes as PATCH. The pre-1.0 cadence (breaking-MINOR allowed) is closed; prior 0.x entries remain below as history.
 
+## 1.2.0 - 2026-09-27
+
+<!-- verified-sha: 901eeb98ccf1dd73f1261e9e5194630919509cb9 -->
+### Breaking
+
+- `--php=8.3` and unknown values now exit 65; packages accept 8.4 (default) or 8.5, laravel-project 8.5.
+- Non-hihaho laravel-packages now get a plain `ServiceProvider`. Keep the spatie base with `--variant=spatie`.
+- rector-extension now defaults to Pest for non-hihaho vendors.
+- Requires `sandermuller/repo-init` ^1.17.
+
+### Added
+
+- Added `--variant=sander|spatie` for laravel-package.
+- Added `--with-health-checks` for laravel-project.
+- `--with-hihaho-rules` is negatable and on by default for hihaho laravel-projects.
+
+### Changed
+
+- `--test-framework` now rewrites test deps, scripts, CI command and Rector config on every stub.
+- `--php=8.5` moves every workflow PHP pin to 8.5.
+- A failed `boost sync` now fails the run.
+- Deprecated `--with-security-advisories`; it does nothing.
+- Default laravel-package Laravel range is `^12.0||^13.0`.
+
+### Fixed
+
+- Fixed `.config/boost.php` not parsing when skill tags were picked.
+- Fixed laravel-package + Pest failing at `composer require`.
+- laravel-project now installs HSTS, registers security middleware, raises `require.php` to `^8.5`, and appends the README.
+- laravel-project keeps the `boost.json` and `.mcp.json` written by `laravel new --boost`.
+- An explicit `allow-plugins: false` is no longer overwritten.
+
+**Full changelog:** https://github.com/SanderMuller/repo-new/compare/1.1.1...1.2.0
+
 ## 1.1.1 - 2026-06-13
 
 <!-- verified-sha: 82b4def5c3275d8e4727514cad83dee32a08f17e -->
@@ -48,6 +82,7 @@ First MINOR since the 1.0.0 stability declaration. Adds first-run self-sync of t
 composer global update sandermuller/repo-new
 
 
+
 ```
 The first `repo` run afterwards performs the one-time user-scope skill sync described above. Set `BOOST_SKIP_AUTOSYNC=1` to opt out. Same wizard, same flags as 1.0.0.
 
@@ -76,6 +111,7 @@ composer global update sandermuller/repo-new
 
 
 
+
 ```
 No further steps. Same wizard, same flags, same scaffolded output as 0.8.0.
 
@@ -99,6 +135,7 @@ No further steps. Same wizard, same flags, same scaffolded output as 0.8.0.
 
 ```bash
 composer global update sandermuller/repo-new
+
 
 
 
