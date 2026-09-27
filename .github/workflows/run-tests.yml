@@ -18,6 +18,12 @@ on:
       - 'phpunit.xml'
       - 'composer.json'
       - 'composer.lock'
+  # composer.lock is not committed, so the prefer-stable cells resolve the newest
+  # sandermuller/repo-init. A weekly run catches a repo-init release that breaks
+  # the scaffold before a user hits it.
+  schedule:
+    - cron: '0 6 * * 1'
+  workflow_dispatch:
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -38,7 +44,9 @@ jobs:
     name: P${{ matrix.php }} - ${{ matrix.stability }}
 
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2

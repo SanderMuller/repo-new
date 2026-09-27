@@ -32,7 +32,7 @@ repo new my-laravel-app \
   --type=laravel-project \
   --vendor=acme \
   --description="My new Laravel app" \
-  --php=8.4 \
+  --php=8.5 \
   --test-framework=phpunit
 ```
 
@@ -44,8 +44,8 @@ repo-new scaffolds seven repo categories. Choose one interactively, or pass `--t
 
 | Category (`--type`) | What it scaffolds | Runtime dependencies wired in | Category options |
 |---|---|---|---|
-| `laravel-project` | A full Laravel application via `laravel new --boost`, with the shared tooling baseline overlaid on top | Laravel skeleton (`laravel new`) | `--with-hihaho-rules`, `--with-security-advisories` |
-| `laravel-package` | A Laravel package — `spatie/laravel-package-tools`-based service provider, `src/`, `tests/`, publishable config | `illuminate/contracts`, `illuminate/support`, `spatie/laravel-package-tools` | `--laravel=<constraint>` |
+| `laravel-project` | A full Laravel application via `laravel new --boost`, with the shared tooling baseline overlaid on top and the security-header + HSTS middleware registered | Laravel skeleton (`laravel new`), `zae/strict-transport-security` | `--with-hihaho-rules` (default on for vendor `hihaho`), `--with-health-checks` |
+| `laravel-package` | A Laravel package — service provider, `src/`, `tests/`, publishable config | `illuminate/contracts`, `illuminate/support` (+ `spatie/laravel-package-tools` for the `spatie` variant) | `--laravel=<constraint>`, `--variant=sander\|spatie` |
 | `php-package` | A framework-agnostic PHP library | none (pure library) | — |
 | `phpstan-extension` | A PHPStan rule / extension package | `phpstan/phpstan: ^2` | `--laravel-aware` (swaps in `larastan/larastan`) |
 | `rector-extension` | A Rector rule / ruleset package | `rector/rector: ^2`, `symplify/rule-doc-generator-contracts` | `--laravel-aware` (adds `driftingly/rector-laravel`) |
@@ -58,8 +58,9 @@ Beyond the category-specific source skeleton above, every scaffolded repo gets t
 
 - **Project files** — `composer.json` with PSR-4 autoloading, `src/` + `tests/`, plus `README.md`, `CHANGELOG.md`, `LICENSE`, `SECURITY.md`, `.editorconfig`, `.gitignore`, `.gitattributes` (lean published archive), and `.mcp.json`.
 - **CI workflows** — GitHub Actions for the test suite, PHPStan, Pint, Rector, and changelog automation, plus a Dependabot config.
-- **Quality tooling, configured and installed** — Pint (`pint.json`), PHPStan (`phpstan-baseline.neon`) with the strict / deprecation / PHPUnit / disallowed-calls / Symplify extension set, Rector with `type-perfect`, and `type-coverage` + `cognitive-complexity` analysis. All wired into `composer` scripts.
-- **Test suite** — Pest or PHPUnit. PHPStan / Rector extensions and Laravel projects default to PHPUnit; other categories default to Pest (PHPUnit for the `hihaho` vendor). Override with `--test-framework`.
+- **Quality tooling, configured and installed** — Pint (`pint.json`), PHPStan (`phpstan-baseline.neon`) with the strict / deprecation / PHPUnit / disallowed-calls / Symplify extension set, Rector, and `type-coverage` + `cognitive-complexity` analysis. All wired into `composer` scripts.
+- **Test suite** — Pest 5 or PHPUnit. PHPStan extensions and Laravel projects default to PHPUnit; other categories default to Pest (PHPUnit for the `hihaho` vendor). Override with `--test-framework`; the test deps, scripts, CI command and Rector config follow the choice.
+- **PHP version** — `--php=8.4` (default) or `8.5` for packages; `laravel-project` takes `8.5` only. Older versions are rejected.
 - **AI tooling** — `sandermuller/package-boost-php` + `boost-core` installed and a `.config/boost.php` config scaffolded — the agents, dependency vendors, and `sandermuller/boost-skills` capability tags to sync (tags chosen interactively or via `--skill-tags`; package categories only — `laravel-project` uses `laravel/boost` instead). Then `vendor/bin/boost sync` generates `.ai/`, `.claude/`, `.agents/`, `.cursor/`, `AGENTS.md`, `CLAUDE.md`, and the per-agent skill directories.
 
 Per-category runtime and dev dependencies come from `repo-init`'s `references/per-category-deps.yml`, so the dependency set always matches the current canonical baseline.
@@ -68,12 +69,12 @@ Per-category runtime and dev dependencies come from `repo-init`'s `references/pe
 
 ## How it works
 
-1. The wizard collects: category → vendor → package name → description → PHP version → (Laravel constraint for `laravel-package`, plugin shape for `composer-plugin`) → test framework → `boost-skills` tags → opt-ins.
+1. The wizard collects: category → vendor → package name → description → PHP version → (Laravel constraint and variant for `laravel-package`, plugin shape for `composer-plugin`) → `boost-skills` tags. Test framework and opt-ins come from flags or vendor defaults.
 2. Runs `laravel new --boost` (for `laravel-project`) or copies the category stubs (for package categories) from the installed `repo-init`.
 3. Substitutes placeholders (`__VENDOR__`, `__NAMESPACE__`, `__PACKAGE_STUDLY__`, …) across `composer.json`, source files, and CI workflows.
 4. Pre-allows Composer plugins (`phpstan/extension-installer`, `pestphp/pest-plugin`) before requiring dependencies, so install never aborts on the plugin allowlist.
 5. Runs `composer install` and the per-category `composer require` lists.
-6. Fires `vendor/bin/boost sync` to generate the AI tooling files.
+6. Fires `vendor/bin/boost sync` to generate the AI tooling files (package categories; a failed sync fails the run).
 7. Initializes a git repo (add `--commit` for an initial commit) and prints a copy-pasteable handoff prompt for Claude or your agent of choice.
 
 ## Testing

@@ -31,70 +31,10 @@ parameters:
 			path: src/Wizard/Question/PackageTypeQuestion.php
 
 		-
-			rawMessage: 'Property SanderMuller\RepoNew\Wizard\WizardState::$phpVersion (string|null) does not accept mixed.'
-			identifier: assign.propertyType
-			count: 1
-			path: src/Wizard/Question/PhpVersionQuestion.php
-
-		-
 			rawMessage: Cannot cast mixed to string.
 			identifier: cast.string
 			count: 1
 			path: src/Wizard/Question/PluginShapeQuestion.php
-
-		-
-			rawMessage: Access to an undefined property Pest\PendingCalls\TestCall::$repoInit.
-			identifier: property.notFound
-			count: 1
-			path: tests/Feature/ComposerPluginScaffoldTest.php
-
-		-
-			rawMessage: Access to an undefined property Pest\PendingCalls\TestCall::$scaffolder.
-			identifier: property.notFound
-			count: 5
-			path: tests/Feature/ComposerPluginScaffoldTest.php
-
-		-
-			rawMessage: Access to an undefined property Pest\PendingCalls\TestCall::$tmp.
-			identifier: property.notFound
-			count: 17
-			path: tests/Feature/ComposerPluginScaffoldTest.php
-
-		-
-			rawMessage: Binary operation "." between mixed and '/src/Plugin.both.php' results in an error.
-			identifier: binaryOp.invalid
-			count: 1
-			path: tests/Feature/ComposerPluginScaffoldTest.php
-
-		-
-			rawMessage: Binary operation "." between mixed and '/src/Plugin.command…' results in an error.
-			identifier: binaryOp.invalid
-			count: 1
-			path: tests/Feature/ComposerPluginScaffoldTest.php
-
-		-
-			rawMessage: Binary operation "." between mixed and '/src/Plugin.event…' results in an error.
-			identifier: binaryOp.invalid
-			count: 1
-			path: tests/Feature/ComposerPluginScaffoldTest.php
-
-		-
-			rawMessage: Binary operation "." between mixed and '/src/Plugin.none.php' results in an error.
-			identifier: binaryOp.invalid
-			count: 1
-			path: tests/Feature/ComposerPluginScaffoldTest.php
-
-		-
-			rawMessage: Binary operation "." between mixed and '/src/Plugin.php' results in an error.
-			identifier: binaryOp.invalid
-			count: 4
-			path: tests/Feature/ComposerPluginScaffoldTest.php
-
-		-
-			rawMessage: Binary operation "." between mixed and '/src…' results in an error.
-			identifier: binaryOp.invalid
-			count: 4
-			path: tests/Feature/ComposerPluginScaffoldTest.php
 
 		-
 			rawMessage: 'Cannot call method getPathname() on mixed.'
@@ -109,19 +49,7 @@ parameters:
 			path: tests/Feature/ComposerPluginScaffoldTest.php
 
 		-
-			rawMessage: 'Parameter #1 $directory of class RecursiveDirectoryIterator constructor expects string, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/ComposerPluginScaffoldTest.php
-
-		-
 			rawMessage: 'Parameter #1 $directory of function rmdir expects string, mixed given.'
-			identifier: argument.type
-			count: 2
-			path: tests/Feature/ComposerPluginScaffoldTest.php
-
-		-
-			rawMessage: 'Parameter #1 $filename of function is_dir expects string, mixed given.'
 			identifier: argument.type
 			count: 1
 			path: tests/Feature/ComposerPluginScaffoldTest.php
@@ -131,132 +59,6 @@ parameters:
 			identifier: argument.type
 			count: 1
 			path: tests/Feature/ComposerPluginScaffoldTest.php
-
-		-
-			rawMessage: 'Parameter #1 $tmp of function scaffoldPlugin expects string, mixed given.'
-			identifier: argument.type
-			count: 4
-			path: tests/Feature/ComposerPluginScaffoldTest.php
-
-		-
-			rawMessage: 'Parameter #3 $scaffolder of function scaffoldPlugin expects SanderMuller\RepoNew\Scaffolder\PackageScaffolder, mixed given.'
-			identifier: argument.type
-			count: 4
-			path: tests/Feature/ComposerPluginScaffoldTest.php
-
-		-
-			rawMessage: Access to an undefined property Pest\PendingCalls\TestCall::$scaffolder.
-			identifier: property.notFound
-			count: 4
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: Access to an undefined property Pest\PendingCalls\TestCall::$tmp.
-			identifier: property.notFound
-			count: 35
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: Binary operation "." between mixed and '/.editorconfig' results in an error.
-			identifier: binaryOp.invalid
-			count: 2
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: Binary operation "." between mixed and '/.github/workflows…' results in an error.
-			identifier: binaryOp.invalid
-			count: 5
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: Binary operation "." between mixed and '/.gitignore' results in an error.
-			identifier: binaryOp.invalid
-			count: 1
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: Binary operation "." between mixed and '/.mcp.json' results in an error.
-			identifier: binaryOp.invalid
-			count: 1
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: Binary operation "." between mixed and '/.config/boost.php' results in an error.
-			identifier: binaryOp.invalid
-			count: 2
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: Binary operation "." between mixed and '/boost.php' results in an error.
-			identifier: binaryOp.invalid
-			count: 1
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: Binary operation "." between mixed and '/composer.json' results in an error.
-			identifier: binaryOp.invalid
-			count: 5
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: Binary operation "." between mixed and '/config/queue…' results in an error.
-			identifier: binaryOp.invalid
-			count: 1
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: Binary operation "." between mixed and '/phpstan-baseline…' results in an error.
-			identifier: binaryOp.invalid
-			count: 1
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: Binary operation "." between mixed and '/phpstan.neon.dist' results in an error.
-			identifier: binaryOp.invalid
-			count: 1
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: Binary operation "." between mixed and '/phpunit.xml' results in an error.
-			identifier: binaryOp.invalid
-			count: 1
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: Binary operation "." between mixed and '/pint.json' results in an error.
-			identifier: binaryOp.invalid
-			count: 1
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: Binary operation "." between mixed and '/resources/boost…' results in an error.
-			identifier: binaryOp.invalid
-			count: 1
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: Binary operation "." between mixed and '/src/QueueInsights…' results in an error.
-			identifier: binaryOp.invalid
-			count: 2
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: Binary operation "." between mixed and '/src…' results in an error.
-			identifier: binaryOp.invalid
-			count: 1
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: Binary operation "." between mixed and '/tests' results in an error.
-			identifier: binaryOp.invalid
-			count: 1
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: Binary operation "." between mixed and '/tests/Pest.php' results in an error.
-			identifier: binaryOp.invalid
-			count: 1
-			path: tests/Feature/PackageScaffolderSmokeTest.php
 
 		-
 			rawMessage: Cannot access offset 'autoload' on mixed.
@@ -277,12 +79,6 @@ parameters:
 			path: tests/Feature/PackageScaffolderSmokeTest.php
 
 		-
-			rawMessage: Cannot access offset 'illuminate/contracts' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
-			count: 1
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
 			rawMessage: Cannot access offset 'name' on mixed.
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 2
@@ -297,12 +93,6 @@ parameters:
 		-
 			rawMessage: Cannot access offset 'require' on mixed.
 			identifier: offsetAccess.nonOffsetAccessible
-			count: 3
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: Cannot access offset 'stubsWritten' on mixed.
-			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
 			path: tests/Feature/PackageScaffolderSmokeTest.php
 
@@ -319,31 +109,13 @@ parameters:
 			path: tests/Feature/PackageScaffolderSmokeTest.php
 
 		-
-			rawMessage: 'Cannot call method scaffold() on mixed.'
-			identifier: method.nonObject
-			count: 3
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
 			rawMessage: 'Parameter #1 $array of function array_key_first expects array, mixed given.'
 			identifier: argument.type
 			count: 1
 			path: tests/Feature/PackageScaffolderSmokeTest.php
 
 		-
-			rawMessage: 'Parameter #1 $directory of class RecursiveDirectoryIterator constructor expects string, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
 			rawMessage: 'Parameter #1 $directory of function rmdir expects string, mixed given.'
-			identifier: argument.type
-			count: 2
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: 'Parameter #1 $filename of function is_dir expects string, mixed given.'
 			identifier: argument.type
 			count: 1
 			path: tests/Feature/PackageScaffolderSmokeTest.php
@@ -357,98 +129,8 @@ parameters:
 		-
 			rawMessage: 'Parameter #1 $json of function json_decode expects string, string|false given.'
 			identifier: argument.type
-			count: 3
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: Access to an undefined property Pest\PendingCalls\TestCall::$deps.
-			identifier: property.notFound
-			count: 15
-			path: tests/Unit/PerCategoryDepsTest.php
-
-		-
-			rawMessage: Access to an undefined property Pest\PendingCalls\TestCall::$repoInit.
-			identifier: property.notFound
-			count: 1
-			path: tests/Unit/PerCategoryDepsTest.php
-
-		-
-			rawMessage: Cannot access property $require on mixed.
-			identifier: property.nonObject
-			count: 4
-			path: tests/Unit/PerCategoryDepsTest.php
-
-		-
-			rawMessage: Cannot access property $requireDev on mixed.
-			identifier: property.nonObject
-			count: 7
-			path: tests/Unit/PerCategoryDepsTest.php
-
-		-
-			rawMessage: 'Cannot call method forCategory() on mixed.'
-			identifier: method.nonObject
-			count: 7
-			path: tests/Unit/PerCategoryDepsTest.php
-
-		-
-			rawMessage: 'Cannot call method sharedStubSkipFor() on mixed.'
-			identifier: method.nonObject
-			count: 3
-			path: tests/Unit/PerCategoryDepsTest.php
-
-		-
-			rawMessage: 'Cannot call method stubDirFor() on mixed.'
-			identifier: method.nonObject
-			count: 4
-			path: tests/Unit/PerCategoryDepsTest.php
-
-		-
-			rawMessage: 'Parameter #1 $callback of function array_map expects (callable(mixed): mixed)|null, Closure(string): string given.'
-			identifier: argument.type
-			count: 11
-			path: tests/Unit/PerCategoryDepsTest.php
-
-		-
-			rawMessage: 'Parameter #2 $array of function array_map expects array, mixed given.'
-			identifier: argument.type
-			count: 11
-			path: tests/Unit/PerCategoryDepsTest.php
-
-		-
-			rawMessage: Access to an undefined property Pest\PendingCalls\TestCall::$tmp.
-			identifier: property.notFound
-			count: 17
-			path: tests/Unit/TargetDirResolverTest.php
-
-		-
-			rawMessage: Binary operation "." between mixed and '/.git' results in an error.
-			identifier: binaryOp.invalid
-			count: 1
-			path: tests/Unit/TargetDirResolverTest.php
-
-		-
-			rawMessage: Binary operation "." between mixed and '/absolute-target' results in an error.
-			identifier: binaryOp.invalid
-			count: 1
-			path: tests/Unit/TargetDirResolverTest.php
-
-		-
-			rawMessage: Binary operation "." between mixed and '/existing-file' results in an error.
-			identifier: binaryOp.invalid
-			count: 1
-			path: tests/Unit/TargetDirResolverTest.php
-
-		-
-			rawMessage: Binary operation "." between mixed and '/foo' results in an error.
-			identifier: binaryOp.invalid
 			count: 2
-			path: tests/Unit/TargetDirResolverTest.php
-
-		-
-			rawMessage: Binary operation "." between mixed and '/foo/x' results in an error.
-			identifier: binaryOp.invalid
-			count: 1
-			path: tests/Unit/TargetDirResolverTest.php
+			path: tests/Feature/PackageScaffolderSmokeTest.php
 
 		-
 			rawMessage: 'Cannot call method getPathname() on mixed.'
@@ -463,19 +145,7 @@ parameters:
 			path: tests/Unit/TargetDirResolverTest.php
 
 		-
-			rawMessage: 'Parameter #1 $directory of class RecursiveDirectoryIterator constructor expects string, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: tests/Unit/TargetDirResolverTest.php
-
-		-
 			rawMessage: 'Parameter #1 $directory of function rmdir expects string, mixed given.'
-			identifier: argument.type
-			count: 2
-			path: tests/Unit/TargetDirResolverTest.php
-
-		-
-			rawMessage: 'Parameter #1 $filename of function is_dir expects string, mixed given.'
 			identifier: argument.type
 			count: 1
 			path: tests/Unit/TargetDirResolverTest.php
@@ -484,16 +154,4 @@ parameters:
 			rawMessage: 'Parameter #1 $filename of function unlink expects string, mixed given.'
 			identifier: argument.type
 			count: 1
-			path: tests/Unit/TargetDirResolverTest.php
-
-		-
-			rawMessage: 'Parameter #1 $path of function realpath expects string, mixed given.'
-			identifier: argument.type
-			count: 2
-			path: tests/Unit/TargetDirResolverTest.php
-
-		-
-			rawMessage: 'Parameter #2 $cwd of method SanderMuller\RepoNew\Scaffolder\TargetDirResolver::resolve() expects string, mixed given.'
-			identifier: argument.type
-			count: 5
 			path: tests/Unit/TargetDirResolverTest.php

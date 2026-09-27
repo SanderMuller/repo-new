@@ -35,7 +35,8 @@ final readonly class RepoInitLocator
         }
 
         throw new RuntimeException(
-            'sandermuller/repo-init not found. Run `composer global require sandermuller/repo-init` first.',
+            'sandermuller/repo-init not found. It ships as a dependency of sandermuller/repo-new, so the install is incomplete: '
+            . 'reinstall repo-new (`composer global require sandermuller/repo-new`).',
         );
     }
 

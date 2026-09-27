@@ -11,6 +11,7 @@ use SanderMuller\RepoNew\Wizard\Question\PhpVersionQuestion;
 use SanderMuller\RepoNew\Wizard\Question\PluginShapeQuestion;
 use SanderMuller\RepoNew\Wizard\Question\ProjectVsPackageQuestion;
 use SanderMuller\RepoNew\Wizard\Question\SkillTagsQuestion;
+use SanderMuller\RepoNew\Wizard\Question\VariantQuestion;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 /**
@@ -29,6 +30,7 @@ final class Wizard
         new DescriptionQuestion()->ask($io, $state);
         new PhpVersionQuestion()->ask($io, $state);
         new LaravelVersionQuestion()->ask($io, $state);
+        new VariantQuestion()->ask($io, $state);
         new LaravelAwareQuestion()->ask($io, $state);
         new PluginShapeQuestion()->ask($io, $state);
         new SkillTagsQuestion()->ask($io, $state);

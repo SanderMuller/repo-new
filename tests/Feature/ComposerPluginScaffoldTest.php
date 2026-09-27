@@ -60,7 +60,7 @@ function scaffoldPlugin(string $tmp, string $shape, PackageScaffolder $scaffolde
     $state->vendor = 'sandermuller';
     $state->package = 'my-plugin';
     $state->description = 'Test plugin.';
-    $state->phpVersion = '8.3';
+    $state->phpVersion = '8.4';
     $state->testFramework = 'pest';
     $state->pluginShape = $shape;
     $state->authorName = 'Sander Muller';

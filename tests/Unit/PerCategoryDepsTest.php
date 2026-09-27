@@ -66,8 +66,10 @@ it('uses phpunit (no pest-plugin-laravel) for laravel-package with phpunit', fun
         ->and($names)->not->toContain('pestphp/pest-plugin-laravel');
 });
 
-it('maps laravel-package to the spatie stub directory', function (): void {
-    expect($this->deps->stubDirFor('laravel-package'))->toBe('laravel-package-spatie')
+it('maps laravel-package to its variant stub directory', function (): void {
+    expect($this->deps->stubDirFor('laravel-package', 'spatie'))->toBe('laravel-package-spatie')
+        ->and($this->deps->stubDirFor('laravel-package', 'sander'))->toBe('laravel-package')
+        ->and($this->deps->stubDirFor('laravel-package'))->toBe('laravel-package')
         ->and($this->deps->stubDirFor('php-package'))->toBe('php-package')
         ->and($this->deps->stubDirFor('composer-plugin'))->toBe('composer-plugin')
         ->and($this->deps->stubDirFor('skill-bundle'))->toBe('skill-bundle');

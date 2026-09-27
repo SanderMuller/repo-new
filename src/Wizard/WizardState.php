@@ -10,6 +10,8 @@ namespace SanderMuller\RepoNew\Wizard;
  */
 final class WizardState
 {
+    public const string DEFAULT_LARAVEL_VERSIONS = '^12.0||^13.0';
+
     /** One of: laravel-project, laravel-package, php-package, phpstan-extension, rector-extension, composer-plugin, skill-bundle. */
     public ?string $category = null;
 
@@ -22,20 +24,26 @@ final class WizardState
     /** Free text. */
     public ?string $description = null;
 
-    /** One of: 8.3, 8.4, 8.5. */
+    /** One of PhpVersionPolicy::allowedFor($category). */
     public ?string $phpVersion = null;
 
-    /** Constraint string. Defaults to ^11.0||^12.0||^13.0 for laravel-package. */
+    /** Constraint string. Defaults to DEFAULT_LARAVEL_VERSIONS for laravel-package and laravel-aware extensions. */
     public ?string $laravelVersions = null;
 
-    /** Pest or phpunit. Vendor-derived default; user can override. */
+    /** Pest or phpunit. Category- and vendor-derived default; user can override. */
     public ?string $testFramework = null;
 
-    /** laravel-project only. */
-    public bool $withHihahoRules = false;
+    /** laravel-project only. Null until a flag answers it; defaults to vendor === hihaho. */
+    public ?bool $withHihahoRules = null;
 
     /** laravel-project only. */
-    public bool $withSecurityAdvisories = false;
+    public bool $withHealthChecks = false;
+
+    /**
+     * laravel-package only. `sander` (plain ServiceProvider) or `spatie`
+     * (spatie/laravel-package-tools). Defaults to `spatie` for vendor hihaho.
+     */
+    public ?string $variant = null;
 
     /** phpstan-extension + rector-extension only. */
     public bool $laravelAware = false;
@@ -79,56 +87,41 @@ final class WizardState
     }
 
     /**
-     * Apply vendor-driven defaults. Idempotent — only sets fields
-     * that are still null/false.
+     * Apply category- and vendor-driven defaults. Idempotent — only sets
+     * fields that are still null.
      */
     public function applyDefaults(): void
     {
-        if ($this->testFramework === null) {
-            $this->testFramework = $this->defaultTestFramework();
-        }
+        $this->testFramework ??= $this->defaultTestFramework();
 
-        if ($this->category === 'laravel-project' && $this->vendor === 'hihaho') {
-            // No-op flag; opt-in only flipped on explicitly.
+        $this->withHihahoRules ??= $this->category === 'laravel-project' && $this->vendor === 'hihaho';
+
+        if ($this->category === 'laravel-package' && $this->variant === null) {
+            $this->variant = $this->vendor === 'hihaho' ? 'spatie' : 'sander';
         }
 
         if ($this->category === 'laravel-package' && $this->laravelVersions === null) {
-            $this->laravelVersions = '^11.0||^12.0||^13.0';
+            $this->laravelVersions = self::DEFAULT_LARAVEL_VERSIONS;
         }
 
         // phpstan/rector extension with --laravel-aware needs a Laravel
         // constraint for illuminate/* in require (per per-category-deps.yml).
         if ($this->laravelAware && $this->laravelVersions === null
             && in_array($this->category, ['phpstan-extension', 'rector-extension'], true)) {
-            $this->laravelVersions = '^11.0||^12.0||^13.0';
+            $this->laravelVersions = self::DEFAULT_LARAVEL_VERSIONS;
         }
 
-        if ($this->phpVersion === null) {
-            $this->phpVersion = '8.3';
-        }
+        $this->phpVersion ??= PhpVersionPolicy::defaultFor($this->category);
     }
 
     private function defaultTestFramework(): string
     {
-        // phpstan-extension + rector-extension always phpunit (per spec §3
-        // vendor-driven defaults; extension stubs hardcode phpunit scripts;
-        // PHPStan's RuleTestCase is PHPUnit-based).
-        if (in_array($this->category, ['phpstan-extension', 'rector-extension'], true)) {
+        // phpstan-extension defaults to phpunit (PHPStan's RuleTestCase is
+        // PHPUnit-based; bootstrap-phpstan-extension.md). laravel-project ships
+        // PHPUnit via `laravel new`; pest there needs `pest --init`, which the
+        // scaffolder does not run.
+        if (in_array($this->category, ['phpstan-extension', 'laravel-project'], true)) {
             return 'phpunit';
-        }
-
-        // laravel-project ships PHPUnit via `laravel new` by default.
-        // pestphp/pest-plugin-laravel lags Laravel versions (Laravel 13
-        // requires pest-plugin-laravel ^4.1; older Laravel can use earlier).
-        // Default to phpunit; users opt into pest via --test-framework=pest
-        // (then they must run `vendor/bin/pest --init` separately to migrate
-        // tests). Sander-vendor convention also defaults laravel-project to
-        // phpunit since pest-on-Laravel-13 is fragile.
-        if ($this->category === 'laravel-project') {
-            return match ($this->vendor) {
-                'sandermuller' => 'phpunit',  // override the sander → pest default for laravel-project
-                default => 'phpunit',
-            };
         }
 
         return match ($this->vendor) {

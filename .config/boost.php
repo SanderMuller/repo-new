@@ -26,6 +26,7 @@ return BoostConfig::configure()
         'stolt/lean-package-validator',
     ])
     ->withTags([
+        'voice',
         Tag::Php,
         Tag::Github,
         Tag::Pest,

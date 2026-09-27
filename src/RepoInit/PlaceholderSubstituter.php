@@ -29,14 +29,14 @@ final readonly class PlaceholderSubstituter
         // NOTE: the literal string above contains 2 backslashes raw (PHP `\\\\`
         // = 2 characters), which is exactly the JSON-source form we need.
 
-        $phpVersion = $state->phpVersion ?? '8.3';
+        $phpVersion = $state->phpVersion ?? '8.4';
         $testRunner = $state->testFramework ?? 'pest';
         $testCoverageFlag = $testRunner === 'phpunit' ? '--coverage-html=coverage' : '--coverage';
 
-        // .config/boost.php `->withTags([__SKILL_TAGS__])`: a comma-separated list of
-        // single-quoted tag strings, or empty (→ `->withTags([])`, a valid no-op).
-        $skillTags = implode(', ', array_map(
-            static fn (string $tag): string => "'{$tag}'",
+        // .config/boost.php `->withTags(['voice'__SKILL_TAGS__])`: each picked tag
+        // rendered as `, '<tag>'` (leading comma-space), or empty when nothing is picked.
+        $skillTags = implode('', array_map(
+            static fn (string $tag): string => ", '{$tag}'",
             $state->skillTags ?? [],
         ));
 

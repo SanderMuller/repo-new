@@ -13,8 +13,7 @@ it('builds a non-empty handoff prompt for every wizard category', function (stri
     // this guards every category in NewCommand::CATEGORIES against that gap.
     $prompt = new HandoffPromptBuilder()->build($state, '/tmp/demo');
 
-    expect($prompt)->toBeString()
-        ->and($prompt)->not->toBeEmpty()
+    expect($prompt)->not->toBeEmpty()
         ->and($prompt)->toContain('/tmp/demo');
 })->with([
     'laravel-project',
@@ -24,4 +23,26 @@ it('builds a non-empty handoff prompt for every wizard category', function (stri
     'rector-extension',
     'composer-plugin',
     'skill-bundle',
+]);
+
+it('describes the laravel-project boost tool as laravel/boost, not package-boost', function (): void {
+    $state = new WizardState();
+    $state->category = 'laravel-project';
+
+    $prompt = new HandoffPromptBuilder()->build($state, '/tmp/demo');
+
+    expect($prompt)->toContain('laravel/boost')
+        ->and($prompt)->not->toContain('package-boost')
+        ->and($prompt)->not->toContain('Every step should be a no-op');
+});
+
+it('names the laravel-package variant the scaffold used', function (string $variant, string $expected): void {
+    $state = new WizardState();
+    $state->category = 'laravel-package';
+    $state->variant = $variant;
+
+    expect(new HandoffPromptBuilder()->build($state, '/tmp/demo'))->toContain($expected);
+})->with([
+    ['sander', 'plain Illuminate ServiceProvider'],
+    ['spatie', 'spatie/laravel-package-tools based'],
 ]);

@@ -45,6 +45,9 @@ final class HandoffPromptBuilder
             '{PHP_VERSION}' => $state->phpVersion ?? '',
             '{LARAVEL_VERSIONS}' => $state->laravelVersions ?? '',
             '{PLUGIN_SHAPE}' => $state->pluginShape ?? '',
+            '{VARIANT_DESCRIPTION}' => $state->variant === 'spatie'
+                ? 'spatie/laravel-package-tools based'
+                : 'plain Illuminate ServiceProvider',
         ]);
     }
 }

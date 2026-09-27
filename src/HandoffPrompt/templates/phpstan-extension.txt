@@ -3,8 +3,9 @@ I just scaffolded a new PHPStan extension at {TARGET_DIR}
 The skeleton is wired (composer install, deps, package-boost). Please:
 
 1. Verify the scaffold is healthy — run the repo-init `bootstrap-phpstan-extension.md`
-   phase file from your skill. Every step should be a no-op (idempotency guards
-   confirm everything is already done). Surface anything that needs attention.
+   phase file from your skill. Most steps should be no-ops (their idempotency
+   guards confirm the work is done). Complete any step that is not, and
+   surface anything that needs attention.
 
 2. Walk me through:
    - Writing the first Rule class in src/Rules/

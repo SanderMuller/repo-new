@@ -15,7 +15,9 @@ use SanderMuller\RepoNew\Scaffolder\LaravelProjectScaffolder;
 use SanderMuller\RepoNew\Scaffolder\PackageScaffolder;
 use SanderMuller\RepoNew\Scaffolder\Scaffolder;
 use SanderMuller\RepoNew\Scaffolder\TargetDirResolver;
+use SanderMuller\RepoNew\Wizard\PhpVersionPolicy;
 use SanderMuller\RepoNew\Wizard\Question\SkillTagsQuestion;
+use SanderMuller\RepoNew\Wizard\Question\VariantQuestion;
 use SanderMuller\RepoNew\Wizard\Wizard;
 use SanderMuller\RepoNew\Wizard\WizardState;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -52,11 +54,13 @@ final class NewCommand extends Command
             ->addOption('type', null, InputOption::VALUE_REQUIRED, 'Category: ' . implode(', ', self::CATEGORIES))
             ->addOption('vendor', null, InputOption::VALUE_REQUIRED, 'Composer vendor.')
             ->addOption('description', null, InputOption::VALUE_REQUIRED, 'One-line description.')
-            ->addOption('php', null, InputOption::VALUE_REQUIRED, 'PHP version: 8.3|8.4|8.5')
+            ->addOption('php', null, InputOption::VALUE_REQUIRED, 'PHP version: 8.4|8.5 for packages (default 8.4); 8.5 for laravel-project')
             ->addOption('laravel', null, InputOption::VALUE_REQUIRED, 'Laravel constraint (laravel-package only).')
             ->addOption('test-framework', null, InputOption::VALUE_REQUIRED, 'pest|phpunit')
-            ->addOption('with-hihaho-rules', null, InputOption::VALUE_NONE, 'Opt-in for laravel-project.')
-            ->addOption('with-security-advisories', null, InputOption::VALUE_NONE, 'Opt-in for laravel-project.')
+            ->addOption('variant', null, InputOption::VALUE_REQUIRED, 'laravel-package service provider base: ' . implode('|', VariantQuestion::VARIANTS) . ' (default spatie for vendor hihaho, else sander)')
+            ->addOption('with-hihaho-rules', null, InputOption::VALUE_NEGATABLE, 'laravel-project: hihaho PHPStan/Rector rule packs (default on for vendor hihaho).')
+            ->addOption('with-health-checks', null, InputOption::VALUE_NONE, 'laravel-project: add spatie/security-advisories-health-check.')
+            ->addOption('with-security-advisories', null, InputOption::VALUE_NONE, 'Deprecated, does nothing (removed in the next major). See --with-health-checks.')
             ->addOption('laravel-aware', null, InputOption::VALUE_NONE, 'Opt-in for phpstan/rector-extension.')
             ->addOption('plugin-shape', null, InputOption::VALUE_REQUIRED, 'composer-plugin shape: ' . implode('|', self::PLUGIN_SHAPES))
             ->addOption('skill-tags', null, InputOption::VALUE_REQUIRED, 'Comma-separated boost-skills tags for .config/boost.php: ' . implode(',', SkillTagsQuestion::TAGS))
@@ -67,11 +71,20 @@ final class NewCommand extends Command
     {
         $io = new SymfonyStyle($input, $output);
 
+        if ($input->getOption('with-security-advisories') === true) {
+            $io->warning('--with-security-advisories is deprecated and does nothing: repo-init no longer ships that opt-in. It will be removed in the next major. For a laravel-project that uses spatie/laravel-health, pass --with-health-checks.');
+        }
+
         try {
             $state = $this->buildStateFromFlags($input);
 
             $wizard = new Wizard();
             $wizard->run($io, $state);
+
+            PhpVersionPolicy::assertAllowed($state->phpVersion ?? '', $state->category);
+            $this->assertTestFrameworkSupported($state);
+            $this->assertLaravelRangeSupported($state);
+            $this->assertHostPhpSupported($state);
 
             // Final validation.
             $missing = $this->missingFields($state);
@@ -127,8 +140,7 @@ final class NewCommand extends Command
 
             return Command::SUCCESS;
         } catch (RuntimeException|InvalidArgumentException $exception) {
-            // RuntimeException — scaffolding/locate failures. InvalidArgumentException
-            // — flag validation (--skill-tags / --plugin-shape / --test-framework).
+            // RuntimeException: scaffolding/locate failures. InvalidArgumentException: flag validation.
             $io->error($exception->getMessage());
 
             return 65;
@@ -144,17 +156,22 @@ final class NewCommand extends Command
         $this->applyType($input, $state);
         $this->applyVendorAndPackage($input, $state);
 
-        foreach (['description' => 'description', 'php' => 'phpVersion', 'laravel' => 'laravelVersions'] as $opt => $field) {
-            $val = $input->getOption($opt);
-            if (is_string($val) && $val !== '') {
-                $state->{$field} = $val;
-            }
+        $state->description = $this->nonEmptyStringOption($input, 'description');
+        $state->phpVersion = $this->nonEmptyStringOption($input, 'php');
+        $state->laravelVersions = $this->nonEmptyStringOption($input, 'laravel');
+
+        // Fail fast on an unsupported --php when the category is already known;
+        // execute() re-checks after the wizard for an interactively-picked category.
+        if ($state->phpVersion !== null && $state->category !== null) {
+            PhpVersionPolicy::assertAllowed($state->phpVersion, $state->category);
         }
 
         $this->applyTestFrameworkFlag($input, $state);
+        $this->applyVariantFlag($input, $state);
 
-        $state->withHihahoRules = $input->getOption('with-hihaho-rules') === true;
-        $state->withSecurityAdvisories = $input->getOption('with-security-advisories') === true;
+        $hihahoRules = $input->getOption('with-hihaho-rules');
+        $state->withHihahoRules = is_bool($hihahoRules) ? $hihahoRules : null;
+        $state->withHealthChecks = $input->getOption('with-health-checks') === true;
         $state->laravelAware = $input->getOption('laravel-aware') === true;
         $state->commit = $input->getOption('commit') === true;
 
@@ -162,6 +179,29 @@ final class NewCommand extends Command
         $this->applySkillTagsFlag($input, $state);
 
         return $state;
+    }
+
+    private function nonEmptyStringOption(InputInterface $input, string $name): ?string
+    {
+        $value = $input->getOption($name);
+
+        return is_string($value) && $value !== '' ? $value : null;
+    }
+
+    private function applyVariantFlag(InputInterface $input, WizardState $state): void
+    {
+        $variant = $input->getOption('variant');
+        if (! is_string($variant) || $variant === '') {
+            return;
+        }
+
+        if (! in_array($variant, VariantQuestion::VARIANTS, true)) {
+            throw new InvalidArgumentException(
+                '--variant must be one of: ' . implode(', ', VariantQuestion::VARIANTS) . ", got '{$variant}'",
+            );
+        }
+
+        $state->variant = $variant;
     }
 
     private function applyPluginShapeFlag(InputInterface $input, WizardState $state): void
@@ -247,9 +287,49 @@ final class NewCommand extends Command
             $state->testFramework = $tf;
         }
 
-        // Laravel-project + pest needs `pest --init` to migrate from PHPUnit
-        // tests, which the scaffolder doesn't run yet. Reject the combo with a
-        // clear message instead of half-applying it.
+        $this->assertTestFrameworkSupported($state);
+    }
+
+    /**
+     * Laravel-project + pest needs `pest --init` to migrate from PHPUnit
+     * tests, which the scaffolder doesn't run yet. Reject the combo with a
+     * clear message instead of half-applying it.
+     */
+    /**
+     * Pest 5 cannot install next to testbench 10, so a Pest laravel-package
+     * tests on Laravel 13 (testbench 11) and its range must include it.
+     */
+    private function assertLaravelRangeSupported(WizardState $state): void
+    {
+        if ($state->category !== 'laravel-package' || $state->testFramework !== 'pest') {
+            return;
+        }
+
+        // Some `||` alternative must start at major 13 (`^13.0`, `~13.1`, `13.*`).
+        if (preg_match('/(?:^|\|)\s*[\^~]?13(?:\.|\s*(?:\||$))/', $state->laravelVersions ?? '') !== 1) {
+            throw new InvalidArgumentException(
+                "--laravel={$state->laravelVersions} cannot be tested with Pest 5, which needs orchestra/testbench 11 (Laravel 13). Include ^13.0 in --laravel or use --test-framework=phpunit.",
+            );
+        }
+    }
+
+    /**
+     * composer and `laravel new` run on this PHP, so it must meet the scaffold's floor.
+     */
+    private function assertHostPhpSupported(WizardState $state): void
+    {
+        $phpVersion = $state->phpVersion ?? '';
+        if (version_compare(PHP_VERSION, $phpVersion, '>=')) {
+            return;
+        }
+
+        throw new InvalidArgumentException(
+            "--php={$phpVersion} needs PHP {$phpVersion} or newer to run composer, but this is PHP " . PHP_VERSION . '. Run repo-new with a newer PHP.',
+        );
+    }
+
+    private function assertTestFrameworkSupported(WizardState $state): void
+    {
         if ($state->category === 'laravel-project' && $state->testFramework === 'pest') {
             throw new InvalidArgumentException(
                 "laravel-project does not yet support --test-framework=pest (would require running `pest --init` to migrate Laravel's PHPUnit tests). Use phpunit or migrate manually after scaffold.",
@@ -310,6 +390,7 @@ final class NewCommand extends Command
         $io->definitionList(
             ['Category' => $state->category ?? ''],
             ['Plugin shape' => $state->pluginShape ?? '—'],
+            ['Variant' => $state->variant ?? '—'],
             ['Composer name' => $state->composerName() ?? ''],
             ['Description' => $state->description ?? ''],
             ['PHP' => $state->phpVersion ?? ''],

@@ -3,10 +3,13 @@
 namespace SanderMuller\RepoNew\Scaffolder;
 
 use RuntimeException;
+use SanderMuller\RepoNew\Composer\ComposerJson;
 use SanderMuller\RepoNew\Composer\ComposerRunnerInterface;
+use SanderMuller\RepoNew\Composer\PluginAllowlist;
 use SanderMuller\RepoNew\RepoInit\PerCategoryDeps;
 use SanderMuller\RepoNew\RepoInit\PlaceholderSubstituter;
 use SanderMuller\RepoNew\RepoInit\StubReader;
+use SanderMuller\RepoNew\Wizard\PhpVersionPolicy;
 use SanderMuller\RepoNew\Wizard\WizardState;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use Symfony\Component\Process\Process;
@@ -14,16 +17,6 @@ use Symfony\Component\Process\Process;
 /**
  * Scaffolds php-package, laravel-package, phpstan-extension, rector-extension,
  * composer-plugin, skill-bundle.
- *
- * Steps (per spec §5 package categories):
- *  1. Copy stubs/shared/* (substituted).
- *  2. Copy stubs/<category>/* (substituted).
- *  3. composer install.
- *  4. composer require --dev <list>.
- *  5. composer require <runtime list>.
- *
- * Laravel-aware opt-in for extension categories is honored BEFORE composer
- * install via PerCategoryDeps.forCategory().
  */
 final readonly class PackageScaffolder
 {
@@ -47,27 +40,31 @@ final readonly class PackageScaffolder
         $sharedSkipper = new SharedStubSkipper($this->deps->sharedStubSkipFor($state->category ?? ''));
         $written += $this->copyStubs('shared', $targetDir, $substituter, $sharedSkipper);
 
-        $stubDir = $this->deps->stubDirFor($state->category ?? '');
+        $category = $state->category ?? '';
+        $framework = $state->testFramework ?? 'pest';
+
+        $stubDir = $this->deps->stubDirFor($category, $state->variant);
         $written += $this->copyStubs($stubDir, $targetDir, $substituter);
 
-        if ($state->category === 'composer-plugin') {
+        if ($category === 'composer-plugin') {
             $this->selectPluginShapeFiles($targetDir, $state->pluginShape ?? 'none');
         }
 
-        // Overlay test-framework-specific stubs (e.g. tests/Pest.php for pest).
-        // skill-bundle ships pure-markdown skills, no PHP and no test runner,
-        // so it gets no test-framework overlay.
-        if ($state->category !== 'skill-bundle') {
-            $framework = $state->testFramework ?? 'pest';
+        // skill-bundle ships no PHP and no test runner, so it gets no test-framework overlay.
+        if ($category !== 'skill-bundle') {
             $written += $this->copyStubs("test-framework-{$framework}", $targetDir, $substituter);
+            $this->overlayFrameworkNativeCiMatrix($category, $stubDir, $framework, $targetDir, $substituter);
+            new TestFrameworkSwapper($this->deps)->apply($targetDir, $category, $framework);
         }
 
+        new WorkflowPhpVersion()->apply($targetDir, $state->phpVersion ?? PhpVersionPolicy::defaultFor($category));
+
         $optInFlags = $this->optInFlagsFromState($state);
-        $depList = $this->deps->forCategory($state->category ?? '', $state->testFramework ?? 'pest', $optInFlags);
+        $depList = $this->deps->forCategory($category, $framework, $optInFlags);
 
         // Substitute placeholders in dep constraints (e.g. illuminate/support: __LARAVEL_VERSIONS__).
-        $require = array_map($substituter->substitute(...), $depList->require);
-        $requireDev = array_map($substituter->substitute(...), $depList->requireDev);
+        $require = $this->withoutAlreadyRequired($targetDir, array_map($substituter->substitute(...), $depList->require));
+        $requireDev = $this->withoutAlreadyRequired($targetDir, array_map($substituter->substitute(...), $depList->requireDev));
 
         // Pre-allow plugins our deps will pull in. Without this, composer
         // aborts with "contains a Composer plugin which is blocked by your
@@ -75,16 +72,15 @@ final readonly class PackageScaffolder
         // composer call already sees them allowed. pestphp/pest-plugin only
         // when actually installing pest (otherwise it lingers in
         // composer.json as a stale allow-plugin entry for nothing).
-        // skill-bundle pulls no plugin-bearing dev deps and ships no test
-        // runner, so it needs no pre-allow — its only plugin, boost-core, is
-        // already allowed in the skill-bundle stub's composer.json.
-        if ($state->category !== 'skill-bundle') {
+        // skill-bundle pulls no plugin-bearing deps (boost-core is type:
+        // library), so it needs no pre-allow.
+        if ($category !== 'skill-bundle') {
             $plugins = ['phpstan/extension-installer'];
-            if (($state->testFramework ?? 'pest') === 'pest') {
+            if ($framework === 'pest') {
                 $plugins[] = 'pestphp/pest-plugin';
             }
 
-            $this->preAllowPlugins($targetDir, $plugins);
+            new PluginAllowlist()->allow($targetDir, $plugins);
         }
 
         $this->composer->install($targetDir);
@@ -152,7 +148,7 @@ final readonly class PackageScaffolder
      * Generate .ai/, .claude/, .agents/, .cursor/, AGENTS.md, CLAUDE.md, etc.
      * Composer install/require ran with --no-scripts to keep the scaffold flow
      * predictable; we invoke sync explicitly so the scaffold completes with
-     * AI tooling wired up.
+     * AI tooling wired up. A failed sync fails the scaffold.
      */
     private function runPackageBoostSync(string $targetDir): void
     {
@@ -168,12 +164,53 @@ final readonly class PackageScaffolder
         });
 
         if (! $process->isSuccessful()) {
-            $this->io->warning(
+            throw new RuntimeException(
                 'boost sync failed (exit ' . $process->getExitCode() . '). '
                 . 'AI tooling dirs (.ai/, .claude/, .agents/, AGENTS.md, CLAUDE.md, …) may be missing or partial. '
-                . 'Re-run `vendor/bin/boost sync` in the scaffolded dir to retry.',
+                . "Fix the error above, then re-run `vendor/bin/boost sync` in {$targetDir}.",
             );
         }
+    }
+
+    /**
+     * laravel-package's two stubs differ in CI matrix as well as framework:
+     * the Pest-flavoured `laravel-package` tests Laravel 13 only (Pest 5 cannot
+     * install next to testbench 10); the PHPUnit-flavoured
+     * `laravel-package-spatie` also tests Laravel 12. When the chosen framework
+     * is not the variant's own, take run-tests.yml from the other stub.
+     */
+    private function overlayFrameworkNativeCiMatrix(string $category, string $stubDir, string $framework, string $targetDir, PlaceholderSubstituter $substituter): void
+    {
+        if ($category !== 'laravel-package') {
+            return;
+        }
+
+        $nativeStubDir = $framework === 'pest' ? 'laravel-package' : 'laravel-package-spatie';
+        if ($nativeStubDir === $stubDir) {
+            return;
+        }
+
+        $this->copyStubs($nativeStubDir, $targetDir, $substituter, only: ['.github/workflows/run-tests.yml']);
+    }
+
+    /**
+     * Drops bare (unconstrained) entries the stub composer.json already
+     * requires — `composer require foo/bar` would otherwise re-guess and
+     * overwrite the stub's canonical constraint. Constrained entries stay,
+     * so the canonical floors are still enforced.
+     *
+     * @param  list<string>  $entries
+     * @return list<string>
+     */
+    private function withoutAlreadyRequired(string $targetDir, array $entries): array
+    {
+        $json = ComposerJson::read($targetDir . '/composer.json');
+        $present = ComposerJson::map($json, 'require') + ComposerJson::map($json, 'require-dev');
+
+        return array_values(array_filter(
+            $entries,
+            static fn (string $entry): bool => str_contains($entry, ':') || ! array_key_exists(trim($entry), $present),
+        ));
     }
 
     /**
@@ -182,14 +219,10 @@ final readonly class PackageScaffolder
     private function optInFlagsFromState(WizardState $state): array
     {
         return match ($state->category) {
-            'laravel-project' => [
-                'with-hihaho-rules' => $state->withHihahoRules,
-                'with-security-advisories' => $state->withSecurityAdvisories,
-            ],
             'laravel-package' => [
-                // laravel-package always scaffolds the spatie/laravel-package-tools
-                // stub; this opt-in pulls spatie/laravel-package-tools into require.
-                'hihaho-package-tools-flavoured' => true,
+                // The spatie stub already pins spatie/laravel-package-tools; the
+                // opt-in only keeps the dep list matching per-category-deps.yml.
+                'hihaho-package-tools-flavoured' => $state->variant === 'spatie',
             ],
             'phpstan-extension', 'rector-extension' => [
                 'laravel-aware' => $state->laravelAware,
@@ -215,28 +248,18 @@ final readonly class PackageScaffolder
     }
 
     /**
-     * @param  list<string>  $plugins
+     * @param  list<string>|null  $only  when set, copy just these stub-relative paths
      */
-    private function preAllowPlugins(string $targetDir, array $plugins): void
-    {
-        foreach ($plugins as $plugin) {
-            $process = new Process(
-                ['composer', 'config', '--no-plugins', "allow-plugins.{$plugin}", 'true'],
-                $targetDir,
-                null,
-                null,
-                60.0,
-            );
-            $process->run();
-        }
-    }
-
-    private function copyStubs(string $stubDir, string $targetDir, PlaceholderSubstituter $substituter, ?SharedStubSkipper $skipper = null): int
+    private function copyStubs(string $stubDir, string $targetDir, PlaceholderSubstituter $substituter, ?SharedStubSkipper $skipper = null, ?array $only = null): int
     {
         $count = 0;
 
         foreach ($this->stubReader->read($stubDir) as $stub) {
             if ($skipper?->shouldSkip($stub['relative']) === true) {
+                continue;
+            }
+
+            if ($only !== null && ! in_array($stub['relative'], $only, true)) {
                 continue;
             }
 

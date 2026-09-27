@@ -19,8 +19,8 @@ final class LaravelVersionQuestion
 
         $state->laravelVersions = $io->choice(
             'Laravel version range?',
-            ['^11.0||^12.0||^13.0', '^12.0||^13.0', '^13.0'],
-            '^11.0||^12.0||^13.0',
+            [WizardState::DEFAULT_LARAVEL_VERSIONS, '^13.0'],
+            WizardState::DEFAULT_LARAVEL_VERSIONS,
         );
     }
 }

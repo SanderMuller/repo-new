@@ -66,15 +66,7 @@ final readonly class PerCategoryDeps
             $sharedAlwaysDev = $this->listFrom($this->data, ['shared', 'always', 'require-dev']);
 
             // Test-framework deps.
-            /** @var list<string> $testDev */
-            $testDev = $this->listFrom($this->data, ['shared', 'test-framework', $testFramework, 'require-dev']);
-
-            // Pest laravel-only addition.
-            if ($testFramework === 'pest' && in_array($category, ['laravel-project', 'laravel-package'], true)) {
-                /** @var list<string> $pestLaravelOnly */
-                $pestLaravelOnly = $this->listFrom($this->data, ['shared', 'test-framework', 'pest-laravel-only', 'require-dev']);
-                $testDev = array_values(array_merge($testDev, $pestLaravelOnly));
-            }
+            $testDev = $this->testFrameworkDevDeps($category, $testFramework);
 
             // Compose shared dev list.
             $sharedDev = array_values(array_merge($sharedAlwaysDev, $testDev));
@@ -116,7 +108,7 @@ final readonly class PerCategoryDeps
             $requireDev = array_values(array_merge($requireDev, $optDev));
         }
 
-        // Dedupe (last write wins keeping original order).
+        // Dedupe (first entry wins, keeping original order).
         $require = $this->dedupeByPackage($require);
         $requireDev = $this->dedupeByPackage($requireDev);
 
@@ -124,13 +116,23 @@ final readonly class PerCategoryDeps
     }
 
     /**
-     * Stub directory for a category. `laravel-package` always scaffolds the
-     * spatie/laravel-package-tools-based stub (`laravel-package-spatie`);
-     * every other category maps 1:1 to its own name.
+     * @return list<string>
      */
-    public function stubDirFor(string $category): string
+    public function testFrameworkDevDeps(string $category, string $testFramework): array
     {
-        if ($category === 'laravel-package') {
+        $testDev = $this->listFrom($this->data, ['shared', 'test-framework', $testFramework, 'require-dev']);
+
+        if ($testFramework === 'pest' && in_array($category, ['laravel-project', 'laravel-package'], true)) {
+            $pestLaravelOnly = $this->listFrom($this->data, ['shared', 'test-framework', 'pest-laravel-only', 'require-dev']);
+            $testDev = array_values(array_merge($testDev, $pestLaravelOnly));
+        }
+
+        return $testDev;
+    }
+
+    public function stubDirFor(string $category, ?string $variant = null): string
+    {
+        if ($category === 'laravel-package' && $variant === 'spatie') {
             return 'laravel-package-spatie';
         }
 
@@ -211,7 +213,7 @@ final readonly class PerCategoryDeps
     /**
      * Extract package name from an entry like `"foo/bar: ^1.0"` or `"foo/bar"`.
      */
-    private function packageName(string $entry): string
+    public function packageName(string $entry): string
     {
         if (str_contains($entry, ':')) {
             return trim(explode(':', $entry, 2)[0]);

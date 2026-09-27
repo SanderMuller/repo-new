@@ -60,7 +60,7 @@ it('scaffolds a php-package skeleton with all expected files', function (): void
     $state->vendor = 'sandermuller';
     $state->package = 'queue-insights';
     $state->description = 'Queue insights for Laravel.';
-    $state->phpVersion = '8.3';
+    $state->phpVersion = '8.4';
     $state->testFramework = 'pest';
     $state->authorName = 'Sander Muller';
     $state->authorEmail = 'github@scode.nl';
@@ -86,28 +86,46 @@ it('scaffolds a php-package skeleton with all expected files', function (): void
         ->toBeGreaterThan(5);
 });
 
-it('scaffolds a laravel-package with the spatie/laravel-package-tools ServiceProvider', function (): void {
+it('scaffolds a laravel-package with a plain ServiceProvider by default (sander variant)', function (): void {
     $state = new WizardState();
     $state->category = 'laravel-package';
     $state->vendor = 'sandermuller';
     $state->package = 'queue-insights';
     $state->description = 'Queue insights for Laravel.';
-    $state->phpVersion = '8.3';
-    $state->laravelVersions = '^11.0||^12.0||^13.0';
+    $state->phpVersion = '8.4';
+    $state->laravelVersions = '^12.0||^13.0';
     $state->testFramework = 'pest';
+    $state->variant = 'sander';
     $state->authorName = 'Sander Muller';
     $state->authorEmail = 'github@scode.nl';
 
     $this->scaffolder->scaffold($state, $this->tmp);
 
     $providerPath = $this->tmp . '/src/QueueInsightsServiceProvider.php';
-    expect(file_exists($providerPath))->toBeTrue()
-        ->and(file_exists($this->tmp . '/config/queue-insights.php'))->toBeTrue()
-        ->and(file_get_contents($providerPath))->toContain('PackageServiceProvider');
+    expect($this->tmp . '/config/queue-insights.php')->toBeFile()
+        ->and(readFileContents($providerPath))->toContain('extends ServiceProvider')
+        ->and(composerJsonOf($this->tmp))
+        ->toHaveKey('require.illuminate/contracts', '^12.0||^13.0')
+        ->not->toHaveKey('require.spatie/laravel-package-tools');
+});
 
-    $composer = json_decode(file_get_contents($this->tmp . '/composer.json'), true, 512, JSON_THROW_ON_ERROR);
-    expect($composer['require']['illuminate/contracts'])->toBe('^11.0||^12.0||^13.0')
-        ->and($composer['require'])->toHaveKey('spatie/laravel-package-tools');
+it('scaffolds a laravel-package with the spatie/laravel-package-tools ServiceProvider for the spatie variant', function (): void {
+    $state = new WizardState();
+    $state->category = 'laravel-package';
+    $state->vendor = 'hihaho';
+    $state->package = 'queue-insights';
+    $state->description = 'Queue insights for Laravel.';
+    $state->phpVersion = '8.4';
+    $state->laravelVersions = '^12.0||^13.0';
+    $state->testFramework = 'phpunit';
+    $state->variant = 'spatie';
+    $state->authorName = 'Sander Muller';
+    $state->authorEmail = 'github@scode.nl';
+
+    $this->scaffolder->scaffold($state, $this->tmp);
+
+    expect(readFileContents($this->tmp . '/src/QueueInsightsServiceProvider.php'))->toContain('PackageServiceProvider')
+        ->and(composerJsonOf($this->tmp))->toHaveKey('require.spatie/laravel-package-tools');
 });
 
 it('scaffolds a skill-bundle with the lean shared set and no PHP toolchain', function (): void {
@@ -116,7 +134,7 @@ it('scaffolds a skill-bundle with the lean shared set and no PHP toolchain', fun
     $state->vendor = 'sandermuller';
     $state->package = 'my-skills';
     $state->description = 'A bundle of AI skills.';
-    $state->phpVersion = '8.3';
+    $state->phpVersion = '8.4';
     $state->testFramework = 'pest'; // even with pest set, skill-bundle gets no test-framework overlay
     $state->authorName = 'Sander Muller';
     $state->authorEmail = 'github@scode.nl';
@@ -142,7 +160,7 @@ it('scaffolds a skill-bundle with the lean shared set and no PHP toolchain', fun
         ->and(file_exists($this->tmp . '/.github/workflows/rector-check.yml'))->toBeFalse()
         // no test-framework overlay, no shared tests/ dir
         ->and(file_exists($this->tmp . '/tests/Pest.php'))->toBeFalse()
-        ->and(is_dir($this->tmp . '/tests'))->toBeFalse();
+        ->and($this->tmp . '/tests')->not->toBeDirectory();
 
     $composer = json_decode(file_get_contents($this->tmp . '/composer.json'), true, 512, JSON_THROW_ON_ERROR);
     expect($composer['name'])->toBe('sandermuller/my-skills')
@@ -150,6 +168,26 @@ it('scaffolds a skill-bundle with the lean shared set and no PHP toolchain', fun
         // no plugin pre-allow needed — boost-core 0.6+ is type:library, skill-bundle uses no phpstan/pest plugins
         ->and($composer['config'])->not->toHaveKey('allow-plugins');
 
-    // __SKILL_TAGS__ substituted — no skillTags set on the state → empty withTags([]).
-    expect(file_get_contents($this->tmp . '/.config/boost.php'))->toContain('->withTags([])');
+    // __SKILL_TAGS__ substituted — no skillTags set on the state → only the stub's always-on voice tag.
+    expect(file_get_contents($this->tmp . '/.config/boost.php'))->toContain("->withTags(['voice'])");
+});
+
+it('writes a .config/boost.php that parses when skill tags are picked', function (): void {
+    $state = new WizardState();
+    $state->category = 'php-package';
+    $state->vendor = 'sandermuller';
+    $state->package = 'queue-insights';
+    $state->description = 'Queue insights.';
+    $state->phpVersion = '8.4';
+    $state->testFramework = 'pest';
+    $state->skillTags = ['php', 'github'];
+    $state->authorName = 'Sander Muller';
+    $state->authorEmail = 'github@scode.nl';
+
+    $this->scaffolder->scaffold($state, $this->tmp);
+
+    $boostConfig = $this->tmp . '/.config/boost.php';
+
+    expect(phpLints($boostConfig))->toBeTrue()
+        ->and(readFileContents($boostConfig))->toContain("->withTags(['voice', 'php', 'github'])");
 });

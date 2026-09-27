@@ -64,17 +64,17 @@ it('StudlyCase handles mixed separators, digits, and all-caps per rules', functi
         ->and(PlaceholderSubstituter::studly('HiHaHo'))->toBe('Hihaho');
 });
 
-it('substitutes __SKILL_TAGS__ as comma-separated single-quoted strings', function (): void {
+it("substitutes __SKILL_TAGS__ as leading-comma single-quoted tags after the stub's voice tag", function (): void {
     $state = new WizardState();
     $state->skillTags = ['php', 'jira'];
 
     $sub = new PlaceholderSubstituter($state);
 
-    expect($sub->substitute('->withTags([__SKILL_TAGS__])'))->toBe("->withTags(['php', 'jira'])");
+    expect($sub->substitute("->withTags(['voice'__SKILL_TAGS__])"))->toBe("->withTags(['voice', 'php', 'jira'])");
 });
 
 it('substitutes __SKILL_TAGS__ to empty when no skill tags are set', function (): void {
     $sub = new PlaceholderSubstituter(new WizardState());
 
-    expect($sub->substitute('->withTags([__SKILL_TAGS__])'))->toBe('->withTags([])');
+    expect($sub->substitute("->withTags(['voice'__SKILL_TAGS__])"))->toBe("->withTags(['voice'])");
 });
