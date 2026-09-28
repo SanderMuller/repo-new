@@ -89,6 +89,16 @@ final readonly class LaravelProjectScaffolder
         }
 
         new LicenseApplier()->apply($targetDir, $state->license ?? 'proprietary');
+
+        // repo-init skips LICENSE for laravel-project (proprietary by default); an MIT project still needs one.
+        if ($state->license === 'MIT' && ! is_file($targetDir . '/LICENSE')) {
+            foreach ($this->stubReader->read('shared') as $stub) {
+                if ($stub['relative'] === 'LICENSE') {
+                    $this->copyStub($stub, $targetDir, $substituter);
+                }
+            }
+        }
+
         new WorkflowPhpVersion()->apply($targetDir, $state->phpVersion ?? PhpVersionPolicy::defaultFor('laravel-project'));
 
         $optInFlags = [
