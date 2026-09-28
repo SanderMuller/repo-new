@@ -126,3 +126,15 @@ it('composerName returns null when either half missing', function (): void {
 
     expect($state->composerName())->toBeNull();
 });
+
+it('defaults the license by category', function (string $category, string $license): void {
+    $state = new WizardState();
+    $state->category = $category;
+    $state->applyDefaults();
+
+    expect($state->license)->toBe($license);
+})->with([
+    ['laravel-project', 'proprietary'],
+    ['php-package', 'MIT'],
+    ['laravel-package', 'MIT'],
+]);

@@ -205,3 +205,24 @@ it('keeps the Laravel 12 CI cells for a PHPUnit ^12.0||^13.0 package', function 
 
     expect(readFileContents($this->tmp . '/.github/workflows/run-tests.yml'))->toContain("laravel: '12.*'");
 });
+
+it('keeps packages MIT by default', function (): void {
+    variantScaffolder(new RecordingComposerRunner())->scaffold(variantState('php-package', 'pest'), $this->tmp);
+
+    expect(composerJsonOf($this->tmp))->toHaveKey('license', 'MIT')
+        ->and($this->tmp . '/LICENSE')->toBeFile();
+});
+
+it('makes a package proprietary with --license=proprietary', function (string $category): void {
+    $state = variantState($category, 'pest');
+    $state->license = 'proprietary';
+
+    variantScaffolder(new RecordingComposerRunner())->scaffold($state, $this->tmp);
+
+    $readme = readFileContents($this->tmp . '/README.md');
+
+    expect(composerJsonOf($this->tmp))->toHaveKey('license', 'proprietary')
+        ->and($this->tmp . '/LICENSE')->not->toBeFile()
+        ->and($readme)->toContain('Proprietary. All rights reserved.')
+        ->not->toContain('LICENSE');
+})->with(['php-package', 'skill-bundle']);

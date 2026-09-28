@@ -58,6 +58,7 @@ final readonly class PackageScaffolder
             new TestFrameworkSwapper($this->deps)->apply($targetDir, $category, $framework);
         }
 
+        new LicenseApplier()->apply($targetDir, $state->license ?? 'MIT');
         new WorkflowPhpVersion()->apply($targetDir, $state->phpVersion ?? PhpVersionPolicy::defaultFor($category));
 
         $optInFlags = $this->optInFlagsFromState($state);

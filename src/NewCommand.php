@@ -12,6 +12,7 @@ use SanderMuller\RepoNew\RepoInit\PerCategoryDeps;
 use SanderMuller\RepoNew\RepoInit\RepoInitLocator;
 use SanderMuller\RepoNew\RepoInit\StubReader;
 use SanderMuller\RepoNew\Scaffolder\LaravelProjectScaffolder;
+use SanderMuller\RepoNew\Scaffolder\LicenseApplier;
 use SanderMuller\RepoNew\Scaffolder\PackageScaffolder;
 use SanderMuller\RepoNew\Scaffolder\Scaffolder;
 use SanderMuller\RepoNew\Scaffolder\TargetDirResolver;
@@ -64,6 +65,7 @@ final class NewCommand extends Command
             ->addOption('laravel-aware', null, InputOption::VALUE_NONE, 'Opt-in for phpstan/rector-extension.')
             ->addOption('plugin-shape', null, InputOption::VALUE_REQUIRED, 'composer-plugin shape: ' . implode('|', self::PLUGIN_SHAPES))
             ->addOption('skill-tags', null, InputOption::VALUE_REQUIRED, 'Comma-separated boost-skills tags for .config/boost.php: ' . implode(',', SkillTagsQuestion::TAGS))
+            ->addOption('license', null, InputOption::VALUE_REQUIRED, 'composer.json license: ' . implode('|', LicenseApplier::LICENSES) . ' (default proprietary for laravel-project, MIT otherwise)')
             ->addOption('commit', null, InputOption::VALUE_NONE, 'Make an initial commit after scaffolding.');
     }
 
@@ -168,6 +170,7 @@ final class NewCommand extends Command
 
         $this->applyTestFrameworkFlag($input, $state);
         $this->applyVariantFlag($input, $state);
+        $this->applyLicenseFlag($input, $state);
 
         $hihahoRules = $input->getOption('with-hihaho-rules');
         $state->withHihahoRules = is_bool($hihahoRules) ? $hihahoRules : null;
@@ -186,6 +189,22 @@ final class NewCommand extends Command
         $value = $input->getOption($name);
 
         return is_string($value) && $value !== '' ? $value : null;
+    }
+
+    private function applyLicenseFlag(InputInterface $input, WizardState $state): void
+    {
+        $license = $this->nonEmptyStringOption($input, 'license');
+        if ($license === null) {
+            return;
+        }
+
+        if (! in_array($license, LicenseApplier::LICENSES, true)) {
+            throw new InvalidArgumentException(
+                '--license must be one of: ' . implode(', ', LicenseApplier::LICENSES) . ", got '{$license}'",
+            );
+        }
+
+        $state->license = $license;
     }
 
     private function applyVariantFlag(InputInterface $input, WizardState $state): void
@@ -391,6 +410,7 @@ final class NewCommand extends Command
             ['Category' => $state->category ?? ''],
             ['Plugin shape' => $state->pluginShape ?? '—'],
             ['Variant' => $state->variant ?? '—'],
+            ['License' => $state->license ?? ''],
             ['Composer name' => $state->composerName() ?? ''],
             ['Description' => $state->description ?? ''],
             ['PHP' => $state->phpVersion ?? ''],

@@ -59,6 +59,9 @@ final class WizardState
      */
     public ?array $skillTags = null;
 
+    /** One of LicenseApplier::LICENSES. Defaults to proprietary for laravel-project, MIT otherwise. */
+    public ?string $license = null;
+
     /** Resolved absolute path the scaffold writes into. */
     public ?string $targetDir = null;
 
@@ -112,6 +115,8 @@ final class WizardState
         }
 
         $this->phpVersion ??= PhpVersionPolicy::defaultFor($this->category);
+
+        $this->license ??= $this->category === 'laravel-project' ? 'proprietary' : 'MIT';
     }
 
     private function defaultTestFramework(): string

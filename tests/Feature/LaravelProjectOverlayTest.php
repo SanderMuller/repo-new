@@ -191,3 +191,19 @@ it('completes a partial middleware registration', function (): void {
 
     expect(readFileContents($this->tmp . '/bootstrap/app.php'))->toContain('\App\Http\Middleware\SecurityHeaders::class');
 });
+
+it('makes a laravel-project proprietary by default', function (): void {
+    $this->scaffolder->overlay($this->state, $this->tmp);
+
+    expect(composerJsonOf($this->tmp))->toHaveKey('license', 'proprietary')
+        ->and($this->tmp . '/LICENSE')->not->toBeFile();
+});
+
+it('keeps a laravel-project MIT with --license=MIT', function (): void {
+    $this->state->license = 'MIT';
+
+    $this->scaffolder->overlay($this->state, $this->tmp);
+
+    expect($this->tmp . '/LICENSE')->toBeFile()
+        ->and(composerJsonOf($this->tmp))->toHaveKey('license', 'MIT');
+});

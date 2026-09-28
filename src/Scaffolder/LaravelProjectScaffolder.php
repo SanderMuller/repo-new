@@ -88,6 +88,7 @@ final readonly class LaravelProjectScaffolder
             $this->wireHihahoRules($targetDir);
         }
 
+        new LicenseApplier()->apply($targetDir, $state->license ?? 'proprietary');
         new WorkflowPhpVersion()->apply($targetDir, $state->phpVersion ?? PhpVersionPolicy::defaultFor('laravel-project'));
 
         $optInFlags = [

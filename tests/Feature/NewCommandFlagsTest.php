@@ -110,3 +110,17 @@ it('rejects a Pest laravel-package whose Laravel range excludes 13', function (s
         ->and($tester->getDisplay())->toContain('cannot be tested with Pest 5')
         ->and(scandir($this->tmp))->toBe(['.', '..']);
 })->with(['^12.0', '^12.13']);
+
+it('rejects an unknown --license', function (): void {
+    $tester = runNew([
+        'name' => 'acme/demo',
+        '--type' => 'php-package',
+        '--description' => 'Demo.',
+        '--license' => 'GPL',
+        '--no-interaction' => true,
+    ]);
+
+    expect($tester->getStatusCode())->toBe(65)
+        ->and($tester->getDisplay())->toContain('--license must be one of')
+        ->and(scandir($this->tmp))->toBe(['.', '..']);
+});
