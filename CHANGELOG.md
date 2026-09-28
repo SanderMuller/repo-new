@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 From `1.0.0` onwards `sandermuller/repo-new` follows standard SemVer — breaking changes ship as MAJOR (2.0.0+), additive as MINOR, fixes as PATCH. The pre-1.0 cadence (breaking-MINOR allowed) is closed; prior 0.x entries remain below as history.
 
+## 1.3.0 - 2026-09-28
+
+<!-- verified-sha: 6d80150ec1800b6d3ef59417fb962af7284cca61 -->
+### Breaking
+
+- laravel-project now defaults to `"license": "proprietary"` with no `LICENSE` file. Pass `--license=MIT` to keep MIT.
+
+### Added
+
+- Added `--license=MIT|proprietary` to override the default license for any category.
+
+**Full changelog:** https://github.com/SanderMuller/repo-new/compare/1.2.1...1.3.0
+
 ## 1.2.1 - 2026-09-27
 
 <!-- verified-sha: 080f9d862a7f6292b9fcdcd77859a17a5e1a6dd6 -->
@@ -97,6 +110,7 @@ composer global update sandermuller/repo-new
 
 
 
+
 ```
 The first `repo` run afterwards performs the one-time user-scope skill sync described above. Set `BOOST_SKIP_AUTOSYNC=1` to opt out. Same wizard, same flags as 1.0.0.
 
@@ -127,6 +141,7 @@ composer global update sandermuller/repo-new
 
 
 
+
 ```
 No further steps. Same wizard, same flags, same scaffolded output as 0.8.0.
 
@@ -150,6 +165,7 @@ No further steps. Same wizard, same flags, same scaffolded output as 0.8.0.
 
 ```bash
 composer global update sandermuller/repo-new
+
 
 
 
