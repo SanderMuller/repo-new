@@ -42,6 +42,7 @@
         "rector/rector": "^2.5",
         "sandermuller/boost-skills": "^2.27.0",
         "sandermuller/package-boost-php": "^1.0",
+        "sandermuller/rector-preset": "~2.8.0",
         "spaze/phpstan-disallowed-calls": "^4.13",
         "stolt/lean-package-validator": "^6.0.1",
         "symplify/phpstan-rules": "^14.17",
