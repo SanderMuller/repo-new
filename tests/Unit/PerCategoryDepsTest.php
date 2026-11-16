@@ -13,7 +13,7 @@ it('returns expected dev deps for php-package with pest', function (): void {
     $names = array_map(fn (string $e): string => trim(explode(':', $e, 2)[0]), $list->requireDev);
 
     expect($names)
-        ->toContain('phpstan/phpstan', 'pestphp/pest', 'laravel/pint', 'stolt/lean-package-validator')
+        ->toContain('phpstan/phpstan', 'pestphp/pest', 'laravel/pint', 'stolt/php-lean')
         ->and($names)->not->toContain('phpunit/phpunit');
 });
 
@@ -84,7 +84,7 @@ it('takes skill-bundle deps solely from its mandatory block (consumes-shared-dev
     // consumes-shared-dev-deps: false → require-dev is the category's own
     // mandatory block, with NO shared.always / shared.test-framework merged in.
     expect($reqNames)->toContain('sandermuller/boost-core')
-        ->and($devNames)->toContain('laravel/pint', 'stolt/lean-package-validator')
+        ->and($devNames)->toContain('laravel/pint', 'stolt/php-lean')
         ->and($devNames)->not->toContain('rector/rector', 'pestphp/pest', 'orchestra/testbench', 'mrpunyapal/rector-pest');
 });
 

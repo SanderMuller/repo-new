@@ -66,7 +66,7 @@ Beyond the category-specific source skeleton above, every scaffolded repo gets t
 
 Per-category runtime and dev dependencies come from `repo-init`'s `references/per-category-deps.yml`, so the dependency set always matches the current canonical baseline.
 
-`skill-bundle` is the lean exception: it ships pure-markdown skills with no PHP, so it skips the PHP toolchain (PHPStan, Rector, PHPUnit, `.mcp.json`, the `phpstan` / `rector-check` workflows) and the test runner — keeping Pint, `lean-package-validator`, the meta files, and the `pint-check` + `update-changelog` workflows.
+`skill-bundle` is the lean exception: it ships pure-markdown skills with no PHP, so it skips the PHP toolchain (PHPStan, Rector, PHPUnit, `.mcp.json`, the `phpstan` / `rector-check` workflows) and the test runner — keeping Pint, `php-lean`, the meta files, and the `pint-check` + `update-changelog` workflows.
 
 ## How it works
 
