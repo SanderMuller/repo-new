@@ -39,19 +39,7 @@ beforeEach(function (): void {
 });
 
 afterEach(function (): void {
-    if (! is_dir($this->tmp)) {
-        return;
-    }
-
-    $iter = new RecursiveIteratorIterator(
-        new RecursiveDirectoryIterator($this->tmp, FilesystemIterator::SKIP_DOTS),
-        RecursiveIteratorIterator::CHILD_FIRST,
-    );
-    foreach ($iter as $f) {
-        $f->isDir() ? @rmdir($f->getPathname()) : @unlink($f->getPathname());
-    }
-
-    @rmdir($this->tmp);
+    removeDirectory($this->tmp);
 });
 
 it('scaffolds a php-package skeleton with all expected files', function (): void {

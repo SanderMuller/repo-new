@@ -38,19 +38,7 @@ beforeEach(function (): void {
 });
 
 afterEach(function (): void {
-    if (! property_exists($this, 'tmp') || $this->tmp === null || ! is_dir($this->tmp)) {
-        return;
-    }
-
-    $iter = new RecursiveIteratorIterator(
-        new RecursiveDirectoryIterator($this->tmp, FilesystemIterator::SKIP_DOTS),
-        RecursiveIteratorIterator::CHILD_FIRST,
-    );
-    foreach ($iter as $f) {
-        $f->isDir() ? @rmdir($f->getPathname()) : @unlink($f->getPathname());
-    }
-
-    @rmdir($this->tmp);
+    removeDirectory($this->tmp);
 });
 
 function scaffoldPlugin(string $tmp, string $shape, PackageScaffolder $scaffolder): void

@@ -37,30 +37,6 @@ parameters:
 			path: src/Wizard/Question/PluginShapeQuestion.php
 
 		-
-			rawMessage: 'Cannot call method getPathname() on mixed.'
-			identifier: method.nonObject
-			count: 2
-			path: tests/Feature/ComposerPluginScaffoldTest.php
-
-		-
-			rawMessage: 'Cannot call method isDir() on mixed.'
-			identifier: method.nonObject
-			count: 1
-			path: tests/Feature/ComposerPluginScaffoldTest.php
-
-		-
-			rawMessage: 'Parameter #1 $directory of function rmdir expects string, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/ComposerPluginScaffoldTest.php
-
-		-
-			rawMessage: 'Parameter #1 $filename of function unlink expects string, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/ComposerPluginScaffoldTest.php
-
-		-
 			rawMessage: Cannot access offset 'autoload' on mixed.
 			identifier: offsetAccess.nonOffsetAccessible
 			count: 1
@@ -97,31 +73,7 @@ parameters:
 			path: tests/Feature/PackageScaffolderSmokeTest.php
 
 		-
-			rawMessage: 'Cannot call method getPathname() on mixed.'
-			identifier: method.nonObject
-			count: 2
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: 'Cannot call method isDir() on mixed.'
-			identifier: method.nonObject
-			count: 1
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
 			rawMessage: 'Parameter #1 $array of function array_key_first expects array, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: 'Parameter #1 $directory of function rmdir expects string, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: tests/Feature/PackageScaffolderSmokeTest.php
-
-		-
-			rawMessage: 'Parameter #1 $filename of function unlink expects string, mixed given.'
 			identifier: argument.type
 			count: 1
 			path: tests/Feature/PackageScaffolderSmokeTest.php
@@ -132,26 +84,3 @@ parameters:
 			count: 2
 			path: tests/Feature/PackageScaffolderSmokeTest.php
 
-		-
-			rawMessage: 'Cannot call method getPathname() on mixed.'
-			identifier: method.nonObject
-			count: 2
-			path: tests/Unit/TargetDirResolverTest.php
-
-		-
-			rawMessage: 'Cannot call method isDir() on mixed.'
-			identifier: method.nonObject
-			count: 1
-			path: tests/Unit/TargetDirResolverTest.php
-
-		-
-			rawMessage: 'Parameter #1 $directory of function rmdir expects string, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: tests/Unit/TargetDirResolverTest.php
-
-		-
-			rawMessage: 'Parameter #1 $filename of function unlink expects string, mixed given.'
-			identifier: argument.type
-			count: 1
-			path: tests/Unit/TargetDirResolverTest.php
