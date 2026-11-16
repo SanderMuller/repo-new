@@ -67,6 +67,7 @@ beforeEach(function (): void {
     $state->authorName = 'Sander Muller';
     $state->authorEmail = 'github@scode.nl';
     $state->applyDefaults();
+
     $this->state = $state;
 });
 
