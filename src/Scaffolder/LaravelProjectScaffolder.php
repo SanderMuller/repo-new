@@ -193,9 +193,11 @@ final readonly class LaravelProjectScaffolder
     }
 
     /**
-     * The stub phpstan.neon.dist and rector.php carry commented hints for the
-     * hihaho rule packs (bootstrap-laravel-project.md step 7); turn them into
-     * config. Warns when a hint is missing rather than guessing a location.
+     * The stub phpstan.neon.dist carries a commented hint for the hihaho rule
+     * pack (bootstrap-laravel-project.md step 7); turn it into config. Warns
+     * when the hint is missing rather than guessing a location. rector.php
+     * needs no edit: Preset::app() adds HihahoSetList::ALL when
+     * hihaho/rector-rules is installed.
      */
     private function wireHihahoRules(string $targetDir): void
     {
@@ -204,10 +206,6 @@ final readonly class LaravelProjectScaffolder
                 "    # When --with-hihaho-rules is opted in, also include:\n    # - vendor/hihaho/phpstan-rules/extension.neon\n",
                 "    - vendor/hihaho/phpstan-rules/extension.neon\n",
             ],
-            'rector.php' => [
-                "            // With --with-hihaho-rules, add HihahoSetList::ALL here. ALL does not\n            // cover every rule in the package — see references/rector-config.md.\n",
-                "            \\Hihaho\\RectorRules\\Set\\HihahoSetList::ALL,\n",
-            ],
         ];
 
         foreach ($edits as $file => [$hint, $config]) {
@@ -215,7 +213,7 @@ final readonly class LaravelProjectScaffolder
             $contents = is_file($path) ? file_get_contents($path) : false;
 
             if ($contents === false || ! str_contains($contents, $hint)) {
-                $this->io->warning("hihaho rules NOT wired into {$file}: its --with-hihaho-rules hint was not found. Wire it by hand (repo-init references/rector-config.md, phpstan-config.md).");
+                $this->io->warning("hihaho rules NOT wired into {$file}: its --with-hihaho-rules hint was not found. Wire it by hand (repo-init references/phpstan-config.md).");
 
                 continue;
             }

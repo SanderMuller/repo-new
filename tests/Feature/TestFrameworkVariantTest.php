@@ -88,8 +88,7 @@ it('composes phpunit onto the Pest-flavoured sander laravel-package stub', funct
         ->toHaveKey('scripts.test', 'vendor/bin/phpunit')
         ->and($ci)->toContain('run: vendor/bin/phpunit')
         ->and($ci)->toContain("laravel: '12.*'")
-        ->and(readFileContents($this->tmp . '/rector.php'))->toContain('->withComposerBased(phpunit: true)')
-        ->and(phpLints($this->tmp . '/rector.php'))->toBeTrue()
+        ->and(readFileContents($this->tmp . '/rector.php'))->toContain('Preset::package()')->not->toContain('withComposerBased')
         ->and($this->tmp . '/tests/Pest.php')->not->toBeFile();
 });
 
@@ -106,8 +105,7 @@ it('composes phpunit onto the Pest-flavoured php-package stub', function (): voi
         ->not->toHaveKey('config.allow-plugins.pestphp/pest-plugin')
         ->toHaveKey('scripts.test-coverage', 'vendor/bin/phpunit --coverage-html=coverage')
         ->and(readFileContents($this->tmp . '/.github/workflows/run-tests.yml'))->toContain('run: vendor/bin/phpunit')
-        ->and(substr_count($rector, '->withComposerBased(phpunit: true)'))->toBe(1)
-        ->and(phpLints($this->tmp . '/rector.php'))->toBeTrue();
+        ->and($rector)->toContain('Preset::package()')->not->toContain('withComposerBased');
 });
 
 it('composes pest onto the PHPUnit-flavoured rector-extension stub', function (): void {

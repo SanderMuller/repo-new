@@ -10,8 +10,8 @@ use SanderMuller\RepoNew\RepoInit\PerCategoryDeps;
  * Composes the test-framework variant on top of the copied category stubs,
  * per the repo-init bootstrap phases ("Compose test-framework variant"):
  * each stub ships one framework (Pest or PHPUnit); this normalises the test
- * deps, scripts, allow-plugins entry, the CI test command and the rector.php
- * `withComposerBased(phpunit: true)` call to the chosen framework.
+ * deps, scripts, allow-plugins entry and the CI test command to the chosen
+ * framework. rector.php needs no edit: the shared Rector preset detects PHPUnit.
  *
  * Runs BEFORE `composer install`, so the first resolution already sees the
  * final dep set (a PHPUnit-pinned stub cannot take Pest 5 afterwards).
@@ -41,7 +41,6 @@ final readonly class TestFrameworkSwapper
 
         $this->swapComposerJson($targetDir . '/composer.json', $category, $framework);
         $this->setCiTestCommand($targetDir . '/.github/workflows/run-tests.yml', $framework);
-        $this->setRectorComposerBased($targetDir . '/rector.php', $framework);
     }
 
     private function swapComposerJson(string $path, string $category, string $framework): void
@@ -137,31 +136,6 @@ final readonly class TestFrameworkSwapper
             '${1}' . self::COMMANDS[$framework]['ci'],
             $yaml,
         ));
-    }
-
-    /**
-     * PHPUnit: the config carries `->withComposerBased(phpunit: true)` right
-     * after the `withPreparedSets(...)` block. Pest: no such call — the PHPUnit
-     * composer-based set rewrites TestCase subclasses, which Pest has none of.
-     */
-    private function setRectorComposerBased(string $path, string $framework): void
-    {
-        $this->rewrite($path, static function (string $php) use ($framework): string {
-            if ($framework === 'pest') {
-                return (string) preg_replace('#^[ \t]*->withComposerBased\(phpunit: true\)\R#m', '', $php);
-            }
-
-            if (str_contains($php, '->withComposerBased(')) {
-                return $php;
-            }
-
-            return (string) preg_replace(
-                '#(->withPreparedSets\(.*?\R([ \t]*)\)\R)#s',
-                '${1}${2}->withComposerBased(phpunit: true)' . "\n",
-                $php,
-                1,
-            );
-        });
     }
 
     /**

@@ -96,8 +96,8 @@ it('adds the hihaho rule packs by default for vendor hihaho, and not when turned
     expect(in_array('hihaho/phpstan-rules', $dev, true))->toBe($expected)
         ->and(in_array('hihaho/rector-rules', $dev, true))->toBe($expected)
         ->and(str_contains(readFileContents($this->tmp . '/phpstan.neon.dist'), "\n    - vendor/hihaho/phpstan-rules/extension.neon\n"))->toBe($expected)
-        ->and(str_contains(readFileContents($this->tmp . '/rector.php'), '\Hihaho\RectorRules\Set\HihahoSetList::ALL,'))->toBe($expected)
-        ->and(phpLints($this->tmp . '/rector.php'))->toBeTrue();
+        ->and(readFileContents($this->tmp . '/rector.php'))->toContain('return Preset::app(')->not->toContain('HihahoSetList')
+        ->and($this->output->fetch())->not->toContain('NOT wired');
 })->with([
     'vendor default' => [null, true],
     '--no-with-hihaho-rules' => [false, false],
