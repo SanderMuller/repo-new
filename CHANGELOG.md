@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 From `1.0.0` onwards `sandermuller/repo-new` follows standard SemVer — breaking changes ship as MAJOR (2.0.0+), additive as MINOR, fixes as PATCH. The pre-1.0 cadence (breaking-MINOR allowed) is closed; prior 0.x entries remain below as history.
 
+## 1.3.5 - 2026-11-17
+
+<!-- verified-sha: 0f8c174a4bccbe79561a21fd0681fa1333535664 -->
+### Fixed
+
+- Fixed `skill-bundle` scaffolds showing the Pest commit note, though they have no tests.
+
+**Full changelog:** https://github.com/SanderMuller/repo-new/compare/1.3.4...1.3.5
+
 ## 1.3.4 - 2026-11-17
 
 <!-- verified-sha: 65c7305341dd19ca147581531cffc5c0a049a562 -->
@@ -167,6 +176,7 @@ composer global update sandermuller/repo-new
 
 
 
+
 ```
 The first `repo` run afterwards performs the one-time user-scope skill sync described above. Set `BOOST_SKIP_AUTOSYNC=1` to opt out. Same wizard, same flags as 1.0.0.
 
@@ -202,6 +212,7 @@ composer global update sandermuller/repo-new
 
 
 
+
 ```
 No further steps. Same wizard, same flags, same scaffolded output as 0.8.0.
 
@@ -225,6 +236,7 @@ No further steps. Same wizard, same flags, same scaffolded output as 0.8.0.
 
 ```bash
 composer global update sandermuller/repo-new
+
 
 
 
