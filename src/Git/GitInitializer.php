@@ -35,6 +35,16 @@ final readonly class GitInitializer
         return $process->isSuccessful();
     }
 
+    /**
+     * Whether Pest's Tia engine will stop the suite: the scaffold has
+     * tests/Pest.php (where the Tia call lives) and the repository has no
+     * commit. Scaffolds without Pest, such as skill-bundle, have no tests/Pest.php.
+     */
+    public function tiaNeedsCommit(string $targetDir): bool
+    {
+        return is_file($targetDir . '/tests/Pest.php') && ! $this->hasCommits($targetDir);
+    }
+
     public function initialCommit(string $targetDir): void
     {
         $add = new Process(['git', 'add', '-A'], $targetDir);

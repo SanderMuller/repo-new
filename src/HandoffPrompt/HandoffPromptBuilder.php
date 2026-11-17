@@ -17,8 +17,8 @@ final class HandoffPromptBuilder
     private const string TEMPLATE_DIR = __DIR__ . '/templates';
 
     /**
-     * Appended when a Pest scaffold has no commit yet: Pest's Tia engine
-     * stops the suite until the repository has one.
+     * Appended when the scaffold has tests/Pest.php but no commit yet: Pest's
+     * Tia engine stops the suite until the repository has one.
      */
     private const string FIRST_COMMIT_NOTE = <<<'TXT'
 
@@ -27,7 +27,7 @@ final class HandoffPromptBuilder
         or run `vendor/bin/pest --no-tia` for a run before that commit.
         TXT;
 
-    public function build(WizardState $state, string $targetDir, bool $hasCommits = true): string
+    public function build(WizardState $state, string $targetDir, bool $tiaNeedsCommit = false): string
     {
         $category = $state->category ?? '';
         $template = self::TEMPLATE_DIR . '/' . $category . '.txt';
@@ -45,7 +45,7 @@ final class HandoffPromptBuilder
         $packageStudly = PlaceholderSubstituter::studly($state->package ?? '');
         $namespace = "{$vendorStudly}\\{$packageStudly}";
 
-        if (! $hasCommits && $state->testFramework === 'pest') {
+        if ($tiaNeedsCommit) {
             $body = rtrim($body) . "\n" . self::FIRST_COMMIT_NOTE . "\n";
         }
 

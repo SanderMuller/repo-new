@@ -47,18 +47,16 @@ it('names the laravel-package variant the scaffold used', function (string $vari
     ['spatie', 'spatie/laravel-package-tools based'],
 ]);
 
-it('tells the user to commit first when a Pest scaffold has no commit', function (string $testFramework, bool $hasCommits, bool $expectNote): void {
+it('tells the user to commit first only when Tia needs a commit', function (bool $tiaNeedsCommit): void {
     $state = new WizardState();
     $state->category = 'php-package';
     $state->vendor = 'acme';
     $state->package = 'demo';
-    $state->testFramework = $testFramework;
 
-    $prompt = new HandoffPromptBuilder()->build($state, '/tmp/demo', $hasCommits);
+    $prompt = new HandoffPromptBuilder()->build($state, '/tmp/demo', $tiaNeedsCommit);
 
-    expect(str_contains($prompt, 'vendor/bin/pest --no-tia'))->toBe($expectNote);
+    expect(str_contains($prompt, 'vendor/bin/pest --no-tia'))->toBe($tiaNeedsCommit);
 })->with([
-    'pest, no commit' => ['pest', false, true],
-    'pest, committed' => ['pest', true, false],
-    'phpunit, no commit' => ['phpunit', false, false],
+    'needs a commit' => [true],
+    'does not' => [false],
 ]);

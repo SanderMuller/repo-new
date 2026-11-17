@@ -30,3 +30,22 @@ it('reports no commits for a fresh repository, and a commit after one', function
 
     expect($this->git->hasCommits($this->tmp))->toBeTrue();
 });
+
+it('needs a commit for Tia only when the scaffold has tests/Pest.php and no commit', function (): void {
+    $this->git->init($this->tmp);
+
+    expect($this->git->tiaNeedsCommit($this->tmp))->toBeFalse();
+
+    mkdir($this->tmp . '/tests');
+    file_put_contents($this->tmp . '/tests/Pest.php', "<?php\n\npest()->tia()->locally();\n");
+
+    expect($this->git->tiaNeedsCommit($this->tmp))->toBeTrue();
+
+    new Process(['git', 'add', '-A'], $this->tmp)->mustRun();
+    new Process(
+        ['git', '-c', 'user.name=Test', '-c', 'user.email=test@example.invalid', '-c', 'commit.gpgsign=false', 'commit', '-qm', 'init'],
+        $this->tmp,
+    )->mustRun();
+
+    expect($this->git->tiaNeedsCommit($this->tmp))->toBeFalse();
+});

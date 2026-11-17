@@ -129,16 +129,16 @@ final class NewCommand extends Command
                 $git->initialCommit($targetDir);
             }
 
-            $hasCommits = $git->hasCommits($targetDir);
+            $tiaNeedsCommit = $git->tiaNeedsCommit($targetDir);
 
             $io->success("Scaffold complete at {$targetDir}");
             $io->writeln('Summary: ' . json_encode($result, JSON_THROW_ON_ERROR));
 
-            if (! $hasCommits && $state->testFramework === 'pest') {
+            if ($tiaNeedsCommit) {
                 $io->note("The repository has no commit yet. Pest's Tia engine needs one, so `composer test` stops until the first commit. Commit the scaffold, or run `vendor/bin/pest --no-tia` until then. Pass --commit to have repo-new make the commit.");
             }
 
-            $handoff = new HandoffPromptBuilder()->build($state, $targetDir, $hasCommits);
+            $handoff = new HandoffPromptBuilder()->build($state, $targetDir, $tiaNeedsCommit);
             $io->newLine();
             $io->writeln('Next: copy-paste this to Claude:');
             $io->writeln('');
