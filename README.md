@@ -44,7 +44,7 @@ repo-new scaffolds seven repo categories. Choose one interactively, or pass `--t
 
 | Category (`--type`) | What it scaffolds | Runtime dependencies wired in | Category options |
 |---|---|---|---|
-| `laravel-project` | A full Laravel application via `laravel new --boost`, with the shared tooling baseline overlaid on top and the security-header + HSTS middleware registered | Laravel skeleton (`laravel new`), `zae/strict-transport-security` | `--with-hihaho-rules` (default on for vendor `hihaho`), `--with-health-checks` |
+| `laravel-project` | A full Laravel application via `laravel new --boost`, with the shared tooling baseline overlaid on top, the security-header + HSTS middleware registered, and the skeleton fixed to pass the PHPStan, Rector and Pint configs | Laravel skeleton (`laravel new`), `zae/strict-transport-security` | `--with-hihaho-rules` (default on for vendor `hihaho`), `--with-health-checks` |
 | `laravel-package` | A Laravel package — service provider, `src/`, `tests/`, publishable config | `illuminate/contracts`, `illuminate/support` (+ `spatie/laravel-package-tools` for the `spatie` variant) | `--laravel=<constraint>`, `--variant=sander\|spatie` |
 | `php-package` | A framework-agnostic PHP library | none (pure library) | — |
 | `phpstan-extension` | A PHPStan rule / extension package | `phpstan/phpstan: ^2` | `--laravel-aware` (swaps in `larastan/larastan`) |

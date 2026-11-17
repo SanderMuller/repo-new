@@ -11,6 +11,7 @@ use SanderMuller\RepoNew\RepoInit\StubReader;
 use SanderMuller\RepoNew\Wizard\PhpVersionPolicy;
 use SanderMuller\RepoNew\Wizard\WizardState;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Process\Exception\ProcessTimedOutException;
 use Symfony\Component\Process\ExecutableFinder;
 use Symfony\Component\Process\Process;
 
@@ -84,10 +85,6 @@ final readonly class LaravelProjectScaffolder
         $substituter = new PlaceholderSubstituter($state);
         $written = $this->overlayStubs($targetDir, $substituter);
 
-        if ($state->withHihahoRules === true) {
-            $this->wireHihahoRules($targetDir);
-        }
-
         new LicenseApplier()->apply($targetDir, $state->license ?? 'proprietary');
 
         // repo-init skips LICENSE for laravel-project (proprietary by default); an MIT project still needs one.
@@ -144,6 +141,9 @@ final readonly class LaravelProjectScaffolder
 
         $this->registerSecurityMiddleware($targetDir);
 
+        new LaravelSkeletonFixer($this->io)->apply($targetDir);
+        $this->runCodeStyleTools($targetDir);
+
         // No boost sync here: laravel-project uses laravel/boost (wired by
         // `laravel new --boost`), not boost-core — there is no vendor/bin/boost.
 
@@ -193,33 +193,36 @@ final readonly class LaravelProjectScaffolder
     }
 
     /**
-     * The stub phpstan.neon.dist carries a commented hint for the hihaho rule
-     * pack (bootstrap-laravel-project.md step 7); turn it into config. Warns
-     * when the hint is missing rather than guessing a location. rector.php
-     * needs no edit: Preset::app() adds HihahoSetList::ALL when
-     * hihaho/rector-rules is installed.
+     * Brings the skeleton in line with the stub rector.php and pint.json, so the
+     * first rector-check and pint-check runs pass. Rector runs first: Pint
+     * formats what Rector writes. A failure warns and does not throw, because
+     * `laravel new` and every composer step already ran.
      */
-    private function wireHihahoRules(string $targetDir): void
+    private function runCodeStyleTools(string $targetDir): void
     {
-        $edits = [
-            'phpstan.neon.dist' => [
-                "    # When --with-hihaho-rules is opted in, also include:\n    # - vendor/hihaho/phpstan-rules/extension.neon\n",
-                "    - vendor/hihaho/phpstan-rules/extension.neon\n",
-            ],
+        $tools = [
+            'rector' => ['vendor/bin/rector', 'process', '--no-progress-bar'],
+            'pint' => ['vendor/bin/pint'],
         ];
 
-        foreach ($edits as $file => [$hint, $config]) {
-            $path = $targetDir . '/' . $file;
-            $contents = is_file($path) ? file_get_contents($path) : false;
+        foreach ($tools as $name => $command) {
+            if (! is_file($targetDir . '/' . $command[0])) {
+                continue;
+            }
 
-            if ($contents === false || ! str_contains($contents, $hint)) {
-                $this->io->warning("hihaho rules NOT wired into {$file}: its --with-hihaho-rules hint was not found. Wire it by hand (repo-init references/phpstan-config.md).");
+            $this->io->writeln("<info>→ {$name}</info>");
+            $process = new Process($command, $targetDir, null, null, 600.0);
+
+            try {
+                $process->run();
+            } catch (ProcessTimedOutException) {
+                $this->io->warning("{$name} timed out after 600 s. Run `{$command[0]}` in {$targetDir} by hand.");
 
                 continue;
             }
 
-            if (file_put_contents($path, str_replace($hint, $config, $contents)) === false) {
-                throw new RuntimeException("Failed to write {$path}");
+            if (! $process->isSuccessful()) {
+                $this->io->warning("{$name} failed (exit {$process->getExitCode()}). Run `{$command[0]}` in {$targetDir} by hand.\n" . $process->getErrorOutput() . $process->getOutput());
             }
         }
     }

@@ -88,3 +88,17 @@ it('drops CommandProvider when shape is event-subscriber', function (): void {
     expect(file_exists($this->tmp . '/src/Plugin.php'))->toBeTrue()
         ->and(file_exists($this->tmp . '/src/CommandProvider.php'))->toBeFalse();
 });
+
+it('writes PHP that lints, and a PHPStan config, for every shape', function (string $shape): void {
+    scaffoldPlugin($this->tmp, $shape, $this->scaffolder);
+
+    $sources = glob($this->tmp . '/src/*.php');
+
+    expect($sources)->not->toBeEmpty()
+        ->and(file_exists($this->tmp . '/phpstan.neon.dist'))->toBeTrue()
+        ->and(readFileContents($this->tmp . '/src/Plugin.php'))->toContain("namespace Sandermuller\\MyPlugin;\n");
+
+    foreach ($sources === false ? [] : $sources as $source) {
+        expect(phpLints($source))->toBeTrue();
+    }
+})->with(['none', 'command-provider', 'event-subscriber', 'both']);

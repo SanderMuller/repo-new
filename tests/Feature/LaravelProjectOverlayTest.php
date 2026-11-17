@@ -96,7 +96,8 @@ it('adds the hihaho rule packs by default for vendor hihaho, and not when turned
 
     expect(in_array('hihaho/phpstan-rules', $dev, true))->toBe($expected)
         ->and(in_array('hihaho/rector-rules', $dev, true))->toBe($expected)
-        ->and(str_contains(readFileContents($this->tmp . '/phpstan.neon.dist'), "\n    - vendor/hihaho/phpstan-rules/extension.neon\n"))->toBe($expected)
+        // phpstan/extension-installer loads the hihaho rules; an explicit include loads them twice and PHPStan stops.
+        ->and(readFileContents($this->tmp . '/phpstan.neon.dist'))->not->toContain("\n    - vendor/hihaho/phpstan-rules/extension.neon\n")
         ->and(readFileContents($this->tmp . '/rector.php'))->toContain('return Preset::app(')->not->toContain('HihahoSetList')
         ->and($this->output->fetch())->not->toContain('NOT wired');
 })->with([
