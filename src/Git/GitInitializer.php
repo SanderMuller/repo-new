@@ -23,6 +23,18 @@ final readonly class GitInitializer
         }
     }
 
+    /**
+     * Whether the repository at $targetDir has a commit. Pest's Tia engine
+     * stops the suite in a repository without one.
+     */
+    public function hasCommits(string $targetDir): bool
+    {
+        $process = new Process(['git', 'rev-parse', '--verify', '--quiet', 'HEAD'], $targetDir);
+        $process->run();
+
+        return $process->isSuccessful();
+    }
+
     public function initialCommit(string $targetDir): void
     {
         $add = new Process(['git', 'add', '-A'], $targetDir);

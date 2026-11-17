@@ -76,7 +76,7 @@ Per-category runtime and dev dependencies come from `repo-init`'s `references/pe
 4. Pre-allows Composer plugins (`phpstan/extension-installer`, `pestphp/pest-plugin`) before requiring dependencies, so install never aborts on the plugin allowlist.
 5. Runs `composer install` and the per-category `composer require` lists.
 6. Fires `vendor/bin/boost sync` to generate the AI tooling files (package categories; a failed sync fails the run).
-7. Initializes a git repo (add `--commit` for an initial commit) and prints a copy-pasteable handoff prompt for Claude or your agent of choice.
+7. Initializes a git repo (add `--commit` for an initial commit; Pest's Tia engine needs one before `composer test` runs) and prints a copy-pasteable handoff prompt for Claude or your agent of choice.
 
 ## Testing
 
