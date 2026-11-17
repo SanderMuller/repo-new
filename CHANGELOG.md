@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 From `1.0.0` onwards `sandermuller/repo-new` follows standard SemVer — breaking changes ship as MAJOR (2.0.0+), additive as MINOR, fixes as PATCH. The pre-1.0 cadence (breaking-MINOR allowed) is closed; prior 0.x entries remain below as history.
 
+## 1.3.3 - 2026-11-17
+
+<!-- verified-sha: dd0bfac70f8a62c3ab48996d69a820a45a0d6285 -->
+### Changed
+
+- Requires `sandermuller/repo-init` ^1.23.1.
+- `laravel-project` scaffolds now end with a Rector and a Pint run.
+
+### Fixed
+
+- Fixed a fresh `laravel-project` failing PHPStan on five Laravel skeleton lines.
+- Fixed PHPStan not starting on hihaho `laravel-project` scaffolds: the rules are no longer included twice.
+- Fixed `composer-plugin` scaffolds writing a namespace that does not parse and no `phpstan.neon.dist`.
+
+**Full changelog:** https://github.com/SanderMuller/repo-new/compare/1.3.2...1.3.3
+
 ## 1.3.2 - 2026-11-17
 
 <!-- verified-sha: 7d96b07ecd56b9a56363c36f964327fd40148a67 -->
@@ -140,6 +156,7 @@ composer global update sandermuller/repo-new
 
 
 
+
 ```
 The first `repo` run afterwards performs the one-time user-scope skill sync described above. Set `BOOST_SKIP_AUTOSYNC=1` to opt out. Same wizard, same flags as 1.0.0.
 
@@ -173,6 +190,7 @@ composer global update sandermuller/repo-new
 
 
 
+
 ```
 No further steps. Same wizard, same flags, same scaffolded output as 0.8.0.
 
@@ -196,6 +214,7 @@ No further steps. Same wizard, same flags, same scaffolded output as 0.8.0.
 
 ```bash
 composer global update sandermuller/repo-new
+
 
 
 
