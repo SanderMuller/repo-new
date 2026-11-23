@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 From `1.0.0` onwards `sandermuller/repo-new` follows standard SemVer — breaking changes ship as MAJOR (2.0.0+), additive as MINOR, fixes as PATCH. The pre-1.0 cadence (breaking-MINOR allowed) is closed; prior 0.x entries remain below as history.
 
+## 1.3.6 - 2026-11-23
+
+<!-- verified-sha: ab1a68b882bc274326771ea5905ca295c28c590b -->
+### Changed
+
+- Requires `sandermuller/repo-init: ^1.24`. A `laravel-project` scaffold now always gets the hihaho rule packs and `laravel-fluent-validation`.
+
+### Deprecated
+
+- `--with-hihaho-rules` and `--no-with-hihaho-rules` do nothing and print a warning. They will be removed in the next major.
+
+**Full changelog:** https://github.com/SanderMuller/repo-new/compare/1.3.5...1.3.6
+
 ## 1.3.5 - 2026-11-17
 
 <!-- verified-sha: 0f8c174a4bccbe79561a21fd0681fa1333535664 -->
@@ -177,6 +190,7 @@ composer global update sandermuller/repo-new
 
 
 
+
 ```
 The first `repo` run afterwards performs the one-time user-scope skill sync described above. Set `BOOST_SKIP_AUTOSYNC=1` to opt out. Same wizard, same flags as 1.0.0.
 
@@ -213,6 +227,7 @@ composer global update sandermuller/repo-new
 
 
 
+
 ```
 No further steps. Same wizard, same flags, same scaffolded output as 0.8.0.
 
@@ -236,6 +251,7 @@ No further steps. Same wizard, same flags, same scaffolded output as 0.8.0.
 
 ```bash
 composer global update sandermuller/repo-new
+
 
 
 
