@@ -78,28 +78,6 @@ it('defaults the laravel-package variant by vendor', function (string $vendor, s
     ['hihaho', 'spatie'],
 ]);
 
-it('turns hihaho rules on by default for a hihaho laravel-project only', function (string $vendor, bool $expected): void {
-    $state = new WizardState();
-    $state->category = 'laravel-project';
-    $state->vendor = $vendor;
-    $state->applyDefaults();
-
-    expect($state->withHihahoRules)->toBe($expected);
-})->with([
-    ['hihaho', true],
-    ['acme', false],
-]);
-
-it('keeps an explicit --no-with-hihaho-rules for vendor hihaho', function (): void {
-    $state = new WizardState();
-    $state->category = 'laravel-project';
-    $state->vendor = 'hihaho';
-    $state->withHihahoRules = false;
-    $state->applyDefaults();
-
-    expect($state->withHihahoRules)->toBeFalse();
-});
-
 it('defaults rector-extension to pest for sandermuller and phpunit for hihaho', function (string $vendor, string $framework): void {
     $state = new WizardState();
     $state->category = 'rector-extension';

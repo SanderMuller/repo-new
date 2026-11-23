@@ -85,25 +85,24 @@ it('installs the security-canon runtime deps into require', function (): void {
         ->not->toContain('spatie/security-advisories-health-check');
 });
 
-it('adds the hihaho rule packs by default for vendor hihaho, and not when turned off', function (?bool $flag, bool $expected): void {
-    $this->state->vendor = 'hihaho';
-    $this->state->withHihahoRules = $flag;
+it('adds the hihaho rule packs and laravel-fluent-validation for every vendor', function (string $vendor): void {
+    $this->state->vendor = $vendor;
     $this->state->applyDefaults();
 
     $this->scaffolder->overlay($this->state, $this->tmp);
 
-    $dev = array_merge(...array_column(array_filter($this->composer->requires, static fn (array $call): bool => $call['dev']), 'packages'));
+    $requires = $this->composer->requires;
+    $packages = static fn (bool $dev): array => array_map(
+        static fn (string $entry): string => explode(':', $entry)[0],
+        array_merge(...array_column(array_filter($requires, static fn (array $call): bool => $call['dev'] === $dev), 'packages')),
+    );
 
-    expect(in_array('hihaho/phpstan-rules', $dev, true))->toBe($expected)
-        ->and(in_array('hihaho/rector-rules', $dev, true))->toBe($expected)
+    expect($packages(true))->toContain('hihaho/phpstan-rules', 'hihaho/rector-rules', 'sandermuller/laravel-fluent-validation-phpstan', 'sandermuller/laravel-fluent-validation-rector')
+        ->and($packages(false))->toContain('sandermuller/laravel-fluent-validation')
         // phpstan/extension-installer loads the hihaho rules; an explicit include loads them twice and PHPStan stops.
         ->and(readFileContents($this->tmp . '/phpstan.neon.dist'))->not->toContain("\n    - vendor/hihaho/phpstan-rules/extension.neon\n")
-        ->and(readFileContents($this->tmp . '/rector.php'))->toContain('return Preset::app(')->not->toContain('HihahoSetList')
-        ->and($this->output->fetch())->not->toContain('NOT wired');
-})->with([
-    'vendor default' => [null, true],
-    '--no-with-hihaho-rules' => [false, false],
-]);
+        ->and(readFileContents($this->tmp . '/rector.php'))->toContain('NamedArgumentFromManifestRector::class');
+})->with(['hihaho', 'acme']);
 
 it('adds the health-check package only with --with-health-checks', function (): void {
     $this->state->withHealthChecks = true;

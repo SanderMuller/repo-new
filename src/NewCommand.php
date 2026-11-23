@@ -59,7 +59,7 @@ final class NewCommand extends Command
             ->addOption('laravel', null, InputOption::VALUE_REQUIRED, 'Laravel constraint (laravel-package only).')
             ->addOption('test-framework', null, InputOption::VALUE_REQUIRED, 'pest|phpunit')
             ->addOption('variant', null, InputOption::VALUE_REQUIRED, 'laravel-package service provider base: ' . implode('|', VariantQuestion::VARIANTS) . ' (default spatie for vendor hihaho, else sander)')
-            ->addOption('with-hihaho-rules', null, InputOption::VALUE_NEGATABLE, 'laravel-project: hihaho PHPStan/Rector rule packs (default on for vendor hihaho).')
+            ->addOption('with-hihaho-rules', null, InputOption::VALUE_NEGATABLE, 'Deprecated, does nothing (removed in the next major). A laravel-project always gets the hihaho rule packs.')
             ->addOption('with-health-checks', null, InputOption::VALUE_NONE, 'laravel-project: add spatie/security-advisories-health-check.')
             ->addOption('with-security-advisories', null, InputOption::VALUE_NONE, 'Deprecated, does nothing (removed in the next major). See --with-health-checks.')
             ->addOption('laravel-aware', null, InputOption::VALUE_NONE, 'Opt-in for phpstan/rector-extension.')
@@ -75,6 +75,10 @@ final class NewCommand extends Command
 
         if ($input->getOption('with-security-advisories') === true) {
             $io->warning('--with-security-advisories is deprecated and does nothing: repo-init no longer ships that opt-in. It will be removed in the next major. For a laravel-project that uses spatie/laravel-health, pass --with-health-checks.');
+        }
+
+        if ($input->getOption('with-hihaho-rules') !== null) {
+            $io->warning('--with-hihaho-rules and --no-with-hihaho-rules are deprecated and do nothing: repo-init makes the hihaho rule packs mandatory for a laravel-project. They will be removed in the next major.');
         }
 
         try {
@@ -178,8 +182,6 @@ final class NewCommand extends Command
         $this->applyVariantFlag($input, $state);
         $this->applyLicenseFlag($input, $state);
 
-        $hihahoRules = $input->getOption('with-hihaho-rules');
-        $state->withHihahoRules = is_bool($hihahoRules) ? $hihahoRules : null;
         $state->withHealthChecks = $input->getOption('with-health-checks') === true;
         $state->laravelAware = $input->getOption('laravel-aware') === true;
         $state->commit = $input->getOption('commit') === true;

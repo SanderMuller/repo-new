@@ -76,6 +76,21 @@ it('warns that --with-security-advisories is a deprecated no-op', function (): v
         ->and($tester->getStatusCode())->toBe(65);
 });
 
+it('warns that --with-hihaho-rules is a deprecated no-op', function (string $flag): void {
+    // --php=8.3 stops the run right after the warning, before any scaffolding.
+    $tester = runNew([
+        'name' => 'acme/demo',
+        '--type' => 'php-package',
+        '--description' => 'Demo.',
+        '--php' => '8.3',
+        $flag => true,
+        '--no-interaction' => true,
+    ]);
+
+    expect($tester->getDisplay())->toContain('--with-hihaho-rules and --no-with-hihaho-rules are deprecated')
+        ->and($tester->getStatusCode())->toBe(65);
+})->with(['--with-hihaho-rules', '--no-with-hihaho-rules']);
+
 it('re-checks --php after the wizard picks the category', function (): void {
     $tester = new CommandTester(new Application()->find('new'));
     $tester->setInputs(['project']);

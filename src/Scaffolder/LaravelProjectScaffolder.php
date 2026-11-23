@@ -99,7 +99,6 @@ final readonly class LaravelProjectScaffolder
         new WorkflowPhpVersion()->apply($targetDir, $state->phpVersion ?? PhpVersionPolicy::defaultFor('laravel-project'));
 
         $optInFlags = [
-            'with-hihaho-rules' => $state->withHihahoRules === true,
             'with-health-checks' => $state->withHealthChecks,
         ];
         $depList = $this->deps->forCategory('laravel-project', $state->testFramework ?? 'phpunit', $optInFlags);

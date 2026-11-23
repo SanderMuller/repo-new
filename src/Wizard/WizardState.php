@@ -33,9 +33,6 @@ final class WizardState
     /** Pest or phpunit. Category- and vendor-derived default; user can override. */
     public ?string $testFramework = null;
 
-    /** laravel-project only. Null until a flag answers it; defaults to vendor === hihaho. */
-    public ?bool $withHihahoRules = null;
-
     /** laravel-project only. */
     public bool $withHealthChecks = false;
 
@@ -96,8 +93,6 @@ final class WizardState
     public function applyDefaults(): void
     {
         $this->testFramework ??= $this->defaultTestFramework();
-
-        $this->withHihahoRules ??= $this->category === 'laravel-project' && $this->vendor === 'hihaho';
 
         if ($this->category === 'laravel-package' && $this->variant === null) {
             $this->variant = $this->vendor === 'hihaho' ? 'spatie' : 'sander';
